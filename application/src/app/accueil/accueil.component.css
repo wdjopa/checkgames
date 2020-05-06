@@ -1,0 +1,77 @@
+.background {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.background h1 {
+  color: white;
+  margin-top: 5rem;
+  /* margin-bottom: rem; */
+  font-family: 'Cinzel';
+  font-weight: 100;
+  font-size: 6rem;
+  text-shadow: 0px 0px 5px forestgreen;
+  text-align: center;
+  /* padding: 5rem; */
+}
+
+.background #pseudo {
+  background: #ffffff88;
+  border: 2px solid white;
+  border-radius: 1rem 0 0 1rem;
+  padding: 1rem 2rem;
+  width: 15rem;
+  color: black;
+  font-family: 'Marcellus',
+    serif;
+
+  font-size: 1rem;
+  border-right: none;
+}
+
+.background #submit {
+  background: #026102;
+  border-left: none;
+  border: 2px solid white;
+  border-radius: 0 1rem 1rem 0;
+  padding: 1rem 0.8rem;
+  font-family: 'Marcellus',
+    serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: auto;
+  color: white;
+  font-size: 1rem;
+}
+
+footer{
+    color: white;
+    text-align: center;
+    margin: 2rem;
+    font-family: "Cinzel";
+}
+footer a{
+    text-decoration: none;
+    color: yellow
+}
+
+/**
+Version Portable
+*/
+@media screen and (max-width: 640px) {
+  .background h1 {
+    font-size: 2.5rem;
+  }
+
+  .background #pseudo {
+       padding: 1rem 2rem;
+       width: 40vw;
+       
+  }
+}

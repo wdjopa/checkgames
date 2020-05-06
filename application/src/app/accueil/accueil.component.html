@@ -1,0 +1,15 @@
+<div class="background">
+    <h1 class="titre">Check & Games</h1>
+     <form (ngSubmit)="OnSubmit(f)" #f="ngForm">
+       <div class="form-row align-items-center">
+         <div class="col-sm-5 my-1">
+           <!-- <label class="sr-only" for="pseudo">Pseudo</label> -->
+           <input type="text" class="form-control" id="pseudo" name="pseudo" ngModel placeholder="Votre pseudo" required autofocus>
+             <input type="submit" id="submit" value="valider">
+         </div>
+       </div>
+     </form>
+     <footer>
+         Copyright &#169; 2020 <a href="https://lamater.tech">La Mater Tech.</a>
+     </footer>
+</div>

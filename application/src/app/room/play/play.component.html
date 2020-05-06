@@ -1,0 +1,69 @@
+<div class="play">
+  <div class="header">
+    <h2 class="title">Check&Games </h2>
+    <div class="btns">
+      <button class="btn btn-danger h2" (click)="quit()">Quitter</button>
+    </div>
+  </div>
+  <div class="main" *ngIf="user.pseudo && partie.id" style="width: 100%; height: 90%;">
+    <div class="row m-0" style="width: 100%; height: 100%;">
+      <div class="col-sm-8 d-flex flex-column">
+        <div class="w-100 d-flex"
+          style="max-height: 20%; flex-wrap :nowrap; overflow: auto; box-shadow: 2px 0px 2px #ffffff66 inset;">
+          <div class="d-inline" *ngFor="let pseudo of partieObjectKeys">
+            <div class="bord" [ngClass]="{'active': partie.main==pseudo,'user':
+                    pseudo == user.pseudo}"> {{(pseudo == user.pseudo) ? 'Vous' : pseudo}}</div>
+          </div>
+        </div>
+        <div class="w-100 d-flex justify-content-around" style="height: 45%;">
+          <div class="d-flex justify-content-end carte-centre">
+            <div class=" center-card  d-flex justify-content-center align-items-center" >
+              <img [src]="'assets/cartes/'+partie.jeu.carte_centre.replace('*', '')+'.gif'"
+                style="width: 70%; height: 70%;" alt="">
+            </div>
+          </div>
+          <div class="box-card carte-pioche d-flex justify-content-end " style="">
+            <div (click)="piocher()" class=" d-flex justify-content-center align-items-center"
+              style="max-width: 10rem; height: 100%; background-color: transparent; ">
+              <img src="assets/cartes/dos.gif" style="width: 70%; height: 70%;" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="w-100  cartes-container" style="height: 35%;">
+          <div class="carte" (click)="jouer(carte)" *ngFor="let carte of partie.users[user.pseudo].cartes">
+            <img [src]="'assets/cartes/'+carte+'.gif'" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4 border-sm-left d-flex justify-content-between align-items-center flex-column mb-4"
+        style="height: 100%">
+        <div #scrollMe class="messages" style="height: 100%; overflow: auto;">
+          <mat-card *ngFor="let message of messages" class=" mb-3"
+            [ngClass]="{'received': message.sender.pseudo != user.pseudo, 'sender':message.sender.pseudo == user.pseudo}">
+            <mat-card-header>
+              <mat-card-title style="color: green">{{message.sender.pseudo}}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              {{message.text}}
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div class="write" style="height: 20%; overflow: auto;">
+          <div class="row m-0">
+            <div class="col-sm-8 col-12">
+              <mat-form-field class="w-100">
+                <mat-label>Veuillez entrer votre message</mat-label>
+                <input matInput type="text" style="color: white;" [(ngModel)]="message.text"
+                  placeholder="Entrez votre message">
+              </mat-form-field>
+            </div>
+            <div class="col-sm-4 col-12 d-flex justify-content-center align-items-center flex-column">
+              <button mat-raised-button color="primary" (click)="send()" [class.spinner]="loading" [disabled]="loading"
+                cdkFocusInitial>Envoyer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

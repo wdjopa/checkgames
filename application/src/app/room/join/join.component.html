@@ -1,0 +1,33 @@
+<div class="join">
+    <div class="header">
+        <h2 class="title">Partie créée par {{partie.admin.pseudo}} </h2>
+        <div class="btns">
+            <button class="btn btn-info" (click)="copyToClipboard()"> Partager</button>
+            <button class="btn start" [disabled]="btndisabled"  (click)="start()">{{btndisabled ? "Patientez ..." : "Lancer"}}</button>
+            <button class="btn btn-danger" (click)="quit()">Quitter</button>
+        </div>
+    </div>
+    <div class="main">
+        <div class="box players">
+            <h3>  Liste des participants</h3>
+            <div class="gamers">
+              <div class="player" *ngFor="let user of objectKeys(partie.users)">
+                <span class="pseudo">
+                    {{partie.users[user].pseudo}}
+                </span>
+                <span class="etat"
+                  [ngClass]="{'text-green':
+                  partie.users[user].etat}">{{partie.users[user].etat ? "connecté" : "connexion en cours ..."}}</span>
+              </div>
+            </div>
+            <div class="foot">En attente d'autres joueurs ...</div>
+        </div>
+        <div class="box rules">
+            <h3>Règles</h3>
+            <p>
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deserunt, eius. Ea optio ex itaque quis quasi consequuntur placeat possimus natus, vero iste rerum odit quibusdam dignissimos tempora ad aut ducimus recusandae praesentium magni, quae corrupti, laboriosam non minus! Sed sequi consequatur delectus provident recusandae id?
+            </p>
+        </div>
+    </div>
+    <div class="footer"></div>
+</div>

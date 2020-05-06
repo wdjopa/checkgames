@@ -1,0 +1,353 @@
+@import "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css";
+
+.play {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2rem 3rem;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+
+.play .header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  border-bottom: 2px solid white;
+  height: 15%;
+}
+
+.play .header .btns {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: row;
+  width: 30%;
+}
+
+/* 
+.btn {
+  min-width: 8rem;
+  height: 2.5rem;
+  font-family: "Open Sans";
+  margin-left: 1rem;
+  border-radius: 5px;
+  color: white;
+  background: #0a6d2b;
+  border: 1px outset forestgreen;
+  cursor: pointer;
+}
+
+.btn[disabled] {
+  background: grey !important;
+}
+
+.btn-danger {
+  background: rgb(226, 33, 33);
+} */
+
+.btn-info {
+  background: #7c0999;
+}
+
+.play .title {
+  color: white;
+  font-family: "Cinzel";
+  text-align: left;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.play .footer {
+  height: 5%;
+}
+
+.play .main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  height: 80%;
+  padding: 2rem 0rem;
+}
+
+.box {
+  box-sizing: border-box;
+  width: 48%;
+  height: 95%;
+  overflow: hidden;
+  overflow: auto;
+}
+
+.rules {
+  color: white;
+  font-family: "Open Sans";
+}
+
+.rules h3 {
+  margin-bottom: 2rem;
+  font-family: "cinzel";
+  line-height: 1.5rem;
+}
+
+
+.players {
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, .5);
+  padding: 2rem;
+  box-sizing: border-box;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.players h3 {
+  padding-bottom: 1rem;
+  color: black;
+  font-family: "Open sans";
+  border-bottom: 1px solid #000;
+  ;
+  /* margin-bottom: 1rem; */
+}
+
+.players .gamers {
+  width: 100%;
+  /* height: 100%; */
+  box-sizing: border-box;
+}
+
+.players .gamers .player {
+  border-bottom: 1px solid #888;
+  padding: 1rem;
+  font-family: "Marcellus";
+  text-transform: uppercase;
+  font-weight: 720;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  /* align-content: center; */
+  align-items: center;
+}
+
+.players .gamers .player .etat {
+  font-size: 0.71rem;
+}
+
+.text-green {
+  color: forestgreen
+}
+
+.foot {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+  padding-top: 1.4rem;
+  padding-bottom: 1.4rem;
+  width: 100%;
+  background: #ffffff88;
+  font-family: "Cinzel";
+}
+
+
+.bord {
+  padding: .5rem 2rem;
+  background-color: #ffffffcc;
+  border: 2px dashed white;
+  border-radius: 4px;
+  font-family: "Cinzel";
+  color: black;
+  font-weight: 700;
+  display: inline-block;
+  margin: .5rem 1rem;
+}
+
+.bord.active {
+  color: white;
+  background-color: forestgreen;
+}
+
+.bord.active.user {
+  color: white;
+  background-color: goldenrod;
+}
+
+.cartes-container {
+  position: relative;
+  overflow-y: hidden;
+  overflow-x: auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+.carte {
+  width: 3rem;
+  height: 100%;
+  position: relative;
+}
+
+.carte img:hover {
+  border: 2px solid orange;
+  z-index: 10;
+  transform: translateY(-20px);
+}
+
+.carte img {
+  height: 100%;
+  z-index: 10;
+  position: relative;
+  width: 7rem;
+  transform: translateY(0);
+  transition: all .3s ease;
+  }
+
+.choice img {
+  padding: 0rem;
+  margin: 2rem;
+}
+
+.mat-card {
+  background: #ffffffde !important;
+  color: #242323 !important;
+  font-family: "Cinzel" !important;
+}
+
+.mat-dialog-container {
+  background: #ffffff7a;
+  color: #fff;
+}
+
+
+:host ::ng-deep .custom-spinner circle {
+  stroke: #fff;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  border-top-color: #40A557;
+  animation: spinner .8s linear infinite;
+}
+
+.messages{
+    width: 100%;
+}
+
+.messages mat-card {
+  font-family: "Open Sans" !important;
+  font-size: 1rem;
+  padding: .6rem;
+}
+
+.messages mat-card mat-card-title {
+  font-size: 1rem;
+  margin: 0 !important;
+}
+
+.messages mat-card mat-card-subtitle {
+  margin: 0 !important;
+  font-size: .51rem;
+}
+
+.messages mat-card mat-card-content {
+  font-size: .7rem;
+}
+
+.messages mat-card-header .mat-card-header-text {
+  margin: 0 !important;
+}
+
+::-webkit-scrollbar {
+  height: .1em;
+  border-radius: 150vw;
+  background: transparent;
+  width: 0.5vw;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  background: beige;
+  margin: 1vw;
+
+  box-shadow: 0px 0px 2px transparent inset;
+  border-radius: 150vw;
+}
+
+/*ascenseur*/
+::-webkit-scrollbar-thumb:hover {
+  box-shadow: none;
+  border: 2px solid #aaa;
+  background: #aaa;
+}
+
+.carte-centre {
+  height: 100%;
+  width: 75%;
+  text-align: right;
+  padding-right: 6rem;
+}
+
+.carte-pioche {
+height: 100%;
+width: 25%;
+}
+.center-card {
+   width: 10rem;
+   height: 100%;
+   background-color: transparent;
+ }
+@media (max-width: 991px) {
+  .play {
+    padding: 1rem;
+  }
+
+  .cartes-container{
+    justify-content: flex-start;
+  }
+
+  .cartes-container img{
+      height: 121%;
+  }
+  .carte-centre {
+    height: 100%;
+    width: 55%;
+    text-align: center;
+    padding-right: 0;
+  }
+
+  .center-card img{
+      width: 60%;
+  }
+  
+
+  .carte-pioche {
+      height: 100%;
+      width: 50%;
+  }
+}

@@ -1,0 +1,18 @@
+<div class="wait">
+
+<div class="header"></div>
+<div class="main">
+    <div class="left box" (click)="new_game()">
+        <h3 class="titre">Créer une partie</h3>
+        <span>+</span>
+    </div>
+    <div class="right box">
+        <h3 class="titre">Rejoindre une partie</h3>
+        <form (ngSubmit)="OnSubmit(f)" #f="ngForm">
+              <input type="text" class="form-control" id="code" style="width: 60%; box-sizing: border-box;" name="code" ngModel placeholder="Code de la partie" required autofocus>
+              <input type="submit" id="submit" value="valider" style="width: 40%; box-sizing: border-box;">
+        </form>
+    </div>
+</div>
+<div class="footer"></div>
+</div>
