@@ -17,9 +17,9 @@ export class PlayComponent implements OnInit {
   user: any = {};
   choiceActive = false;
   loading = false;
-  message : any = {text : ""};
-  messages : any[] = [];
-  dialogRef : any = null;
+  message: any = { text: "" };
+  messages: any[] = [];
+  dialogRef: any = null;
 
   @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
 
@@ -37,35 +37,40 @@ export class PlayComponent implements OnInit {
       localStorage.setItem("partie", JSON.stringify(this.partie)) // sauvegarde en local
       this.user = this.partie.users[this.user.pseudo];
       this.partieObjectKeys = this.objectKeys(data.users)
-      if(this.messages.length != this.partie.messages){
+      if (this.messages.length != this.partie.messages) {
         this.scrollToBottom()
       }
       this.messages = this.partie.messages;
 
       if (this.partie.etat == 3) {
         this._snackBar.open("GAAAAMMMEESSSS !!! La partie est terminée. Félicitations à " + this.partie.gagnant + ". 🎉", "FERMER", {
-            duration: 10000,
-          });
-          setTimeout(() => {
-            window.location.reload()
-          }, 10000);
+          duration: 10000,
+        });
+        setTimeout(() => {
+          window.location.reload()
+        }, 10000);
       } else {
         if (this.user.pseudo == this.partie.main) {
           // this._snackBar.open("C'est à vous de jouer", "FERMER", {
           //   duration: 5000,
           // });
           this.scrollToRight()
-          if (this.partie.jeu.carte_centre[0] == "J" && !this.choiceActive) {
-            // Envoyer l'argent
-            const dialogRef = this.dialog.open(CommanderModal, {
+          if (this.partie.jeu.carte_centre[0] == "J" && !this.choiceActive && this.partie.main == this.user.pseudo) {
+
+            this.dialogRef = this.dialog.open(CommanderModal, {
               width: '700px',
             });
             this.choiceActive = true;
-            dialogRef.afterClosed().subscribe((result) => {
+            this.dialogRef.afterClosed().subscribe((result) => {
               console.log('The dialog was closed', result);
               if (result) {
                 // this.loadComponent = this.dialog.open(LoaderComponent, { data: { message: "Chargement ..." }, disableClose: true })  
-                this.webSocket.commande(this.partie.id, result)
+
+                if (this.choiceActive === true) {
+                  this.webSocket.commande(this.partie.id, result, this.choiceActive)
+                  this.choiceActive = false;
+                  this.dialog.closeAll()
+                }
               }
             });
           }
@@ -84,25 +89,29 @@ export class PlayComponent implements OnInit {
 
     this.webSocket.commander().subscribe(() => {
       // faire une commande
-      if (this.dialogRef){
-        this.dialogRef = null
-        return;
-      } 
+      this.choiceActive = true;
+      // if (this.dialogRef){
+      //   this.dialogRef = null
+      //   return;
+      // } 
       this.dialogRef = this.dialog.open(CommanderModal, {
         width: '700px',
       });
-      this.choiceActive = true;
       this.dialogRef.afterClosed().subscribe((result) => {
         console.log('The dialog was closed', result);
         if (result) {
           // this.loadComponent = this.dialog.open(LoaderComponent, { data: { message: "Chargement ..." }, disableClose: true })  
-          this.webSocket.commande(this.partie.id, result)
+          if (this.choiceActive === true) {
+            this.webSocket.commande(this.partie.id, result, this.choiceActive)
+            this.dialog.closeAll()
+            this.choiceActive = false;
+          }
         }
       });
     })
-    
-    this.webSocket.newMessageReceived().subscribe((mess)=>{
-      if(!this.messages.includes(mess)){
+
+    this.webSocket.newMessageReceived().subscribe((mess) => {
+      if (!this.messages.includes(mess)) {
         this.messages.push(mess)
         setTimeout(() => {
           this.scrollToBottom()
@@ -111,9 +120,9 @@ export class PlayComponent implements OnInit {
     })
   }
 
-  remove(joueur){
-    if(this.partie.admin.pseudo == this.user.pseudo && this.partie.etat != 3){
-      if(confirm("Souhaitez vous retirer le joueur : "+joueur)){
+  remove(joueur) {
+    if (this.partie.admin.pseudo == this.user.pseudo && this.partie.etat != 3) {
+      if (confirm("Souhaitez vous retirer le joueur : " + joueur)) {
         this.webSocket.removePlayer(joueur, this.partie.id)
       }
     }
@@ -127,24 +136,24 @@ export class PlayComponent implements OnInit {
 
   scrollToRight(): void {
     try {
-      window.document.querySelector(".scrollright").scrollLeft = window.document.querySelector(".scrollright .active")["offsetLeft"] ;
+      window.document.querySelector(".scrollright").scrollLeft = window.document.querySelector(".scrollright .active")["offsetLeft"];
     } catch (err) { }
   }
 
-  send(){
-    if (this.message.text.length>0){
+  send() {
+    if (this.message.text.length > 0) {
       this.message.sender = this.user
-      this.webSocket.sendMessage({...this.message})
+      this.webSocket.sendMessage({ ...this.message })
     }
     this.scrollToBottom()
     this.message.text = ""
-  } 
+  }
 
   piocher() {
     // this._snackBar.open("Vous essayez de piocher", "FERMER", {
     //   duration: 5000,
     // });
-    if ( this.partie.etat != 3){
+    if (this.partie.etat != 3) {
 
       if (this.user.pioche) {
         this.webSocket.piquer(this.partie.id)
@@ -156,12 +165,12 @@ export class PlayComponent implements OnInit {
 
   jouer(carte) {
     if (this.partie.etat != 3) {
-    if (this.checkGamesPossibilities(carte)) {
-      this.webSocket.jouer(this.partie.id, carte)
-    } else {
-      this._snackBar.open("Vous ne pouvez pas jouer cette carte", "FERMER", {
-        duration: 5000,
-      });
+      if (this.checkGamesPossibilities(carte)) {
+        this.webSocket.jouer(this.partie.id, carte)
+      } else {
+        this._snackBar.open("Vous ne pouvez pas jouer cette carte", "FERMER", {
+          duration: 5000,
+        });
       }
     }
   }

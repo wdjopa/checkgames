@@ -8,8 +8,8 @@ import { Partie } from '../models/Partie.model';
 @Injectable()
 export class WebsocketService {
 
-    private socket = io("https://cards.lamater.tech:5200");
-    // private socket = io("http://localhost:4000");
+    // private socket = io("https://cards.lamater.tech:5200");
+    private socket = io("http://localhost:4000");
 
     constructor() { }
 
@@ -118,7 +118,7 @@ export class WebsocketService {
         this.socket.emit("jouer", id, carte)
     }
 
-    commande(id, carte){
+    commande(id, carte, choix){
         this.socket.emit("commande", id, carte)
     }
 
