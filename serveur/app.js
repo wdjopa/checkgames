@@ -115,8 +115,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       socket.join(partie.id);
       console.log("Nouvelle partie", partie);
       io.in(partie.id).emit("join", partie);
-      console.log("broadcast new game", parties)
-      io.emit("all parties", parties);
+      // console.log("broadcast new game", parties)
+      // io.emit("all parties", parties);
       // socket.emit("")
     });
 
@@ -306,6 +306,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     socket.on("remove player", (joueur, id) => {
       if (parties[id] && parties[id].users[joueur]) {
         parties[id].jeu.dessous_pioche.push(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
+        if(parties[id].main == pseudo){
+          parties[id].main = nextValue(parties[id].users, pseudo);
+        }
         delete parties[id].users[joueur];
         if (sockets_id[joueur])
           io.sockets.connected[sockets_id[joueur].socket].emit("quit");
