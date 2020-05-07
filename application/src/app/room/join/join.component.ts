@@ -1,33 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Partie } from 'src/app/models/Partie.model';
 import { UserService } from 'src/app/services/user.service';
 import { PartieService } from 'src/app/services/partie.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
+import { User } from 'src/app/models/User.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-join',
   templateUrl: './join.component.html',
   styleUrls: ['./join.component.css']
 })
-export class JoinComponent implements OnInit {
+export class JoinComponent implements OnInit, OnDestroy {
   objectKeys = Object.keys;
 
   partie: Partie;
   btndisabled : boolean = false;
-
+  user : User;
+  partieSubscription : Subscription;
 
   constructor(private userService: UserService, private partieService: PartieService, private webSocketService: WebsocketService, private router: Router, private route: ActivatedRoute, private ngNavigatorShareService: NgNavigatorShareService) {
-    this.webSocketService.updatePartie().subscribe(partie => {
+    this.user = this.userService.getUser();
+    this.partieSubscription = this.webSocketService.updatePartie().subscribe(partie => {
       this.partie = partie
       // console.log(partie)
+      this.user = this.partie.users[this.user.pseudo]
       if(partie.etat == 2){
         this.router.navigate(["/room/play/"+partie.id]);
       }
       localStorage.setItem("partie", JSON.stringify(this.partie))
 
     })
+  }
+
+  ngOnDestroy(){
+    // this.partieSubscription.unsubscribe()
   }
 
   ngOnInit() {

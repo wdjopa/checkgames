@@ -8,11 +8,11 @@
   <div class="main" *ngIf="user.pseudo && partie.id" style="width: 100%; height: 90%;">
     <div class="row m-0" style="width: 100%; height: 100%;">
       <div class="col-sm-8 d-flex flex-column">
-        <div class="w-100 d-flex"
+        <div class="w-100 d-flex scrollright"
           style="max-height: 20%; flex-wrap :nowrap; overflow: auto; box-shadow: 2px 0px 2px #ffffff66 inset;">
           <div class="d-inline" *ngFor="let pseudo of partieObjectKeys">
-            <div class="bord" [ngClass]="{'active': partie.main==pseudo,'user':
-                    pseudo == user.pseudo}"> {{(pseudo == user.pseudo) ? 'Vous' : pseudo}}</div>
+            <div class="bord" (click)="remove(pseudo)" [ngClass]="{'active': partie.main==pseudo,'user':
+                    pseudo == user.pseudo}"> {{(pseudo == user.pseudo) ? 'Vous' : pseudo}} {{(partie.users[pseudo].cartes.length == 1) ?" (CHECK)" : ""}} </div>
           </div>
         </div>
         <div class="w-100 d-flex justify-content-around" style="height: 45%;">

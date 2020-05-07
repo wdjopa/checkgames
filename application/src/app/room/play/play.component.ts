@@ -33,6 +33,7 @@ export class PlayComponent implements OnInit {
     this.webSocket.updatePartie().subscribe(data => {
       console.log("partie ", data)
       this.partie = data;
+      localStorage.setItem("partie", JSON.stringify(this.partie)) // sauvegarde en local
       this.user = this.partie.users[this.user.pseudo];
       this.partieObjectKeys = this.objectKeys(data.users)
       if(this.messages.length != this.partie.messages){
@@ -48,6 +49,7 @@ export class PlayComponent implements OnInit {
           this._snackBar.open("C'est à vous de jouer", "FERMER", {
             duration: 5000,
           });
+          this.scrollToRight()
           if (this.partie.jeu.carte_centre[0] == "J" && !this.choiceActive) {
             // Envoyer l'argent
             const dialogRef = this.dialog.open(CommanderModal, {
@@ -100,10 +102,23 @@ export class PlayComponent implements OnInit {
     })
   }
 
+  remove(joueur){
+    if(this.partie.admin.pseudo == this.user.pseudo){
+      if(confirm("Souhaitez vous retirer le joueur : "+joueur)){
+        this.webSocket.removePlayer(joueur, this.partie.id)
+      }
+    }
+  }
+
   scrollToBottom(): void {
     try {
-      console.log("sdf")
       window.document.querySelector(".messages").scrollTop = window.document.querySelector(".messages").scrollHeight;
+    } catch (err) { }
+  }
+
+  scrollToRight(): void {
+    try {
+      window.document.querySelector(".scrollright").scrollLeft = window.document.querySelector(".scrollright .active")["offsetLeft"] ;
     } catch (err) { }
   }
 

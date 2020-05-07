@@ -169,6 +169,7 @@
   font-weight: 700;
   display: inline-block;
   margin: .5rem 1rem;
+  position: relative;
 }
 
 .bord.active {
@@ -210,12 +211,19 @@
   width: 7rem;
   transform: translateY(0);
   transition: all .3s ease;
-  }
+}
 
 .choice img {
   padding: 0rem;
-  margin: 2rem;
+  margin: 1rem;
 }
+
+.choice .row .col-6 {
+  display: flex;
+  justify-content: center;
+}
+
+
 
 .mat-card {
   background: #ffffffde !important;
@@ -255,8 +263,8 @@
   animation: spinner .8s linear infinite;
 }
 
-.messages{
-    width: 100%;
+.messages {
+  width: 100%;
 }
 
 .messages mat-card {
@@ -314,26 +322,29 @@
 }
 
 .carte-pioche {
-height: 100%;
-width: 25%;
+  height: 100%;
+  width: 25%;
 }
+
 .center-card {
-   width: 10rem;
-   height: 100%;
-   background-color: transparent;
- }
+  width: 10rem;
+  height: 100%;
+  background-color: transparent;
+}
+
 @media (max-width: 991px) {
   .play {
     padding: 1rem;
   }
 
-  .cartes-container{
+  .cartes-container {
     justify-content: flex-start;
   }
 
-  .cartes-container img{
-      height: 121%;
+  .cartes-container img {
+    height: 121%;
   }
+
   .carte-centre {
     height: 100%;
     width: 55%;
@@ -341,13 +352,17 @@ width: 25%;
     padding-right: 0;
   }
 
-  .center-card img{
-      width: 60%;
+  .center-card img {
+    width: 60%;
   }
-  
+
 
   .carte-pioche {
-      height: 100%;
-      width: 50%;
+    height: 100%;
+    width: 50%;
+  }
+
+  .mat-card-header .mat-card-title {
+    font-size: 0.7rem;
   }
 }

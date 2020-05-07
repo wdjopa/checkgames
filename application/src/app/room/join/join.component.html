@@ -3,7 +3,7 @@
         <h2 class="title">Partie créée par {{partie.admin.pseudo}} </h2>
         <div class="btns">
             <button class="btn btn-info" (click)="copyToClipboard()"> Partager</button>
-            <button class="btn start" [disabled]="btndisabled"  (click)="start()">{{btndisabled ? "Patientez ..." : "Lancer"}}</button>
+            <button class="btn start" *ngIf="partie.admin.pseudo == user.pseudo" [disabled]="btndisabled"  (click)="start()">{{btndisabled ? "Patientez ..." : "Lancer"}}</button>
             <button class="btn btn-danger" (click)="quit()">Quitter</button>
         </div>
     </div>

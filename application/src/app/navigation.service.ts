@@ -8,7 +8,7 @@ export class NavigationService {
 
   constructor( private _snackBar: MatSnackBar) { }
 
-  openSnackBar({ message, action, duration = 2000 }: { message: string; action: string; duration?: number; }) {
+  openSnackBar({ message, action, duration = 2000 }) {
     this._snackBar.open(message, action, {
       duration: duration,
     });

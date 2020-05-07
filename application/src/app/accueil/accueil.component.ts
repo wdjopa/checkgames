@@ -28,7 +28,7 @@ export class AccueilComponent implements OnInit {
     });
 
     this.webSocketService.userAlreadySaved().subscribe(data => {
-      alert("Votre compte est déjà ouvert ailleurs")
+      alert("Votre compte était déjà ouvert ailleurs, l'ancienne session sera donc fermée.")
     });
 
   }

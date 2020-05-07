@@ -19,10 +19,11 @@
   font-family: 'Viaoda Libre',
     cursive;
   color: white;
-
+  overflow: auto;
 }
 
 .main .box {
+  text-align: center;
   border: 2px dashed #ffffff88;
   height: 100%;
   width: 100%;

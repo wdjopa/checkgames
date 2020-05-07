@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 const socket = require("socket.io");
 
 var parties = [];
-
+var waitingTime = 3000;
 var mongoPassword = "willaudyv2016";
 var dbase = "dcafc3fe9a3456a911b404aae165817b";
 var config = JSON.parse(
@@ -80,6 +80,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     socket.on("connexion", (user) => {
       // console.log("Connexion d'un utilisateur ", user, sockets_id);
       if (sockets_id[user.pseudo]) {
+        // io.sockets.connected[sockets_id[user.pseudo].socket].close();
         socket.emit("user already saved", user);
       } else {
         user.points = 0;
@@ -95,7 +96,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     socket.on("new game", (user) => {
       user.etat = 1;
       partie.id = uuidv4().split("-")[0];
-      partie.ready = 0;
       partie.admin = user;
       partie.etat = 0;
       partie.limit = 8;
@@ -122,89 +122,82 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     socket.on("lancer", (id) => {
       if (parties[id]) {
         partie = parties[id];
-        let message = {
-          text: "Je suis pret à commencer",
-          sender: currentUser,
-          date: new Date(),
-        };
-        currentUser.etat = 2;
-        partie.users[currentUser.pseudo] = currentUser;
-        partie.messages.push(message);
-        partie.ready++;
-        if (partie.ready >= Object.size(partie.users)) {
-          // Partie effectivemnt lancée
-          partie.etat = 2;
-          partie.jeu = {
-            pioche: [
-              "2c",
-              "3c",
-              "4c",
-              "5c",
-              "6c",
-              "7c",
-              "8c",
-              "9c",
-              "10c",
-              "2d",
-              "3d",
-              "4d",
-              "5d",
-              "6d",
-              "7d",
-              "8d",
-              "9d",
-              "10d",
-              "2h",
-              "3h",
-              "4h",
-              "5h",
-              "6h",
-              "7h",
-              "8h",
-              "9h",
-              "10h",
-              "2s",
-              "3s",
-              "4s",
-              "5s",
-              "6s",
-              "7s",
-              "8s",
-              "9s",
-              "10s",
-              "Asc",
-              "Asd",
-              "Ash",
-              "Ass",
-              "Jc",
-              "Jd",
-              "Jh",
-              "Js",
-              "Qc",
-              "Qd",
-              "Qh",
-              "Qs",
-              "Kc",
-              "Kd",
-              "Kh",
-              "Ks",
-            ],
-            dessous_pioche: [],
-            pioche_vide: 0,
-            carte_centre: "",
-            tour: 0,
-          };
-          console.log("lancement de la partie");
-          // On fixe le joueur qui a la main
-          let allUsers = Object.keys(partie.users);
-          partie.jeu.tour %= allUsers.length;
-          partie.main = allUsers[partie.jeu.tour];
-          distribution(id);
+        for (let pseudo in partie.users) {
+          partie.users[pseudo].etat = 2;
+          partie.users[pseudo].autoPlay = 0;
         }
+        // Partie effectivemnt lancée par l'admin
+        partie.etat = 2;
+        partie.jeu = {
+          pioche: [
+            "2c",
+            "3c",
+            "4c",
+            "5c",
+            "6c",
+            "7c",
+            "8c",
+            "9c",
+            "10c",
+            "2d",
+            "3d",
+            "4d",
+            "5d",
+            "6d",
+            "7d",
+            "8d",
+            "9d",
+            "10d",
+            "2h",
+            "3h",
+            "4h",
+            "5h",
+            "6h",
+            "7h",
+            "8h",
+            "9h",
+            "10h",
+            "2s",
+            "3s",
+            "4s",
+            "5s",
+            "6s",
+            "7s",
+            "8s",
+            "9s",
+            "10s",
+            "Asc",
+            "Asd",
+            "Ash",
+            "Ass",
+            "Jc",
+            "Jd",
+            "Jh",
+            "Js",
+            "Qc",
+            "Qd",
+            "Qh",
+            "Qs",
+            "Kc",
+            "Kd",
+            "Kh",
+            "Ks",
+          ],
+          dessous_pioche: [],
+          pioche_vide: 0,
+          carte_centre: "",
+          tour: 0,
+        };
+        console.log("lancement de la partie");
+        // On fixe le joueur qui a la main
+        let allUsers = Object.keys(partie.users);
+        partie.jeu.tour %= allUsers.length;
+        partie.main = allUsers[partie.jeu.tour];
+        distribution(id);
         parties[id] = partie;
         io.in(id).emit("partie", partie);
       } else {
-        socket.emit("nogame", id);
+        socket.emit("error message", "Cette partie n'existe plus");
       }
     });
 
@@ -257,8 +250,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       try {
         partie = parties[id];
         if (currentUser.pseudo == partie.main) {
-          var { r } = jouer(id, currentUser.pseudo, carte);
-          if (r) {
+          var { r, commande } = jouer(id, currentUser.pseudo, carte);
+          if (r || commande) {
             //On passe la main au joueur suivant
             partie = parties[id];
             partie.jeu.tour += r;
@@ -267,13 +260,33 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             partie.main = allUsers[partie.jeu.tour];
             parties[id] = partie;
             currentUser = parties[id].users[currentUser.pseudo];
+            // On met à jour les cartes
+            // Si la partie est finie,
             if (currentUser.cartes.length == 0) {
               // Fin de la partie
+              partie = parties[id];
+              io.in(id).emit("partie", partie);
               parties[id].etat = 3;
               parties[id].gagnant = currentUser.pseudo;
+            } else if (currentUser.cartes.length == 1) {
+              partie.messages.push({
+                text: "CHECK",
+                sender: currentUser,
+                date: new Date(),
+              });
             }
             partie = parties[id];
             io.in(id).emit("partie", partie);
+
+            // On definit le timer pour le joueur suivant
+            // if (parties[id].timer) {
+            //   clearTimeout(parties[id].timer);
+            // }
+            // parties[id].timer = setTimeout(bouffeAuto,waitingTime,parties[id].main,id);
+            if (commande) {
+              //Le J commande, donc le joueur doit choisir la carte qu'il commande
+              socket.emit("commande");
+            }
           } else {
           }
         } else {
@@ -287,6 +300,51 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         socket.emit("reset", id, err);
       }
     });
+
+    socket.on("remove player", (joueur, id) => {
+      if (parties[id] && parties[id].users[joueur]) {
+        parties[id].jeu.dessous_pioche.push(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
+        delete parties[id].users[joueur];
+        io.sockets.connected[sockets_id[joueur].socket].emit("quit");
+        // sockets_id[joueur].socket
+        partie = parties[id];
+        io.in(id).emit("partie", partie);
+      }
+    });
+
+    function bouffeAuto(joueur, id) {
+      io.in(id).emit("error message", "Bouffe auto pour " + joueur);
+      // Au bout du delai, je fais bouffer automatiquement et je passe la main
+      console.log("Bouffe Auto");
+      console.log(parties[id]);
+      piocher(id, joueur); // On pioche autant de fois que necessaire
+      parties[id].users[joueur].autoPlay++; // on met à jour l'utilisateur
+      if (parties[id].users[joueur].autoPlay > 2) {
+        // 2 jeux automatiques, on sort le joueur
+        parties[id].jeu.dessous_pioche.push(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
+        delete parties[id].users[joueur];
+      }
+      let partie = parties[id];
+      console.log(partie);
+      //On passe la main au joueur suivant
+      partie.jeu.tour++;
+      let allUsers = Object.keys(partie.users);
+      partie.jeu.tour %= allUsers.length;
+      partie.main = allUsers[partie.jeu.tour];
+      parties[id] = partie;
+      io.in(id).emit("partie", partie);
+
+      // On definit le timer pour le joueur suivant
+      if (parties[id].timer) {
+        clearTimeout(parties[id].timer);
+      }
+      parties[id].timer = setTimeout(
+        bouffeAuto,
+        waitingTime,
+        parties[id].main,
+        id
+      );
+    }
 
     /** un joueur essaie de jouer une carte */
     socket.on("commande", (id, carte) => {
@@ -314,67 +372,72 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     });
 
     // enregistrer un message
-    socket.on("message", (message)=>{
-      if(partie && parties[partie.id]){
-        message.date = new Date()
-        parties[partie.id].messages.push(message)
-        partie = parties[partie.id]
-        io.in(partie.id).emit("new message", message)
+    socket.on("message", (message) => {
+      if (partie && parties[partie.id]) {
+        message.date = new Date();
+        parties[partie.id].messages.push(message);
+        partie = parties[partie.id];
+        io.in(partie.id).emit("new message", message);
       }
-    })
+    });
     // 'join event'
     socket.on("join", (id) => {
       // console.log(currentUser);
       if (parties[id]) {
-        let message = {
-          text:
-            "Salut, je suis " +
-            currentUser.pseudo +
-            ", je souhaite rejoindre votre partie",
-          sender: currentUser,
-          date: new Date(),
-        };
-        partie = parties[id];
-        // On s'assure que l'utilisateur n'était pas deja inscrit à la partie
-        let dejala = false;
-        if (partie.users[currentUser.pseudo]) dejala = true;
-
-        if (!dejala) {
-          if (parties[id].etat < 2) {
-            // si la partie n'a pas encore été lancée
-            // si l'utilisateur n'est pas encore inscrit (premiere fois)
-            socket.join(id);
-            currentUser.etat = 1;
-            partie.users[currentUser.pseudo] = currentUser;
-            partie.messages.push(message);
-            io.in(partie.id).emit("join", partie);
-            io.in(partie.id).emit("partie", partie);
-            io.in(partie.id).emit("new message", message);
-            console.log(currentUser.pseudo + " a rejoint une partie", partie);
-            parties[id] = partie;
-          } else {
-            // la partie a déjà débuté
-            socket.emit("in game", id, parties[id].etat);
-          }
+        let allUsers = Object.keys(parties[id].users);
+        if (allUsers.length >= parties[id].limit) {
+          socket.emit("error message", "La session est pleine.");
         } else {
-          if (parties[id].etat == 3) {
-            currentUser.etat = 0;
-            socket.leave(id);
-          } else {
-            socket.join(id);
-            // L'utilisateur vient de se reconnecter, on remet son etat à 1
-            for (let pseudo in partie.users) {
-              if (!partie.users[pseudo]) {
-                // Si le champ pseudo manque, on supprime cet utilisateur
-                delete partie.users[pseudo];
-              } else {
-                partie.users[pseudo].etat = 1;
-              }
+          let message = {
+            text:
+              "Salut, je suis " +
+              currentUser.pseudo +
+              ", je souhaite rejoindre votre partie",
+            sender: currentUser,
+            date: new Date(),
+          };
+          partie = parties[id];
+          // On s'assure que l'utilisateur n'était pas deja inscrit à la partie
+          let dejala = false;
+          if (partie.users[currentUser.pseudo]) dejala = true;
+
+          if (!dejala) {
+            if (parties[id].etat < 2) {
+              // si la partie n'a pas encore été lancée
+              // si l'utilisateur n'est pas encore inscrit (premiere fois)
+              socket.join(id);
+              currentUser.etat = 1;
+              partie.users[currentUser.pseudo] = currentUser;
+              partie.messages.push(message);
+              io.in(partie.id).emit("join", partie);
+              io.in(partie.id).emit("partie", partie);
+              io.in(partie.id).emit("new message", message);
+              console.log(currentUser.pseudo + " a rejoint une partie", partie);
+              parties[id] = partie;
+            } else {
+              // la partie a déjà débuté
+              socket.emit("in game", id, parties[id].etat);
             }
-            io.in(partie.id).emit("join", partie);
-            io.in(partie.id).emit("partie", partie);
-            console.log(currentUser.pseudo + " était deja là");
-            parties[id] = partie;
+          } else {
+            if (parties[id].etat == 3) {
+              currentUser.etat = 0;
+              socket.leave(id);
+            } else {
+              socket.join(id);
+              // L'utilisateur vient de se reconnecter, on remet son etat à 1
+              for (let pseudo in partie.users) {
+                if (!partie.users[pseudo]) {
+                  // Si le champ pseudo manque, on supprime cet utilisateur
+                  delete partie.users[pseudo];
+                } else {
+                  partie.users[pseudo].etat = 1;
+                }
+              }
+              parties[id] = partie;
+              io.in(partie.id).emit("join", partie);
+              io.in(partie.id).emit("partie", partie);
+              console.log(currentUser.pseudo + " était deja là");
+            }
           }
         }
       } else {
@@ -385,6 +448,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     socket.on("quit", (id) => {
       if (parties[id]) {
         partie = parties[id];
+        parties[id].jeu.dessous_pioche.push(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
         delete partie.users[currentUser.pseudo];
         currentUser.etat = 0;
         parties[id] = partie;
@@ -445,59 +509,64 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     }
 
     function piocher(id, pseudo, distrib = 0) {
-      if (partie.jeu.pioche_vide) {
-        partie.jeu.pioche = partie.jeu.dessous_pioche;
-        partie.jeu.dessous_pioche = [];
-        partie.jeu.pioche_vide = 0;
-        console.log("Vous ne pouviez plus piocher");
-      }
-      var ran;
-      if (distrib)
-        do {
-          ran = random(0, partie.jeu.pioche.length);
-          var card = partie.jeu.pioche[ran];
-          var motif = card.split("")[card.split("").length - 1];
-          num = card.split(motif)[0];
-        } while (num != "7" && !partie.jeu.pioche[ran]);
-      else
-        do {
-          ran = random(0, partie.jeu.pioche.length);
-        } while (!partie.jeu.pioche[ran]);
+      // if (partie.jeu.pioche_vide) {
+      //   partie.jeu.pioche = partie.jeu.dessous_pioche;
+      //   partie.jeu.dessous_pioche = [];
+      //   partie.jeu.pioche_vide = 0;
+      //   console.log("Vous ne pouviez plus piocher");
+      // }
+      if (!parties[id].pioche_vide) {
+        var ran;
+        if (distrib)
+          do {
+            ran = random(0, partie.jeu.pioche.length);
+            var card = partie.jeu.pioche[ran];
+            var motif = card.split("")[card.split("").length - 1];
+            num = card.split(motif)[0];
+          } while (num != "7" && !partie.jeu.pioche[ran]);
+        else
+          do {
+            ran = random(0, partie.jeu.pioche.length);
+          } while (!partie.jeu.pioche[ran]);
 
-      partie.users[pseudo].cartes.push(partie.jeu.pioche[ran]);
-      partie.jeu.pioche = partie.jeu.pioche.filter((value, index, arr) => {
-        return index != ran;
-      });
+        partie.users[pseudo].cartes.push(partie.jeu.pioche[ran]);
+        partie.jeu.pioche = partie.jeu.pioche.filter((value, index, arr) => {
+          return index != ran;
+        });
 
-      // delete partie.jeu.pioche[ran];
+        // delete partie.jeu.pioche[ran];
 
-      // io.in(id).emit("pioche", pseudo, parties[id].jeu.pioche[ran]);
-      // io.in(id).emit("partie", parties[id])
-      // partie = parties[id]
-      // console.log(
-      //   "Partie n°" +
-      //     id +
-      //     ": " +
-      //     nom +
-      //     " a piocher la carte " +
-      //     parties[id].pioche[ran]
-      // );
-      //joueurs.push(pioche[ran]);
-      // supprbypos(ran, parties[id].pioche);
-      if (partie.jeu.pioche.length < 1) {
-        //Lorqu'il reste une carte dans la pioche
-        if (partie.jeu.dessous_pioche.length > 1) {
-          //Alors, on prend les cartes qui sont en dessous de la carte du centre
-          for (var i = 0; i < partie.jeu.dessous_pioche.length; i++) {
-            partie.jeu.pioche.push(partie.jeu.dessous_pioche[i]);
-            delete partie.jeu.dessous_pioche[i];
+        // io.in(id).emit("pioche", pseudo, parties[id].jeu.pioche[ran]);
+        // io.in(id).emit("partie", parties[id])
+        // partie = parties[id]
+        // console.log(
+        //   "Partie n°" +
+        //     id +
+        //     ": " +
+        //     nom +
+        //     " a piocher la carte " +
+        //     parties[id].pioche[ran]
+        // );
+        //joueurs.push(pioche[ran]);
+        // supprbypos(ran, parties[id].pioche);
+        if (partie.jeu.pioche.length < 1) {
+          //Lorqu'il reste une carte dans la pioche
+          if (partie.jeu.dessous_pioche.length > 1) {
+            //Alors, on prend les cartes qui sont en dessous de la carte du centre
+            for (var i = 0; i < partie.jeu.dessous_pioche.length; i++) {
+              partie.jeu.pioche.push(partie.jeu.dessous_pioche[i]);
+              delete partie.jeu.dessous_pioche[i];
+            }
+          } else {
+            //La pioche est vide
+            partie.jeu.pioche_vide = 1;
           }
-        } else {
-          //La pioche est vide
-          partie.jeu.pioche_vide = 1;
         }
+        parties[id] = partie;
+      } else {
+        console.log("Vous ne pouvez plus piocher");
+        socket.emit("error message", "Vous ne pouvez plus piocher de carte");
       }
-      parties[id] = partie;
     }
 
     function jouer(id, nom, card, nombre_de_cartes_a_piocher = 2) {
@@ -515,7 +584,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       console.log(num + " <> " + num_centre);
 
       let r = 0,
-        contre = false;
+        commande = false;
 
       if (num == "2") {
         //Le  numéro de la carte jouée est 2 (passe partout)
@@ -530,22 +599,24 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         socket.emit("retirer carte", card);
       } else {
         if (num == "J") {
-          //Le J commande, donc le joueur doit choisir la carte qu'il commande
-          socket.emit("commande");
           //Lorsquil commande, le motif devient le motif quil a commandé et le numero devient une etoile
 
           //On la met sur la table
-          parties[id].jeu.dessous_pioche.push(parties[id].carte_centre);
+          if (num_centre != "*")
+            // Si la carte du milieu est une * cest que cest un modele de carte "commandée"
+            parties[id].jeu.dessous_pioche.push(parties[id].carte_centre);
           parties[id].jeu.carte_centre = card;
-          io.in(id).emit("carte centre", parties[id].jeu.carte_centre);
+          // io.in(id).emit("carte centre", parties[id].jeu.carte_centre);
 
           //On la retire de la main du joueur
           parties[id].users[currentUser.pseudo].cartes = parties[id].users[
             currentUser.pseudo
           ].cartes.filter((carte) => carte != card);
           currentUser = parties[id].users[currentUser.pseudo];
-          partie = parties[id];
-          io.in(id).emit("partie", partie);
+          commande = true;
+
+          // partie = parties[id];
+          // io.in(id).emit("partie", partie);
           // socket.emit("retirer carte", card);
         } else {
           if (
@@ -558,7 +629,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               r = 2;
 
               //On la met sur la table
-              parties[id].jeu.dessous_pioche.push(parties[id].jeu.carte_centre);
+              if (num_centre != "*" && parties[id].jeu.carte_centre)
+                // Si la carte du milieu est une * cest que cest un modele de carte "commandée"
+                parties[id].jeu.dessous_pioche.push(
+                  parties[id].jeu.carte_centre
+                );
               parties[id].jeu.carte_centre = card;
               io.in(id).emit("carte centre", parties[id].jeu.carte_centre);
 
@@ -593,9 +668,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 // );
 
                 //On la met sur la table
-                parties[id].jeu.dessous_pioche.push(
-                  parties[id].jeu.carte_centre
-                );
+                if (num_centre != "*" && parties[id].jeu.carte_centre)
+                  // Si la carte du milieu est une * cest que cest un modele de carte "commandée"
+                  parties[id].jeu.dessous_pioche.push(
+                    parties[id].jeu.carte_centre
+                  );
                 parties[id].jeu.carte_centre = card;
                 // io.in(id).emit("carte centre", parties[id].jeu.carte_centre);
 
@@ -607,11 +684,10 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 );
 
                 if (parties[id].users[currentUser.pseudo].pioche) {
-                  contre = true;
-                  parties[id].users[suivant.pseudo].pioche =
-                    parties[id].users[currentUser.pseudo].pioche +
-                    nombre_de_cartes_a_piocher;
+                  let p = parties[id].users[currentUser.pseudo].pioche;
                   delete parties[id].users[currentUser.pseudo].pioche;
+                  parties[id].users[suivant.pseudo].pioche =
+                    p + nombre_de_cartes_a_piocher;
                 } else {
                   parties[id].users[
                     suivant.pseudo
@@ -642,9 +718,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 //si la carte proposée correspond aux criteres, alors elle est jouée.
 
                 //On la met sur la table
-                parties[id].jeu.dessous_pioche.push(
-                  parties[id].jeu.carte_centre
-                );
+                if (num_centre != "*" && parties[id].jeu.carte_centre)
+                  // Si la carte du milieu est une * cest que cest un modele de carte "commandée"
+                  parties[id].jeu.dessous_pioche.push(
+                    parties[id].jeu.carte_centre
+                  );
                 parties[id].jeu.carte_centre = card;
                 // io.in(id).emit("carte centre", parties[id].jeu.carte_centre);
 
@@ -661,7 +739,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           }
         }
       }
-      return { r: r, contre: contre };
+      return { r: r, commande: commande };
     }
     function nextValue(obj, key) {
       var keys = Object.keys(obj),

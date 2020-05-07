@@ -8,14 +8,14 @@ import { Partie } from '../models/Partie.model';
 @Injectable()
 export class WebsocketService {
 
-    private socket = io("https://cards.lamater.tech:3000");
+    // private socket = io("https://cards.lamater.tech:3000");
+    private socket = io("http://localhost:4000");
 
     constructor() { }
 
     saveUser(user: User) {
         this.socket.emit("connexion", user);
     }
-
 
     async newGame(user: User) {
         console.log("Envoie au socket")
@@ -24,6 +24,10 @@ export class WebsocketService {
 
     lancer(id:string){
         this.socket.emit("lancer", id)
+    }
+
+    removePlayer(joueur:string, id:string){
+        this.socket.emit("remove player", joueur, id)
     }
 
     userSaved() {
@@ -209,6 +213,19 @@ export class WebsocketService {
         return observable;
     }
 
+    error() {
+        return new Observable<User>(
+            observer => {
+                this.socket.on("error message", data => {
+                    observer.next(data);
+                });
+                return () => {
+                    this.socket.disconnect();
+                };
+            }
+        );
+    }
+
     joinedRoom() {
         const observable = new Observable<Partie>(observer => {
             this.socket.on("join", data => {
@@ -228,7 +245,6 @@ export class WebsocketService {
                     observer.next();
                 });
                 return () => {
-                    console.log("sdf")
                     this.socket.disconnect();
                 };
             }

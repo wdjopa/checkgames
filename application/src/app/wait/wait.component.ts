@@ -21,7 +21,7 @@ export class WaitComponent implements OnInit {
     this.joinRoom = this.websocketService.joinedRoom().subscribe(data => {
       this.partie = data;
       console.log(data)
-      partieService.setPartie(this.partie)
+      this.partieService.setPartie(this.partie)
       // alert("Bienvenue "+this.user.pseudo)
     }); 
     if(localStorage.getItem("currentid")){
