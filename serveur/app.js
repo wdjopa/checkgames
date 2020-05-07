@@ -495,7 +495,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       //Distribution de n cartes au debut
       for (let user of Object.keys(partie.users)) {
         for (var j = 0; j < n; j++) {
-          piocher(id, user);
+          if(partie.users[user].cartes){
+            piocher(id, user);
+          }
         }
       }
       //tableau (carte du milieu)
@@ -518,7 +520,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       io.in(id).emit("partie", partie);
     }
 
-    function piocher(id, pseudo, distrib = 0) {
+    function  piocher(id, pseudo, distrib = 0) {
       // if (partie.jeu.pioche_vide) {
       //   partie.jeu.pioche = partie.jeu.dessous_pioche;
       //   partie.jeu.dessous_pioche = [];
