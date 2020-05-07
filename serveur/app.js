@@ -357,20 +357,25 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             socket.emit("in game", id, parties[id].etat);
           }
         } else {
-          socket.join(id);
-          // L'utilisateur vient de se reconnecter, on remet son etat à 1
-          for (let pseudo in partie.users) {
-            if (!partie.users[pseudo]) {
-              // Si le champ pseudo manque, on supprime cet utilisateur
-              delete partie.users[pseudo];
-            } else {
-              partie.users[pseudo].etat = 1;
+          if (parties[id].etat == 3) {
+            currentUser.etat = 0;
+            socket.leave(id);
+          } else {
+            socket.join(id);
+            // L'utilisateur vient de se reconnecter, on remet son etat à 1
+            for (let pseudo in partie.users) {
+              if (!partie.users[pseudo]) {
+                // Si le champ pseudo manque, on supprime cet utilisateur
+                delete partie.users[pseudo];
+              } else {
+                partie.users[pseudo].etat = 1;
+              }
             }
+            io.in(partie.id).emit("join", partie);
+            io.in(partie.id).emit("partie", partie);
+            console.log(currentUser.pseudo + " était deja là");
+            parties[id] = partie;
           }
-          io.in(partie.id).emit("join", partie);
-          io.in(partie.id).emit("partie", partie);
-          console.log(currentUser.pseudo + " était deja là");
-          parties[id] = partie;
         }
       } else {
         socket.emit("nogame", id);
