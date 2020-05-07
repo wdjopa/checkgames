@@ -8,7 +8,7 @@ import { Partie } from '../models/Partie.model';
 @Injectable()
 export class WebsocketService {
 
-    private socket = io("http://localhost:3000");
+    private socket = io("https://cards.lamater.tech:3000");
 
     constructor() { }
 
