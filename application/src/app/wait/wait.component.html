@@ -65,7 +65,7 @@
             Aucune partie n'est encore disponible pour l'instant
           </div>
           <mat-list role="list" *ngIf="partieObjectKeys.length>0">
-            <mat-list-item (click)="join(id)" class="mat-elevation-z2 border-radius mb-3" style="cursor: pointer;" matRipple [matRippleColor]="efefef" role=" listitem"
+            <mat-list-item (click)="join(id)" class="mat-elevation-z2 border-radius mb-3" style="cursor: pointer;" matRipple matRippleColor="#efefef" role=" listitem"
               *ngFor="let id of partieObjectKeys">
                 <mat-icon mat-list-icon>play_for_work</mat-icon>
                 <div mat-line>Créée par <span style="color: #026102; text-decoration: underline;">{{parties[id].admin.pseudo}}</span> le {{parties[id].created_at | date}}</div>
