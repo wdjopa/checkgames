@@ -307,7 +307,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       if (parties[id] && parties[id].users[joueur]) {
         parties[id].jeu.dessous_pioche.push(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
         delete parties[id].users[joueur];
-        io.sockets.connected[sockets_id[joueur].socket].emit("quit");
+        if (sockets_id[joueur])
+          io.sockets.connected[sockets_id[joueur].socket].emit("quit");
         // sockets_id[joueur].socket
         partie = parties[id];
         io.in(id).emit("partie", partie);
