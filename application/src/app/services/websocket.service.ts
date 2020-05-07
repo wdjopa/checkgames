@@ -30,6 +30,19 @@ export class WebsocketService {
         this.socket.emit("remove player", joueur, id)
     }
 
+    nogame() {
+        return new Observable<User>(
+            observer => {
+                this.socket.on("nogame", data => {
+                    observer.next(data);
+                });
+                return () => {
+                    this.socket.disconnect();
+                };
+            }
+        );
+    }
+
     userSaved() {
         return new Observable<User>(
             observer => {
@@ -168,6 +181,24 @@ export class WebsocketService {
 
     getPartieData(id){
         this.socket.emit("get partie", id)
+    }
+
+    getAllParties() {
+        this.socket.emit("all parties")
+    }
+
+    allPartiesDatas() {
+        return new Observable<any>(
+            observer => {
+                this.socket.on("all parties", (data) => {
+                    console.log("data",data)
+                    observer.next(data);
+                });
+                return () => {
+                    this.socket.disconnect();
+                };
+            }
+        );
     }
 
     quitRoom(id){

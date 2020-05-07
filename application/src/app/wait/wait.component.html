@@ -1,3 +1,5 @@
+
+<!-- <div class="d-none d-lg-block">
 <div class="wait">
 
 <div class="header"></div>
@@ -15,4 +17,63 @@
     </div>
 </div>
 <div class="footer"></div>
+</div>
+    
+</div>
+
+  <div class="d-block d-lg-none">
+</div>
+--> 
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="deconnexion()">Déconnexion</button>
+</mat-menu>
+<mat-toolbar class="mb-4" style="background-color: #026102;">
+  <mat-toolbar-row>
+    <span style="font-family: 'Cinzel'!important; font-size: 1.8rem;">Check & Games</span>
+    <span class="example-spacer"></span>
+    <mat-icon class="example-icon" [matMenuTriggerFor]="menu" aria-hidden="false"
+      aria-label="Example user verified icon">menu</mat-icon>
+  </mat-toolbar-row>
+</mat-toolbar>
+<div class="mt-4 container">
+  <mat-card style="background-color: white;" class="mb-4">
+    <mat-card-content style="color: black!important;">
+      Salut {{user.pseudo}}, vous avez 0 coins
+    </mat-card-content>
+  </mat-card>
+  <div class="row">
+    <div class="col-sm-6">
+      <mat-card class="mb-3" style="background-color: white; ">
+        <mat-card-header class="border-bottom">
+          <mat-card-subtitle style="color:#444;">Créez une partie</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="text-center mt-3 mb-3">
+            <button (click)="new_game()" mat-raised-button style="background-color: #026102; color: #fff;">Créer une
+              partie</button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="col-sm-6">
+      <mat-card class="mb-3" style="background-color: white; ">
+        <mat-card-header class="border-bottom">
+          <mat-card-subtitle style="color:#444;">Rejoignez une partie</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="empty mt-3 mb-3" style="color: #ccc; text-align: center;" *ngIf="parties.length==0">
+            Aucune partie n'est encore disponible pour l'instant
+          </div>
+          <mat-list role="list" *ngIf="parties.length>0">
+            <mat-list-item role="listitem" *ngFor="let partie of parties">
+              <mat-icon mat-list-icon>star</mat-icon>
+              <div mat-line>Créée par {{partie.admin.pseudo}} le {{partie.created_at | date}}</div>
+              <div mat-line> {{partie.users.length}} participant(s)</div>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
 </div>

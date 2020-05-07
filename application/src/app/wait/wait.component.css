@@ -1,3 +1,5 @@
+@import "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css";
+
 .wait {
   width: 100%;
   height: 100%;
@@ -7,7 +9,7 @@
   flex-direction: column;
 }
 
-.main {
+ .main  {
   height: 70%;
   width: 100%;
   padding: 2rem;
@@ -22,7 +24,7 @@
   overflow: auto;
 }
 
-.main .box {
+ .box {
   text-align: center;
   border: 2px dashed #ffffff88;
   height: 100%;
@@ -42,39 +44,39 @@
     height: auto;
     flex-direction: column;
   }
-  .main .box {
+   .box {
     height: auto;
   }
-  .main .left  {
+   .left  {
     padding: 2rem 0;
   }
-  .main .left span {
+   .left span {
     line-height: 5rem;
   }
-  .main .right {
+   .right {
     padding: 2rem 0;
   }
 
-  .main .right span {
+   .right span {
     line-height: 5rem;
   }
 }
 
-.main .box:hover {
+ .box:hover {
   cursor: pointer;
   background: rgba(4, 90, 4, 0.747);
 }
 
-.main .right:hover {
+ .right:hover {
   background: #2c045abe;
   cursor: initial;
 }
 
-.main .left span {
+ .left span {
   font-size: 8rem;
 }
 
-.main .right form {
+ .right form {
   width: 90%;
   display: flex;
   justify-content: center;
@@ -84,7 +86,7 @@
   padding: 1rem;
 }
 
-.main .right form input[type="text"] {
+ .right form input[type="text"] {
   background: #ffffff88;
   border: 2px solid white;
   border-radius: 1rem 0 0 1rem;
@@ -100,7 +102,7 @@
   border-right: none;
 }
 
-.main .right form input[type="submit"] {
+ .right form input[type="submit"] {
   background: #026102;
   border-left: none;
   border: 2px solid white;
@@ -114,4 +116,17 @@
   width: auto;
   color: white;
   font-size: 1.1rem;
+}
+
+
+
+.example-icon {
+  padding: 0 14px;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+mat-list-item{
+  color: #444!important;
 }

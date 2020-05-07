@@ -115,6 +115,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       socket.join(partie.id);
       console.log("Nouvelle partie", partie);
       io.in(partie.id).emit("join", partie);
+      console.log("broadcast new game", parties)
+      io.emit("all parties", parties);
       // socket.emit("")
     });
 
@@ -441,14 +443,21 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           }
         }
       } else {
+        socket.emit("error message", "Cette partie n'est pas disponible")
         socket.emit("nogame", id);
       }
     });
 
+    socket.on("all parties", ()=>{
+      socket.emit("all parties", parties)
+    })
+
     socket.on("quit", (id) => {
       if (parties[id]) {
         partie = parties[id];
-        parties[id].jeu.dessous_pioche.push(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
+        if(parties[id].jeu.dessous_pioche){
+          parties[id].jeu.dessous_pioche.push(parties[id].users[currentUser.pseudo].cartes); // on met ses cartes dans la pioche
+        }
         delete partie.users[currentUser.pseudo];
         currentUser.etat = 0;
         parties[id] = partie;

@@ -6,6 +6,7 @@ import { Partie } from '../models/Partie.model';
 import { PartieService } from '../services/partie.service';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { User } from '../models/User.model';
 
 @Component({
   selector: 'app-wait',
@@ -15,9 +16,12 @@ import { Subscription } from 'rxjs';
 export class WaitComponent implements OnInit {
   partie:Partie
   joinRoom : Subscription;
-
+  user : User;
+  code : string="";
+  parties : any[] = []
 
   constructor(private userService: UserService, private partieService : PartieService, private websocketService : WebsocketService, private router:Router) {
+    this.user = this.userService.getUser();
     this.joinRoom = this.websocketService.joinedRoom().subscribe(data => {
       this.partie = data;
       console.log(data)
@@ -28,6 +32,11 @@ export class WaitComponent implements OnInit {
       // L'utilisateur est arrivé ici via un lien
       this.websocketService.joinRoom(localStorage.getItem("currentid"));
     }
+    this.websocketService.getAllParties()
+    this.websocketService.allPartiesDatas().subscribe((parties:any)=>{
+      console.log("parties", parties)
+      this.parties = parties;
+    })
 
   }
 
@@ -37,6 +46,12 @@ export class WaitComponent implements OnInit {
 
   ngOnDestroy(){
     // this.joinRoom.unsubscribe()
+  }
+
+  deconnexion(){
+    localStorage.removeItem("partie")
+    localStorage.removeItem("user")
+    window.location.reload()
   }
 
   OnSubmit(form: NgForm) {

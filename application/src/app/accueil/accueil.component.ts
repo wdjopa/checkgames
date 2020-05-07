@@ -13,7 +13,7 @@ import { ActivatedRoute } from "@angular/router";
 })
 export class AccueilComponent implements OnInit {
   user: User;
-
+  opened : boolean = false;
   constructor(
     private router: Router,
     private userService: UserService,
@@ -21,14 +21,15 @@ export class AccueilComponent implements OnInit {
   ) {
     this.webSocketService.userSaved().subscribe(data => {
       this.user = data;
-      console.log(data)
+      // console.log(data)
       // alert("Bienvenue "+this.user.pseudo)
       localStorage.setItem("user", JSON.stringify(this.user))
       this.router.navigate(["wait"]);
     });
 
     this.webSocketService.userAlreadySaved().subscribe(data => {
-      alert("Votre compte était déjà ouvert ailleurs, l'ancienne session sera donc fermée.")
+      this.opened = true;
+      alert("Votre compte était déjà ouvert ailleurs, l'ancienne session devra donc être fermée.")
     });
 
   }
@@ -41,8 +42,13 @@ export class AccueilComponent implements OnInit {
    }
 
   OnSubmit(form: NgForm) {
-    if (form.value.pseudo)
-    this.userService.connectUserByPseudo(form.value.pseudo);
+    if (form.value.pseudo && !this.opened){
+      this.userService.connectUserByPseudo(form.value.pseudo);
+    }else{
+      if(this.opened){
+        alert("Veuillez fermer la fenetre ouverte et actualisez cette page")
+      }
+    }
     
     form.reset();
   }
