@@ -43,7 +43,7 @@ export class WaitComponent implements OnInit {
     this.websocketService.getAllParties()
 
     this.websocketService.allPartiesDatas().subscribe((parties: any) => {
-      console.log("parties", parties)
+      // console.log("parties", parties)
       // parties = parties.filter((value, index, obj)=> value.etat < 3);
       // parties = parties.forEach((partie)=>{
       //   partie.usersSize = Object.keys(partie.users).length

@@ -589,7 +589,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
 
         partie.users[pseudo].cartes.push(partie.jeu.pioche[ran]);
         partie.jeu.pioche = partie.jeu.pioche.filter((value, index, arr) => {
-          return index != ran;
+          return index != ran && arr[index];
         });
 
         // delete partie.jeu.pioche[ran];
@@ -613,17 +613,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             //Alors, on prend les cartes qui sont en dessous de la carte du centre
             for (var i = 0; i < partie.jeu.dessous_pioche.length; i++) {
               partie.jeu.pioche.push(partie.jeu.dessous_pioche[i]);
-              delete partie.jeu.dessous_pioche[i];
             }
+            partie.jeu.dessous_pioche = [];
           } else {
             //La pioche est vide
+            io.sockets.emit("error message", "La pioche est vide")
             partie.jeu.pioche_vide = 1;
           }
         }
         parties[id] = partie;
       } else {
         console.log("Vous ne pouvez plus piocher");
-        socket.emit("error message", "Vous ne pouvez plus piocher de carte");
+        io.sockets.emit("error message", "Vous ne pouvez plus piocher de carte");
       }
     }
 
