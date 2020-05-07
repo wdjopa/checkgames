@@ -19,6 +19,7 @@ export class PlayComponent implements OnInit {
   loading = false;
   message : any = {text : ""};
   messages : any[] = [];
+  dialogRef : any = null;
 
   @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
 
@@ -82,12 +83,16 @@ export class PlayComponent implements OnInit {
     })
 
     this.webSocket.commander().subscribe(() => {
-      // Envoyer l'argent
-      const dialogRef = this.dialog.open(CommanderModal, {
+      // faire une commande
+      if (this.dialogRef){
+        this.dialogRef = null
+        return;
+      } 
+      this.dialogRef = this.dialog.open(CommanderModal, {
         width: '700px',
       });
       this.choiceActive = true;
-      dialogRef.afterClosed().subscribe((result) => {
+      this.dialogRef.afterClosed().subscribe((result) => {
         console.log('The dialog was closed', result);
         if (result) {
           // this.loadComponent = this.dialog.open(LoaderComponent, { data: { message: "Chargement ..." }, disableClose: true })  

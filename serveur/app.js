@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 
 const socket = require("socket.io");
 
-var parties = [];
+var parties = {};
 var waitingTime = 3000;
 var mongoPassword = "willaudyv2016";
 var dbase = "dcafc3fe9a3456a911b404aae165817b";
@@ -116,10 +116,27 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       console.log("Nouvelle partie", partie);
       io.in(partie.id).emit("join", partie);
       // console.log("broadcast new game", parties)
-      // io.emit("all parties", parties);
+       let datas = {};
+       for (let id in parties) {
+         if (parties[id].etat < 2) datas[id] = parties[id];
+       }
+       io.sockets.emit("all parties", datas);
+      //  io.sockets.emit("error message", "Il y a actuellement "+Object.size(parties)+" parties en cours")
+
       // socket.emit("")
     });
 
+    // Get all parties
+    socket.on("all parties", ()=>{
+      // socket.emit("error message", "Il y a actuellement "+Object.size(parties)+" parties en cours")
+      console.log("parties en cours", parties)
+      let datas = {};
+      for (let id in parties) {
+        if (parties[id].etat < 2) datas[id] = parties[id];
+      }
+      socket.emit("all parties", datas);
+    })
+    
     // 'lancer event'
     socket.on("lancer", (id) => {
       if (parties[id]) {
@@ -167,10 +184,10 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             "8s",
             "9s",
             "10s",
-            "Asc",
-            "Asd",
-            "Ash",
-            "Ass",
+            "Ac",
+            "Ad",
+            "Ah",
+            "As",
             "Jc",
             "Jd",
             "Jh",
@@ -201,6 +218,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       } else {
         socket.emit("error message", "Cette partie n'existe plus");
       }
+       let datas = {};
+       for (let id in parties) {
+         if (parties[id].etat < 2) datas[id] = parties[id];
+       }
+       io.sockets.emit("all parties", datas);
     });
 
     /** */
@@ -209,6 +231,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       currentUser = partie.users[currentUser.pseudo];
       console.log(currentUser, "doit piocher normalement", partie);
       if (currentUser.pioche && currentUser.pseudo == partie.main) {
+        io.in(id).emit("notification", currentUser.pseudo + " prend "+currentUser.pioche+" cartes supplémentaires");
+        io.in(id).emit("error message", currentUser.pseudo + " prend "+currentUser.pioche+" cartes supplémentaires");
+
         for (let i = 0; i < currentUser.pioche; i++) {
           piocher(id, currentUser.pseudo); // On pioche autant de fois que necessaire
           console.log("pioche n°", i);
@@ -271,6 +296,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               parties[id].etat = 3;
               parties[id].gagnant = currentUser.pseudo;
             } else if (currentUser.cartes.length == 1) {
+              io.in(id).emit("notification", currentUser.pseudo+" annonce 'CHECK !' ")
               partie.messages.push({
                 text: "CHECK",
                 sender: currentUser,
@@ -306,8 +332,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     socket.on("remove player", (joueur, id) => {
       if (parties[id] && parties[id].users[joueur]) {
         parties[id].jeu.dessous_pioche.push(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
-        if(parties[id].main == pseudo){
-          parties[id].main = nextValue(parties[id].users, pseudo);
+        if(parties[id].main == joueur){
+          parties[id].main = nextValue(parties[id].users, joueur);
         }
         delete parties[id].users[joueur];
         if (sockets_id[joueur])
@@ -316,6 +342,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         partie = parties[id];
         io.in(id).emit("partie", partie);
       }
+       let datas = {};
+       for (let id in parties) {
+         if (parties[id].etat < 2) datas[id] = parties[id];
+       }
+       io.sockets.emit("all parties", datas);
     });
 
     function bouffeAuto(joueur, id) {
@@ -362,6 +393,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         partie.jeu.tour %= allUsers.length;
         partie.main = allUsers[partie.jeu.tour];
         parties[id] = partie;
+        io.in(id).emit("notification", currentUser.pseudo+" a commandé  ")
         io.in(id).emit("partie", partie);
       } catch (err) {
         console.log(err);
@@ -450,11 +482,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         socket.emit("error message", "Cette partie n'est pas disponible")
         socket.emit("nogame", id);
       }
+       let datas = {};
+       for (let id in parties) {
+         if (parties[id].etat < 2) datas[id] = parties[id];
+       }
+       io.sockets.emit("all parties", datas);
     });
-
-    socket.on("all parties", ()=>{
-      socket.emit("all parties", parties)
-    })
 
     socket.on("quit", (id) => {
       if (parties[id]) {
@@ -473,6 +506,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         }
         io.in(id).emit("partie", parties[id]);
       }
+       let datas = {};
+       for (let id in parties) {
+         if (parties[id].etat < 2) datas[id] = parties[id];
+       }
+       io.sockets.emit("all parties", datas);
       socket.leave(id);
     });
 
@@ -490,6 +528,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         io.in(partie.id).emit("partie", partie);
       }
       socket.emit("deconnexion");
+       let datas = {};
+       for (let id in parties) {
+         if (parties[id].etat < 2) datas[id] = parties[id];
+       }
+       io.sockets.emit("all parties", datas);
       // parties[partie.id].users.remove(currentUser);
     });
 

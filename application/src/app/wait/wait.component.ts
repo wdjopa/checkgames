@@ -14,11 +14,13 @@ import { User } from '../models/User.model';
   styleUrls: ['./wait.component.css']
 })
 export class WaitComponent implements OnInit {
-  partie:Partie
+  objectKeys = Object.keys;
+  partie: Partie
   joinRoom : Subscription;
   user : User;
   code : string="";
   parties : any[] = []
+  partieObjectKeys: any = [];
 
   constructor(private userService: UserService, private partieService : PartieService, private websocketService : WebsocketService, private router:Router) {
     this.user = this.userService.getUser();
@@ -32,16 +34,23 @@ export class WaitComponent implements OnInit {
       // L'utilisateur est arrivé ici via un lien
       this.websocketService.joinRoom(localStorage.getItem("currentid"));
     }
-    this.websocketService.getAllParties()
-    this.websocketService.allPartiesDatas().subscribe((parties:any)=>{
-      console.log("parties", parties)
-      this.parties = parties;
-    })
+
 
   }
 
   ngOnInit() {
 
+    this.websocketService.getAllParties()
+
+    this.websocketService.allPartiesDatas().subscribe((parties: any) => {
+      console.log("parties", parties)
+      // parties = parties.filter((value, index, obj)=> value.etat < 3);
+      // parties = parties.forEach((partie)=>{
+      //   partie.usersSize = Object.keys(partie.users).length
+      // })
+      this.partieObjectKeys = this.objectKeys(parties)
+      this.parties = parties;
+    })
   }
 
   ngOnDestroy(){
@@ -52,6 +61,10 @@ export class WaitComponent implements OnInit {
     localStorage.removeItem("partie")
     localStorage.removeItem("user")
     window.location.reload()
+  }
+
+  join(id){
+    this.websocketService.joinRoom(id);
   }
 
   OnSubmit(form: NgForm) {

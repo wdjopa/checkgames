@@ -18,7 +18,7 @@
         <div class="w-100 d-flex justify-content-around" style="height: 45%;">
           <div class="d-flex justify-content-end carte-centre">
             <div class=" center-card  d-flex justify-content-center align-items-center" >
-              <img [src]="'assets/cartes/'+partie.jeu.carte_centre.replace('*', '')+'.gif'"
+              <img [src]="'assets/goldcartes/'+partie.jeu.carte_centre.replace('*', '').toUpperCase()+'.png'"
                 style="width: 70%; height: 70%;" alt="">
             </div>
           </div>
@@ -31,7 +31,7 @@
         </div>
         <div class="w-100  cartes-container" style="height: 35%;">
           <div class="carte" (click)="jouer(carte)" *ngFor="let carte of partie.users[user.pseudo].cartes">
-            <img [src]="'assets/cartes/'+carte+'.gif'" alt="">
+            <img [src]="'assets/goldcartes/'+carte.toUpperCase()+'.png'" alt="">
           </div>
         </div>
       </div>

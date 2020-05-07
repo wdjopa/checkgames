@@ -8,8 +8,8 @@ import { Partie } from '../models/Partie.model';
 @Injectable()
 export class WebsocketService {
 
-    private socket = io("https://cards.lamater.tech:3000");
-    // private socket = io("http://localhost:4000");
+    // private socket = io("https://cards.lamater.tech:5200");
+    private socket = io("http://localhost:4000");
 
     constructor() { }
 
@@ -190,9 +190,8 @@ export class WebsocketService {
     allPartiesDatas() {
         return new Observable<any>(
             observer => {
-                this.socket.on("all parties", (data) => {
-                    console.log("data",data)
-                    observer.next(data);
+                this.socket.on("all parties", parties => {
+                    observer.next(parties);
                 });
                 return () => {
                     this.socket.disconnect();
@@ -245,9 +244,22 @@ export class WebsocketService {
     }
 
     error() {
-        return new Observable<User>(
+        return new Observable<string>(
             observer => {
                 this.socket.on("error message", data => {
+                    observer.next(data);
+                });
+                return () => {
+                    this.socket.disconnect();
+                };
+            }
+        );
+    }
+
+    notifications(){
+        return new Observable<string>(
+            observer => {
+                this.socket.on("notification", data => {
                     observer.next(data);
                 });
                 return () => {

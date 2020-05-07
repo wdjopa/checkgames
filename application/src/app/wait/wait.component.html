@@ -61,14 +61,16 @@
           <mat-card-subtitle style="color:#444;">Rejoignez une partie</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-          <div class="empty mt-3 mb-3" style="color: #ccc; text-align: center;" *ngIf="parties.length==0">
+          <div class="empty mt-3 mb-3" style="color: #ccc; text-align: center;" *ngIf="partieObjectKeys.length==0">
             Aucune partie n'est encore disponible pour l'instant
           </div>
-          <mat-list role="list" *ngIf="parties.length>0">
-            <mat-list-item role="listitem" *ngFor="let partie of parties">
-              <mat-icon mat-list-icon>star</mat-icon>
-              <div mat-line>Créée par {{partie.admin.pseudo}} le {{partie.created_at | date}}</div>
-              <div mat-line> {{partie.users.length}} participant(s)</div>
+          <mat-list role="list" *ngIf="partieObjectKeys.length>0">
+            <mat-list-item (click)="join(id)" class="mat-elevation-z2 border-radius mb-3" style="cursor: pointer;" matRipple [matRippleColor]="efefef" role=" listitem"
+              *ngFor="let id of partieObjectKeys">
+                <mat-icon mat-list-icon>play_for_work</mat-icon>
+                <div mat-line>Créée par <span style="color: #026102; text-decoration: underline;">{{parties[id].admin.pseudo}}</span> le {{parties[id].created_at | date}}</div>
+                <div mat-line> {{objectKeys(parties[id].users).length}}
+                  participant{{objectKeys(parties[id].users).length>1?'s':''}}</div>
             </mat-list-item>
           </mat-list>
         </mat-card-content>
