@@ -126,7 +126,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         partie = parties[id];
         for (let pseudo in partie.users) {
           partie.users[pseudo].etat = 2;
-          partie.users[pseudo].autoPlay = 0;
         }
         // Partie effectivemnt lancée par l'admin
         partie.etat = 2;
@@ -195,6 +194,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         let allUsers = Object.keys(partie.users);
         partie.jeu.tour %= allUsers.length;
         partie.main = allUsers[partie.jeu.tour];
+        parties[id] = partie;
         distribution(id);
         parties[id] = partie;
         io.in(id).emit("partie", partie);

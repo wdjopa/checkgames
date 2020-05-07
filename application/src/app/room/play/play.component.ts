@@ -42,13 +42,17 @@ export class PlayComponent implements OnInit {
       this.messages = this.partie.messages;
 
       if (this.partie.etat == 3) {
-        alert("La partie est terminée. Félicitations à " + this.partie.gagnant + ". 🎉")
-        window.location.reload()
+        this._snackBar.open("GAAAAMMMEESSSS !!! La partie est terminée. Félicitations à " + this.partie.gagnant + ". 🎉", "FERMER", {
+            duration: 10000,
+          });
+          setTimeout(() => {
+            window.location.reload()
+          }, 10000);
       } else {
         if (this.user.pseudo == this.partie.main) {
-          this._snackBar.open("C'est à vous de jouer", "FERMER", {
-            duration: 5000,
-          });
+          // this._snackBar.open("C'est à vous de jouer", "FERMER", {
+          //   duration: 5000,
+          // });
           this.scrollToRight()
           if (this.partie.jeu.carte_centre[0] == "J" && !this.choiceActive) {
             // Envoyer l'argent
@@ -103,7 +107,7 @@ export class PlayComponent implements OnInit {
   }
 
   remove(joueur){
-    if(this.partie.admin.pseudo == this.user.pseudo){
+    if(this.partie.admin.pseudo == this.user.pseudo && this.partie.etat != 3){
       if(confirm("Souhaitez vous retirer le joueur : "+joueur)){
         this.webSocket.removePlayer(joueur, this.partie.id)
       }
@@ -135,20 +139,25 @@ export class PlayComponent implements OnInit {
     // this._snackBar.open("Vous essayez de piocher", "FERMER", {
     //   duration: 5000,
     // });
-    if (this.user.pioche) {
-      this.webSocket.piquer(this.partie.id)
-    } else {
-      this.webSocket.piocher(this.partie.id)
+    if ( this.partie.etat != 3){
+
+      if (this.user.pioche) {
+        this.webSocket.piquer(this.partie.id)
+      } else {
+        this.webSocket.piocher(this.partie.id)
+      }
     }
   }
 
   jouer(carte) {
+    if (this.partie.etat != 3) {
     if (this.checkGamesPossibilities(carte)) {
       this.webSocket.jouer(this.partie.id, carte)
     } else {
       this._snackBar.open("Vous ne pouvez pas jouer cette carte", "FERMER", {
         duration: 5000,
       });
+      }
     }
   }
 
