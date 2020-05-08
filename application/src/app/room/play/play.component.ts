@@ -23,6 +23,8 @@ export class PlayComponent implements OnInit {
   end = false;
   unreadMessages = 0;
   lastTotalMessages = 0;
+  messagesColor = {}
+  colorsMessages = ["forestgreen", "maroon", "dodgerblue", "purple", "Crimson", "DarkTurquoise", "Brown", "YellowGreen"]
 
   @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
 
@@ -32,16 +34,28 @@ export class PlayComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userService.getUser();
-
+    this.messagesColor[this.user.pseudo] = {}
+    this.messagesColor[this.user.pseudo].color = "#FF6600";
     // Recevoir les mises à jour sur la partie
     this.webSocket.updatePartie().subscribe(data => {
       console.log("partie ", data)
       this.partie = data;
       localStorage.setItem("partie", JSON.stringify(this.partie)) // sauvegarde en local
       this.user = this.partie.users[this.user.pseudo];
+      if(this.objectKeys(this.messagesColor).length<2){
+        let co = 0
+        for(let ps in this.partie.users){
+          this.messagesColor[ps] = {}
+          this.messagesColor[ps].color = this.colorsMessages[co];
+          co++
+        }
+      }
+
       this.partieObjectKeys = this.objectKeys(data.users)
       if (this.messages.length != this.partie.messages) {
-        this.scrollToBottom()
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 500);
       }
       this.messages = this.partie.messages;
       if(this.lastTotalMessages < this.messages.length){

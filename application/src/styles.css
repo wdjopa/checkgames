@@ -29,3 +29,26 @@ body::before {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+::-webkit-scrollbar {
+  height: .1em;
+  border-radius: 150vw;
+  background: transparent;
+  width: 0.5vw;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  background: beige;
+  margin: 1vw;
+
+  box-shadow: 0px 0px 2px transparent inset;
+  border-radius: 150vw;
+}
+
+/*ascenseur*/
+::-webkit-scrollbar-thumb:hover {
+  box-shadow: none;
+  border: 2px solid #aaa;
+  background: #aaa;
+}

@@ -40,7 +40,8 @@ export class JoinComponent implements OnInit, OnDestroy {
         if (this.user && this.user.pseudo) {
           this.user = this.partie.users[this.user.pseudo]
         }
-        if (partie.etat >= 2 && this.router.url !== "/room/play/"+partie.id) {
+        console.log(partie)
+        if (partie.etat >= 1 && this.router.url !== "/room/play/"+partie.id) {
           this.router.navigate(["/room/play/" + partie.id]);
         }
         localStorage.setItem("partie", JSON.stringify(this.partie))

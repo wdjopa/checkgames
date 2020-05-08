@@ -324,30 +324,6 @@ canvas{
 .messages mat-card-header .mat-card-header-text {
   margin: 0 !important;
 }
-
-::-webkit-scrollbar {
-  height: .1em;
-  border-radius: 150vw;
-  background: transparent;
-  width: 0.5vw;
-}
-
-::-webkit-scrollbar-thumb {
-  border: 2px solid transparent;
-  background: beige;
-  margin: 1vw;
-
-  box-shadow: 0px 0px 2px transparent inset;
-  border-radius: 150vw;
-}
-
-/*ascenseur*/
-::-webkit-scrollbar-thumb:hover {
-  box-shadow: none;
-  border: 2px solid #aaa;
-  background: #aaa;
-}
-
 .carte-centre {
   height: 100%;
   width: 75%;
@@ -410,7 +386,7 @@ canvas{
 
 .messages-box-small {
   width: 100vw;
-  height: 100vh;
+  height: 95vh;
   background: #ffffffee;
   display: none;
   position: fixed;

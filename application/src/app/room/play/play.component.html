@@ -12,22 +12,26 @@
       <!-- <button class="btn btn-danger h2" (click)="quit()">&times;</button> -->
     </div>
   </div>
-  <div class="main" *ngIf="user.pseudo && partie.id" style="width: 100%; height: 90%;">
+  <div class="main" *ngIf="user.pseudo && partie.id" style="width: 100%; min-height: 90%;">
     <div class="row m-0" style="width: 100%; height: 100%;">
       <div class="col-sm-8 d-flex flex-column">
         <div class="w-100 d-flex scrollright"
-          style="max-height: 20%; flex-wrap :nowrap; overflow: auto; box-shadow: 2px 0px 2px #ffffff66 inset;">
+          style="max-height: 20%; flex-wrap :nowrap; overflow: auto">
           <div class="d-inline" *ngFor="let pseudo of partieObjectKeys">
             <div class="bord" (click)="remove(pseudo)" [ngClass]="{'active': partie.main==pseudo,'user':
                     pseudo == user.pseudo}"> {{(pseudo == user.pseudo) ? 'Vous' : pseudo}}
               {{(partie.users[pseudo].cartes.length == 1) ?" (CHECK)" : ""}} </div>
           </div>
         </div>
-        <div class="w-100 d-flex justify-content-around" style="height: 45%;">
+        <div class="w-100 d-flex justify-content-around" style="min-height: 45%;">
           <div class="d-flex justify-content-end carte-centre">
             <div class=" center-card  d-flex justify-content-center align-items-center">
-              <img [src]="'assets/goldcartes/'+partie.jeu.carte_centre.replace('*', '').toUpperCase()+'.png'"
-                style="width: 7rem; height: 9rem;" alt="">
+              <div class="cartes-centres" style="width: 7rem; height: 9rem; position: relative;">
+                <img *ngIf="partie.jeu.dessous_pioche.length>0" [src]="'assets/goldcartes/'+partie.jeu.dessous_pioche[partie.jeu.dessous_pioche.length-1].replace('*', '').toUpperCase()+'.png'"
+                style="width: 100%; height: 100%;" alt="">
+                <img [src]="'assets/goldcartes/'+partie.jeu.carte_centre.replace('*', '').toUpperCase()+'.png'"
+                style="width: 100%; height: 100%; position: absolute; left: 1rem;" alt="">
+              </div>
             </div>
           </div>
           <div class="box-card carte-pioche d-flex justify-content-end " style="">
@@ -37,7 +41,7 @@
             </div>
           </div>
         </div>
-        <div class="w-100  cartes-container" style="height: 13rem;">
+        <div class="w-100 mt-4 cartes-container" style="height: 13rem;">
           <div class="carte" (click)="jouer(carte)" *ngFor="let carte of partie.users[user.pseudo].cartes">
             <img [src]="'assets/goldcartes/'+carte.toUpperCase()+'.png'" alt="">
           </div>
@@ -75,7 +79,7 @@
     </div>
   </div>
 
-  <div cdkDrag class="message-btn d-md-none">
+  <div cdkDrag class="message-btn d-md-none" style="position: absolute; bottom: 1rem; left: 1rem;">
     <button [matBadge]="unreadMessages" matBadgeOverlap="true"  [matBadgeHidden]="unreadMessages===0"
       style="z-index: 10000; background: #ff6600;"
       (click)="printMessagesBox()" mat-fab color="warn"
@@ -101,9 +105,10 @@
     </div>
     <div class="messages-box" style="height: 100%; overflow: auto;">
       <div class="w-100 p-2"
-        [ngClass]="{'receiver-message': message.sender.pseudo != user.pseudo, 'sender-message':message.sender.pseudo == user.pseudo}"
+        [ngClass]="{'receiver-message': message.sender.pseudo != user.pseudo, 'sender-message':message.sender.pseudo == user.pseudo }"
+        [style.borderColor]="messagesColor[message.sender.pseudo].color"
         style="background: white;" *ngFor="let message of messages">
-        <h6>{{message.sender.pseudo}}</h6>
+        <h6 [style.color]="messagesColor[message.sender.pseudo].color">{{message.sender.pseudo}}</h6>
         <p class="m-0 p-0">{{message.text}}</p>
       </div>
     </div>

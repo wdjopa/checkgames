@@ -1,3 +1,4 @@
+<div class="d-md-none">
 <mat-toolbar class="mb-4" style="background-color: #026102;">
   <mat-toolbar-row>
     <span style="font-family: 'Cinzel'!important; font-size: 1.4rem;">Check & Games</span>
@@ -7,10 +8,11 @@
   </mat-toolbar-row>
 </mat-toolbar>
 
+</div>
 <div class="join">
   <div class="header">
     <h2 class="title">Partie gérée par {{partie.admin.pseudo}} </h2>
-    <div class="btns  d-none d-md-block">
+    <div class="btns  d-none d-md-flex">
       <button class="btn btn-info" (click)="copyToClipboard()"> Partager</button>
       <button class="btn start" *ngIf="partie.admin.pseudo == user.pseudo" [disabled]="btndisabled"
         (click)="start()">{{btndisabled ? "Patientez ..." : "Lancer"}}</button>
