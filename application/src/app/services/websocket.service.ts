@@ -4,12 +4,13 @@ import * as io from "socket.io-client";
 import { Observable } from "rxjs";
 import { User } from "../models/User.model";
 import { Partie } from '../models/Partie.model';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class WebsocketService {
 
-    // private socket = io("https://cards.lamater.tech:5200");
-    private socket = io("http://localhost:4000");
+    private socket = io(environment.link);
+    // private socket = io("http://localhost:4000");
 
     constructor() { }
 
