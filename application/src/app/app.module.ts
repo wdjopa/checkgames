@@ -53,6 +53,8 @@ import {
   MAT_DATE_LOCALE
 } from '@angular/material';
 
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AccueilComponent } from './accueil/accueil.component';
@@ -110,6 +112,7 @@ const appRoutes: Routes = [
     MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    DragDropModule,
     MatRadioModule,
     MatRippleModule,
     MatSelectModule,

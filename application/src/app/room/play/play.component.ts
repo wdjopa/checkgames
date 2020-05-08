@@ -21,6 +21,8 @@ export class PlayComponent implements OnInit {
   messages: any[] = [];
   dialogRef: any = null;
   end = false;
+  unreadMessages = 0;
+  lastTotalMessages = 0;
 
   @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
 
@@ -42,6 +44,11 @@ export class PlayComponent implements OnInit {
         this.scrollToBottom()
       }
       this.messages = this.partie.messages;
+      if(this.lastTotalMessages < this.messages.length){
+        this.unreadMessages = this.messages.length - this.lastTotalMessages
+        this.lastTotalMessages = this.messages.length
+        console.log("messages non lus", this.unreadMessages)
+      }
 
       if (this.partie.etat == 3) {
 
@@ -59,11 +66,14 @@ export class PlayComponent implements OnInit {
           window.location.reload()
         }, 5000);
       } else {
+        setTimeout(() => {
+          this.scrollToRight()
+        }, 500);
         if (this.user.pseudo == this.partie.main) {
           // this._snackBar.open("C'est à vous de jouer", "FERMER", {
           //   duration: 5000,
           // });
-          this.scrollToRight()
+          
           if (this.partie.jeu.carte_centre[0] == "J" && !this.choiceActive && this.partie.main == this.user.pseudo) {
 
             this.dialogRef = this.dialog.open(CommanderModal, {
@@ -122,6 +132,12 @@ export class PlayComponent implements OnInit {
     this.webSocket.newMessageReceived().subscribe((mess) => {
       if (!this.messages.includes(mess)) {
         this.messages.push(mess)
+        if (this.lastTotalMessages < this.messages.length) {
+          this.unreadMessages += this.messages.length - this.lastTotalMessages
+          this.lastTotalMessages = this.messages.length
+          console.log("messages non lus", this.unreadMessages)
+        }
+
         setTimeout(() => {
           this.scrollToBottom()
         }, 500);
@@ -140,15 +156,30 @@ export class PlayComponent implements OnInit {
   scrollToBottom(): void {
     try {
       window.document.querySelector(".messages").scrollTop = window.document.querySelector(".messages").scrollHeight;
-    } catch (err) { }
+      window.document.querySelector(".messages-box").scrollTop = window.document.querySelector(".messages-box").scrollHeight;
+    } catch (err) { console.log("error scroll", err) }
   }
 
   scrollToRight(): void {
     try {
-      window.document.querySelector(".scrollright").scrollLeft = window.document.querySelector(".scrollright .active")["offsetLeft"];
-    } catch (err) { }
+      window.document.querySelector(".scrollright").scrollLeft = window.document.querySelector(".scrollright .active")["offsetLeft"] - 30;
+    } catch (err) { console.log("error scroll", err) }
   }
 
+  // Afficher la boite de message
+  printMessagesBox(){
+    this.unreadMessages = 0
+    setTimeout(() => {
+      this.scrollToBottom()
+    }, 500);
+    window.document.querySelector(".messages-box-small")['style'].display="flex"
+  }
+
+  closeMessage(){
+    window.document.querySelector(".messages-box-small")['style'].display = "none"
+  }
+
+  // Envoyer le message
   send() {
     if (this.message.text.length > 0) {
       this.message.sender = this.user
@@ -210,7 +241,9 @@ export class PlayComponent implements OnInit {
   }
 
   quit() {
-    this.webSocket.quitRoom(this.partie.id);
+    if(confirm("Etes vous sur de vouloir quitter cette partie ?")){
+      this.webSocket.quitRoom(this.partie.id);
+    }
   }
 
 }

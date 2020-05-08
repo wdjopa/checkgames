@@ -8,7 +8,8 @@
   <div class="header">
     <h2 class="title">Check&Games </h2>
     <div class="btns">
-      <button class="btn btn-danger h2" (click)="quit()">Quitter</button>
+      <h2 class="text-white" style="cursor: pointer;" (click)="quit()">&times;</h2>
+      <!-- <button class="btn btn-danger h2" (click)="quit()">&times;</button> -->
     </div>
   </div>
   <div class="main" *ngIf="user.pseudo && partie.id" style="width: 100%; height: 90%;">
@@ -18,30 +19,31 @@
           style="max-height: 20%; flex-wrap :nowrap; overflow: auto; box-shadow: 2px 0px 2px #ffffff66 inset;">
           <div class="d-inline" *ngFor="let pseudo of partieObjectKeys">
             <div class="bord" (click)="remove(pseudo)" [ngClass]="{'active': partie.main==pseudo,'user':
-                    pseudo == user.pseudo}"> {{(pseudo == user.pseudo) ? 'Vous' : pseudo}} {{(partie.users[pseudo].cartes.length == 1) ?" (CHECK)" : ""}} </div>
+                    pseudo == user.pseudo}"> {{(pseudo == user.pseudo) ? 'Vous' : pseudo}}
+              {{(partie.users[pseudo].cartes.length == 1) ?" (CHECK)" : ""}} </div>
           </div>
         </div>
         <div class="w-100 d-flex justify-content-around" style="height: 45%;">
           <div class="d-flex justify-content-end carte-centre">
-            <div class=" center-card  d-flex justify-content-center align-items-center" >
+            <div class=" center-card  d-flex justify-content-center align-items-center">
               <img [src]="'assets/goldcartes/'+partie.jeu.carte_centre.replace('*', '').toUpperCase()+'.png'"
-                style="width: 70%; height: 70%;" alt="">
+                style="width: 7rem; height: 9rem;" alt="">
             </div>
           </div>
           <div class="box-card carte-pioche d-flex justify-content-end " style="">
-            <div (click)="piocher()" class=" d-flex justify-content-center align-items-center"
+            <div (click)="piocher()" class="doscarte d-flex justify-content-center align-items-center"
               style="max-width: 10rem; height: 100%; background-color: transparent; ">
-              <img src="assets/cartes/dos.gif" style="width: 70%; height: 70%;" alt="">
+              <img src="assets/cartes/dos.gif" style="width: 7rem; height: 9rem;" alt="">
             </div>
           </div>
         </div>
-        <div class="w-100  cartes-container" style="height: 35%;">
+        <div class="w-100  cartes-container" style="height: 13rem;">
           <div class="carte" (click)="jouer(carte)" *ngFor="let carte of partie.users[user.pseudo].cartes">
             <img [src]="'assets/goldcartes/'+carte.toUpperCase()+'.png'" alt="">
           </div>
         </div>
       </div>
-      <div class="col-sm-4 border-sm-left d-flex justify-content-between align-items-center flex-column mb-4"
+      <div class="col-sm-4 border-sm-left  d-none d-md-flex justify-content-between align-items-center flex-column mb-4"
         style="height: 100%">
         <div #scrollMe class="messages" style="height: 100%; overflow: auto;">
           <mat-card *ngFor="let message of messages" class=" mb-3"
@@ -67,6 +69,61 @@
               <button mat-raised-button color="primary" (click)="send()" [class.spinner]="loading" [disabled]="loading"
                 cdkFocusInitial>Envoyer</button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div cdkDrag class="message-btn d-md-none">
+    <button [matBadge]="unreadMessages" matBadgeOverlap="true"  [matBadgeHidden]="unreadMessages===0"
+      style="z-index: 10000; background: #ff6600;"
+      (click)="printMessagesBox()" mat-fab color="warn"
+      aria-label="Cliquez pour voir les messages">
+      <mat-icon>messages</mat-icon>
+    </button>
+  </div>
+
+  <div class="messages-box-small">
+    <div class="header-box mat-elevation-z3" style="background: white;">
+      <div class="row p-2">
+        <div class="col-10 d-flex align-items-center" style="font-family: 'Cinzel'; font-size: 1.5rem;">
+          Messages
+        </div>
+        <div class="col-2">
+            <div class="example-button-container">
+              <button (click)="closeMessage()" mat-mini-fab color="warn" class="mat-elevation-z0" aria-label="Example icon button with a bookmark icon">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="messages-box" style="height: 100%; overflow: auto;">
+      <div class="w-100 p-2"
+        [ngClass]="{'receiver-message': message.sender.pseudo != user.pseudo, 'sender-message':message.sender.pseudo == user.pseudo}"
+        style="background: white;" *ngFor="let message of messages">
+        <h6>{{message.sender.pseudo}}</h6>
+        <p class="m-0 p-0">{{message.text}}</p>
+      </div>
+    </div>
+    <div class="footer-box mat-elevation-z3" style="background: white; z-index: 100;">
+      <div class="row  p-2 pb-0">
+        <div class="col-9">
+           <mat-form-field color="primary" class="w-100 example-full-width">
+            <mat-label>Votre message</mat-label>
+             <input [(ngModel)]="message.text" name="text" matInput placeholder="Votre message ici 👑">
+           </mat-form-field>
+<!-- 
+          <mat-form-field class="w-100 example-full-width">
+            <textarea matInput style="resize: none" placeholder="Ex. It makes me feel..."></textarea>
+          </mat-form-field> -->
+        </div>
+        <div class="col-3">
+          <div class="example-button-container text-center">
+            <button (click)="send()" mat-fab style="background-color: #026102; transform: rotate(-30deg);" aria-label="Example icon button with a home icon">
+              <mat-icon style="color: white">send</mat-icon>
+            </button>
           </div>
         </div>
       </div>

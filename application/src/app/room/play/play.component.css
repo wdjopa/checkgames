@@ -22,7 +22,7 @@
   align-items: center;
   flex-direction: row;
   border-bottom: 2px solid white;
-  height: 15%;
+  height: auto;
 }
 
 .play .header .btns {
@@ -63,7 +63,8 @@
   font-family: "Cinzel";
   text-align: left;
   width: 100%;
-  padding: 2rem 0;
+  padding: 1.2rem 0;
+  font-size: 1.5rem;
 }
 
 .play .footer {
@@ -205,10 +206,10 @@
 }
 
 .carte img {
-  height: 100%;
   z-index: 10;
   position: relative;
   width: 7rem;
+  height: 100%;
   transform: translateY(0);
   transition: all .3s ease;
 }
@@ -359,6 +360,8 @@ canvas{
   width: 25%;
 }
 
+
+
 .center-card {
   width: 10rem;
   height: 100%;
@@ -375,7 +378,7 @@ canvas{
   }
 
   .cartes-container img {
-    height: 121%;
+    height: 100%;
   }
 
   .carte-centre {
@@ -383,6 +386,11 @@ canvas{
     width: 55%;
     text-align: center;
     padding-right: 0;
+  }
+
+  .doscarte:active{
+    transition: all .12s ease;
+    transform: scale(0.9);
   }
 
   .center-card img {
@@ -398,4 +406,35 @@ canvas{
   .mat-card-header .mat-card-title {
     font-size: 0.7rem;
   }
+}
+
+.messages-box-small {
+  width: 100vw;
+  height: 100vh;
+  background: #ffffffee;
+  display: none;
+  position: fixed;
+  justify-content: space-between;
+  flex-direction: column;
+  left: 0;
+  top: 0;
+  z-index: 12000;
+}
+
+.messages-box-small .messages-box {
+  height: 100%;
+  width: 100%;
+}
+
+.mat-form-field-wrapper {
+  padding: 0;
+}
+
+.receiver-message {
+  margin-bottom: 2px;
+  border-left: 8px solid #026102;
+}
+
+.sender-message {
+  border-right: 8px solid #ff6600;
 }

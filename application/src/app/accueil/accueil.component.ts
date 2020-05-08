@@ -5,6 +5,7 @@ import { UserService } from "../services/user.service";
 import { WebsocketService } from "../services/websocket.service";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
+import { NavigationService } from '../navigation.service';
 
 @Component({
   selector: "app-accueil",
@@ -17,7 +18,8 @@ export class AccueilComponent implements OnInit {
   constructor(
     private router: Router,
     private userService: UserService,
-    private webSocketService: WebsocketService
+    private webSocketService: WebsocketService,
+    private navigationService : NavigationService
   ) {
     this.webSocketService.userSaved().subscribe(data => {
       this.user = data;
@@ -42,14 +44,17 @@ export class AccueilComponent implements OnInit {
    }
 
   OnSubmit(form: NgForm) {
-    if (form.value.pseudo && !this.opened){
+    if (form.value.pseudo && !this.opened && form.value.pseudo.length <=8){
       this.userService.connectUserByPseudo(form.value.pseudo);
-    }else{
+      form.reset();
+    } else {
       if(this.opened){
         alert("Veuillez fermer la fenetre ouverte et actualisez cette page")
       }
+      if (form.value.pseudo.length > 8){
+        this.navigationService.openSnackBar({message : "Votre nom est trop long (8 maximum)", action : "FERMER"})
+      }
     }
     
-    form.reset();
   }
 }
