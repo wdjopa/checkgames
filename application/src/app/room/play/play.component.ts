@@ -20,6 +20,7 @@ export class PlayComponent implements OnInit {
   message: any = { text: "" };
   messages: any[] = [];
   dialogRef: any = null;
+  end = false;
 
   @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
 
@@ -43,12 +44,20 @@ export class PlayComponent implements OnInit {
       this.messages = this.partie.messages;
 
       if (this.partie.etat == 3) {
+
+        this.end = true;
         this._snackBar.open("GAAAAMMMEESSSS !!! La partie est terminée. Félicitations à " + this.partie.gagnant + ". 🎉", "FERMER", {
           duration: 10000,
         });
         setTimeout(() => {
+          // Pour leffet de neige
+          window["initial"]()
+          window["init"]()
+        }, 2000);
+
+        setTimeout(() => {
           window.location.reload()
-        }, 10000);
+        }, 5000);
       } else {
         if (this.user.pseudo == this.partie.main) {
           // this._snackBar.open("C'est à vous de jouer", "FERMER", {

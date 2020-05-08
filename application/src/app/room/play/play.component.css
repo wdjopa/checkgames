@@ -225,6 +225,37 @@
   justify-content: center;
 }
 
+.endgame{
+  position: fixed;
+  background: #19271c42;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 12000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+canvas{
+    position:absolute;top:0;left:0;
+    background-image: linear-gradient(bottom, transparent 0%, transparent 84%);
+    background-image: -o-linear-gradient(bottom, transparent 0%, transparent 84%);
+    background-image: -moz-linear-gradient(bottom, transparent 0%, transparent 84%);
+    background-image: -webkit-linear-gradient(bottom, transparent 0%, transparent 84%);
+    background-image: -ms-linear-gradient(bottom, transparent 0%, transparent 84%);
+    
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0, transparent),
+        color-stop(0.84, transparent)
+    );
+}
+
 
 
 .mat-card {

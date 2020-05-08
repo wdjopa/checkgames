@@ -23,16 +23,7 @@ export class JoinComponent implements OnInit, OnDestroy {
 
   constructor(private userService: UserService, private partieService: PartieService, private webSocketService: WebsocketService, private router: Router, private route: ActivatedRoute, private ngNavigatorShareService: NgNavigatorShareService) {
     this.user = this.userService.getUser();
-    this.partieSubscription = this.webSocketService.updatePartie().subscribe(partie => {
-      this.partie = partie
-      // console.log(partie)
-      this.user = this.partie.users[this.user.pseudo]
-      if(partie.etat == 2){
-        this.router.navigate(["/room/play/"+partie.id]);
-      }
-      localStorage.setItem("partie", JSON.stringify(this.partie))
-
-    })
+   
   }
 
   ngOnDestroy(){
@@ -41,6 +32,20 @@ export class JoinComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.partie = this.partieService.getPartie()
+    this.partieSubscription = this.webSocketService.updatePartie().subscribe(partie => {
+      if (partie) {
+        this.partie = partie
+        // console.log(partie)
+        if (this.user && this.user.pseudo) {
+          this.user = this.partie.users[this.user.pseudo]
+        }
+        if (partie.etat >= 2 && this.router.url !== "/room/play/"+partie.id) {
+          this.router.navigate(["/room/play/" + partie.id]);
+        }
+        localStorage.setItem("partie", JSON.stringify(this.partie))
+      }
+
+    })
   }
 
   quit(){

@@ -21,7 +21,6 @@ export class AuthGuard implements CanActivate {
           // Si l'utilisateur arrive sur l'application avec un lien de partie, mais n'est pas connecté
          localStorage.setItem("currentid", id)
       }
-
       this.router.navigate(['/accueil']);
     }
   }
