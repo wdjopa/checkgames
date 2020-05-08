@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { User } from 'src/app/models/User.model';
 import { Subscription } from 'rxjs';
+import { NavigationService } from 'src/app/navigation.service';
 
 @Component({
   selector: 'app-join',
@@ -21,7 +22,7 @@ export class JoinComponent implements OnInit, OnDestroy {
   user : User;
   partieSubscription : Subscription;
 
-  constructor(private userService: UserService, private partieService: PartieService, private webSocketService: WebsocketService, private router: Router, private route: ActivatedRoute, private ngNavigatorShareService: NgNavigatorShareService) {
+  constructor(private userService: UserService, private navigationService :NavigationService, private partieService: PartieService, private webSocketService: WebsocketService, private router: Router, private route: ActivatedRoute, private ngNavigatorShareService: NgNavigatorShareService) {
     this.user = this.userService.getUser();
    
   }
@@ -83,6 +84,6 @@ export class JoinComponent implements OnInit, OnDestroy {
     }).then(() => console.log('Successful share'))
       .catch((error) => console.log('Error sharing', error));
 
-    alert("Vous pouvez partager")
+      this.navigationService.openSnackBar({message : "Vous pouvez partager", action : "OK"})
   }
 }

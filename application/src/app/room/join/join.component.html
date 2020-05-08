@@ -1,7 +1,16 @@
+<mat-toolbar class="mb-4" style="background-color: #026102;">
+  <mat-toolbar-row>
+    <span style="font-family: 'Cinzel'!important; font-size: 1.4rem;">Check & Games</span>
+    <span class="example-spacer"></span>
+    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon" (click)="quit()">close
+    </mat-icon>
+  </mat-toolbar-row>
+</mat-toolbar>
+
 <div class="join">
   <div class="header">
-    <h2 class="title">Partie créée par {{partie.admin.pseudo}} </h2>
-    <div class="btns">
+    <h2 class="title">Partie gérée par {{partie.admin.pseudo}} </h2>
+    <div class="btns  d-none d-md-block">
       <button class="btn btn-info" (click)="copyToClipboard()"> Partager</button>
       <button class="btn start" *ngIf="partie.admin.pseudo == user.pseudo" [disabled]="btndisabled"
         (click)="start()">{{btndisabled ? "Patientez ..." : "Lancer"}}</button>
@@ -25,17 +34,17 @@
         </mat-card-content>
       </mat-card>
     </div>
-      <div class="box players d-none d-md-block">
-        <h3> Liste des participants</h3>
-        <div class="gamers">
-          <div class="player" *ngFor="let user of objectKeys(partie.users)">
-            <span class="pseudo">{{partie.users[user].pseudo}}</span>
-            <span class="etat"
-              [ngClass]="{'text-green': partie.users[user].etat}">{{partie.users[user].etat ? "connecté" : "connexion en cours ..."}}</span>
-          </div>
+    <div class="box players d-none d-md-block">
+      <h3> Liste des participants</h3>
+      <div class="gamers">
+        <div class="player" *ngFor="let user of objectKeys(partie.users)">
+          <span class="pseudo">{{partie.users[user].pseudo}}</span>
+          <span class="etat"
+            [ngClass]="{'text-green': partie.users[user].etat}">{{partie.users[user].etat ? "connecté" : "connexion en cours ..."}}</span>
         </div>
-        <div class="foot mt-2 mb-2">En attente d'autres joueurs ...</div>
       </div>
+      <div class="foot mt-2 mb-2">En attente d'autres joueurs ...</div>
+    </div>
     <div class="box rules">
       <h3>Règles</h3>
       <div>
@@ -59,5 +68,22 @@
       </div>
     </div>
   </div>
-  <div class="footer"></div>
+  <div class="d-md-none" style="margin-bottom: 5rem;">
+    &nbsp;
+  </div>
+  <div class="footer-btn d-md-none" style="">
+    <!-- <div class="example-button-container">
+      <button mat-fab  style=" background: purple;"aria-label="Partager">
+        <mat-icon style="color: white;">share</mat-icon>
+      </button>
+    </div> -->
+    <button mat-raised-button style="background: white; color: #444; font-size: 1.2rem;"
+      (click)="copyToClipboard()">Partager </button>
+    <button mat-raised-button style="background: white; color: forestgreen; font-size: 1.2rem;"
+      *ngIf="partie.admin.pseudo == user.pseudo" [disabled]="btndisabled" (click)="start()">Lancer la partie</button>
+
+    <!-- <button mat-flat-button color="warn">Cliquez pour lancer la partie</button> -->
+
+   
+  </div>
 </div>
