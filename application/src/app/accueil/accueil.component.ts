@@ -49,18 +49,19 @@ export class AccueilComponent implements OnInit {
     if(localStorage.getItem("user") && localStorage.getItem("browserid")){
       this.user = JSON.parse(localStorage.getItem("user"))
       let browserid = JSON.parse(localStorage.getItem("browserid"))
-      const dialogRef = this.dialog.open(ChoiceModal,{
-        data: { message: "Vous aviez une ancienne session, voulez vous la remplacer par celle ci ?" },
-        disableClose: true,
-        backdropClass: "mat"
-      })
-      dialogRef.afterClosed().subscribe((result)=>{
-        if(result === true){
-          this.userService.connectUser(this.user, browserid, true);
-        }else{
-          this.splashscreen = true;
-        }
-      })
+      this.userService.connectUser(this.user, browserid, true);
+
+      // const dialogRef = this.dialog.open(ChoiceModal,{
+      //   data: { message: "Vous aviez une ancienne session, voulez vous la remplacer par celle ci ?" },
+      //   disableClose: true,
+      //   backdropClass: "mat"
+      // })
+      // dialogRef.afterClosed().subscribe((result)=>{
+      //   if(result === true){
+      //   }else{
+      //     this.splashscreen = true;
+      //   }
+      // })
     }else{
       localStorage.removeItem("user")
       localStorage.removeItem("currentid")
