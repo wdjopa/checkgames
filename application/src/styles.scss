@@ -1,0 +1,80 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel&family=Marcellus&family=Viaoda+Libre&family=Open+Sans&display=swap');
+@import "fonts/flaticon.css";
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '~@angular/material/theming';
+*{
+    margin: 0;
+    padding: 0;
+}
+body {
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-image: url("images/background.jpg");
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(#026102bb, #000000);
+  z-index: -1;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+::-webkit-scrollbar {
+  height: .1em;
+  border-radius: 150vw;
+  background: transparent;
+  width: 0.5vw;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  background: beige;
+  margin: 1vw;
+
+  box-shadow: 0px 0px 2px transparent inset;
+  border-radius: 150vw;
+}
+
+/*ascenseur*/
+::-webkit-scrollbar-thumb:hover {
+  box-shadow: none;
+  border: 2px solid #aaa;
+  background: #aaa;
+}
+
+.basic-container {
+  padding: 30px;
+}
+
+.version-info {
+  font-size: 8pt;
+  float: right;
+}
+
+.elevate#onboarding-active {
+  @include mat-elevation-transition; 
+  @include mat-elevation(8); 
+  z-index: 10000;
+}
+
+.elevate {
+  background: white;
+  position: relative;
+}
+
+.my-backdrop {
+  background: rgba(0, 0, 0, 0.76);
+}
