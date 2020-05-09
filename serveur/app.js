@@ -492,11 +492,12 @@ function tentativesDeReconnexion(currentUser, id) {
                   "notification",
                   currentUser.pseudo + " annonce 'CHECK !' "
                 );
-                partie.messages.push({
-                  text: "CHECK",
-                  sender: currentUser,
-                  date: new Date(),
-                });
+                // Le joueur annonce check
+                // partie.messages.push({
+                //   text: "CHECK",
+                //   sender: currentUser,
+                //   date: new Date(),
+                // });
               }
               partie = parties[id];
               io.in(id).emit("partie", partie);

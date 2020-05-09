@@ -3,6 +3,7 @@ import { WebsocketService } from './services/websocket.service';
 import { NavigationService } from './navigation.service';
 import { MatDialog } from '@angular/material';
 import { ChoiceModal } from './modals/choice/choice-modal';
+import { Howl, Howler } from 'howler';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,13 @@ export class AppComponent {
     })
 
     this.webSocket.notifications().subscribe((message)=>{
+      if(message.includes("CHECK")){
+        new Howl({
+          src: "assets/sounds/check.mp3",
+          autoplay: true,
+          volume: 0.5,
+        })
+      }
       this.navigationService.openSnackBar({ message: message, action: "FERMER", duration: 5000 })
 
       // new Notification("CheckGamesMaster - Message du serveur", { "body": message , "dir": "auto", "icon": "https://cards.lamater.tech/assets/favicon.ico" })

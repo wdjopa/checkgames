@@ -6,6 +6,7 @@ import { MatSnackBar, MatDialogRef, MatDialog } from '@angular/material';
 import { PausableObservable, pausable } from 'rxjs-pausable';
 import { Subject, interval } from 'rxjs';
 import { WinnerModal } from 'src/app/modals/winner/winner-modal';
+import { Howl, Howler } from 'howler';
 
 
 @Component({
@@ -28,7 +29,19 @@ export class PlayComponent implements OnInit {
   lastTotalMessages = 0;
   messagesColor = {}
   colorsMessages = ["forestgreen", "maroon", "dodgerblue", "purple", "Crimson", "DarkTurquoise", "Brown", "YellowGreen"]
+  sounds: string[] = ["assets/sounds/victoire1.mp3", 'assets/sounds/victoire2.mp3', 'assets/sounds/message.mp3']
 
+  soundVictoire1 = new Howl({
+    src: this.sounds[0],
+    volume: 0.5,
+    onend: ()=>{
+      new Howl({
+        src: this.sounds[1],
+        autoplay : true,
+        volume: 0.5,
+      })
+    }
+  });
   paused = true;
   pausable: PausableObservable<number>;
 
@@ -76,24 +89,47 @@ export class PlayComponent implements OnInit {
         if(this.lastTotalMessages < this.messages.length){
           this.unreadMessages = this.messages.length - this.lastTotalMessages
           this.lastTotalMessages = this.messages.length
-          console.log("messages non lus", this.unreadMessages)
+          new Howl({
+            src: this.sounds[2],
+            autoplay: true,
+            volume: 0.5,
+          })
+          // console.log("messages non lus", this.unreadMessages)
         }
 
         if (this.partie.etat == 3) {
 
-          this.end = true;
-          this._snackBar.open("GAAAAMMMEESSSS !!! La partie est terminée. Félicitations à " + this.partie.gagnant + ". 🎉", "FERMER", {
-            duration: 10000,
-          });
-          setTimeout(() => {
-            // Pour leffet de neige
-            window["initial"]()
-            window["init"]()
-          }, 2000);
+          // this.end = true;
+          // this._snackBar.open("GAAAAMMMEESSSS !!! La partie est terminée. Félicitations à " + this.partie.gagnant + ". 🎉", "FERMER", {
+          //   duration: 10000,
+          // });
+          // Fin de partie
 
-          setTimeout(() => {
+          this.soundVictoire1.play();
+
+          this.paused = false;
+          this.shoot();
+          this.pausable = interval(this.random(300, 1000)).pipe(pausable()) as PausableObservable<number>;
+          this.pausable.subscribe(this.shoot.bind(this));
+          // this.pausable.pause();
+          this.dialog.open(WinnerModal, {
+            width: '500px',
+            panelClass: 'myapp-no-padding-dialog',
+            backdropClass: 'dialog-background',
+            data: { pseudo: this.partie.gagnant }
+          }).afterClosed().subscribe((result) => {
             window.location.reload()
-          }, 5000);
+          })
+
+          // setTimeout(() => {
+          //   // Pour leffet de neige
+          //   window["initial"]()
+          //   window["init"]()
+          // }, 2000);
+
+          // setTimeout(() => {
+          //   window.location.reload()
+          // }, 5000);
         } else {
           setTimeout(() => {
             this.scrollToRight()
@@ -178,21 +214,7 @@ export class PlayComponent implements OnInit {
       }
     })
 
-    this.paused = false;
-    this.shoot();
-    this.pausable = interval(this.random(300,1000)).pipe(pausable()) as PausableObservable<number>;
-    this.pausable.subscribe(this.shoot.bind(this));
-    // this.pausable.pause();
-    let sounds = ["victoire1",'victoire2']
-    this.dialog.open(WinnerModal, {
-      width: '500px',
-      panelClass: 'myapp-no-padding-dialog',
-       backdropClass: 'dialog-background' ,
-        data : {pseudo : "Willy"}
-    }).afterClosed().subscribe((result)=>{
-      window.location.reload()
-    })
-
+   
   }
 
 
