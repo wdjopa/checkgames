@@ -30,15 +30,20 @@ export class WaitComponent implements OnInit {
       this.partieService.setPartie(this.partie)
       // alert("Bienvenue "+this.user.pseudo)
     }); 
-    if(localStorage.getItem("currentid")){
+
+
+    if (localStorage.getItem("currentid")) {
       // L'utilisateur est arrivé ici via un lien
       this.websocketService.joinRoom(localStorage.getItem("currentid"));
     }
-
-
   }
 
   ngOnInit() {
+
+    if (localStorage.getItem("currentid")) {
+      // L'utilisateur est arrivé ici via un lien
+      this.websocketService.joinRoom(localStorage.getItem("currentid"));
+    }
 
     this.websocketService.getAllParties()
 
