@@ -19,16 +19,17 @@ export class UserService {
     let user = new User()
     user.pseudo = pseudo
     user.updated_at = new Date()
+    user.cartes = []
     this.user = user;
     this.authService.isAuth = true;
     this.websocketService.saveUser(user);
   }
 
-  connectUser(user: User) {
+  connectUser(user: User, browserid:number, verif ? : boolean) {
     user.updated_at = new Date()
     this.user = user;
     this.authService.isAuth = true;
-    this.websocketService.saveUser(user);
+    this.websocketService.saveUser(user, browserid, verif);
   }
 
   setUser(user: User) {

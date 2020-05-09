@@ -1,8 +1,12 @@
 <div class="background">
     <h1 class="titre">Check & Games</h1>
-     <form (ngSubmit)="OnSubmit(f)" #f="ngForm">
+     <div class="text-center" *ngIf="splashscreen">
+       <button (click)="reload()" mat-raised-button style="background-color: #082e08; color: #fff; padding: 1rem 2rem; font-family: 'Cinzel';">Actualiser la
+         page</button>
+     </div>
+     <form (ngSubmit)="OnSubmit(f)" *ngIf="!splashscreen" #f="ngForm">
        <div class="form-row align-items-center">
-         <div class="col-sm-5 my-1">
+         <div class="col-sm-5 my-1" >
            <!-- <label class="sr-only" for="pseudo">Pseudo</label> -->
            <input type="text" class="form-control" id="pseudo" max="8" name="pseudo" ngModel placeholder="Votre pseudo" required autofocus>
              <input type="submit" id="submit" value="valider">

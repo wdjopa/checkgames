@@ -5,6 +5,7 @@ import { Observable } from "rxjs";
 import { User } from "../models/User.model";
 import { Partie } from '../models/Partie.model';
 import { environment } from '../../environments/environment';
+import { browser } from 'protractor';
 
 @Injectable()
 export class WebsocketService {
@@ -14,8 +15,9 @@ export class WebsocketService {
 
     constructor() { }
 
-    saveUser(user: User) {
-        this.socket.emit("connexion", user);
+    saveUser(user: User, browserid ? : number, verif ? : boolean ) {
+        console.log("save user", user)
+        this.socket.emit("connexion", user, browserid, verif);
     }
 
     async newGame(user: User) {
@@ -45,10 +47,10 @@ export class WebsocketService {
     }
 
     userSaved() {
-        return new Observable<User>(
+        return new Observable<{user : User, browserid : number}>(
             observer => {
-                this.socket.on("user saved", data => {
-                    observer.next(data);
+                this.socket.on("user saved", (user, browserid) => {
+                    observer.next({user, browserid});
                 });
                 return () => {
                     this.socket.disconnect();

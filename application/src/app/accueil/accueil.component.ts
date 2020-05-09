@@ -6,6 +6,8 @@ import { WebsocketService } from "../services/websocket.service";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { NavigationService } from '../navigation.service';
+import { MatDialog } from '@angular/material';
+import { ChoiceModal } from '../modals/choice/choice-modal';
 
 @Component({
   selector: "app-accueil",
@@ -15,42 +17,62 @@ import { NavigationService } from '../navigation.service';
 export class AccueilComponent implements OnInit {
   user: User;
   opened : boolean = false;
+  splashscreen = false;
   constructor(
     private router: Router,
     private userService: UserService,
     private webSocketService: WebsocketService,
-    private navigationService : NavigationService
+    private navigationService : NavigationService,
+    private dialog : MatDialog
   ) {
-    this.webSocketService.userSaved().subscribe(data => {
-      this.user = data;
-      // console.log(data)
+    this.webSocketService.userSaved().subscribe(({user, browserid}) => {
+      this.user = user;
+      console.log(browserid)
       // alert("Bienvenue "+this.user.pseudo)
       localStorage.setItem("user", JSON.stringify(this.user))
+      localStorage.setItem("browserid", JSON.stringify(browserid))
       this.router.navigate(["wait"]);
     });
 
     this.webSocketService.userAlreadySaved().subscribe(data => {
       this.opened = true;
-      alert("Votre compte était déjà ouvert ailleurs, l'ancienne session devra donc être fermée.")
+      this.navigationService.openSnackBar({message : "Ce pseudo est déjà utilisé", action : "OK"})
+      // alert("Votre compte était déjà ouvert ailleurs, l'ancienne session devra donc être fermée.")
     });
 
   }
 
+  reload(){
+    window.location.reload()
+  }
   ngOnInit() {
-    if(localStorage.getItem("user")){
+    if(localStorage.getItem("user") && localStorage.getItem("browserid")){
       this.user = JSON.parse(localStorage.getItem("user"))
-      this.userService.connectUser(this.user);
+      let browserid = JSON.parse(localStorage.getItem("browserid"))
+      const dialogRef = this.dialog.open(ChoiceModal,{
+        data: { message: "Vous aviez une ancienne session, voulez vous la remplacer par celle ci ?" },
+        disableClose: true,
+        backdropClass: "mat"
+      })
+      dialogRef.afterClosed().subscribe((result)=>{
+        if(result === true){
+          this.userService.connectUser(this.user, browserid, true);
+        }else{
+          this.splashscreen = true;
+        }
+      })
+    }else{
+      localStorage.removeItem("user")
+      localStorage.removeItem("currentid")
+      localStorage.removeItem("partie")
     }
    }
 
   OnSubmit(form: NgForm) {
-    if (form.value.pseudo && !this.opened && form.value.pseudo.length <=8){
+    if (form.value.pseudo && form.value.pseudo.length <=8){
       this.userService.connectUserByPseudo(form.value.pseudo);
       form.reset();
     } else {
-      if(this.opened){
-        alert("Veuillez fermer la fenetre ouverte et actualisez cette page")
-      }
       if (form.value.pseudo.length > 8){
         this.navigationService.openSnackBar({message : "Votre nom est trop long (8 maximum)", action : "FERMER"})
       }

@@ -1,1 +1,6 @@
 <router-outlet></router-outlet>
+<div class="splashscreen" *ngIf="splashscreen">
+     <div class="text-center">
+       <button (click)="reload()" mat-raised-button style="background-color: #026102; color: #fff;">Actualiser la page</button>
+     </div>
+</div>

@@ -9,6 +9,7 @@ import { NavigationService } from './navigation.service';
 })
 export class AppComponent {
   title = 'application';
+  splashscreen=false;
 
   constructor(private webSocket: WebsocketService, private navigationService :NavigationService){
 
@@ -30,10 +31,14 @@ export class AppComponent {
     })  
 
     this.webSocket.deconnexion().subscribe(()=>{
-      window.location.reload();
+      this.splashscreen=true;
     }, (err)=>{
       console.log(err)
     })
+  }
+
+  reload(){
+    window.location.reload();
   }
 
 }

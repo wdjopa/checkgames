@@ -64,6 +64,7 @@ import { JoinComponent } from './room/join/join.component';
 import { PlayComponent, CommanderModal } from './room/play/play.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationService } from './navigation.service';
+import { ChoiceModal } from './modals/choice/choice-modal';
 
 
 const appRoutes: Routes = [
@@ -79,10 +80,11 @@ const appRoutes: Routes = [
 
 
 @NgModule({
-  declarations: [AppComponent, AccueilComponent, WaitComponent, CreateComponent, JoinComponent, PlayComponent, CommanderModal],
+  declarations: [AppComponent, AccueilComponent, WaitComponent, CreateComponent, JoinComponent, PlayComponent, CommanderModal,ChoiceModal],
 
   entryComponents: [
-    CommanderModal
+    CommanderModal,
+    ChoiceModal,
   ],
   imports: [
     BrowserModule,

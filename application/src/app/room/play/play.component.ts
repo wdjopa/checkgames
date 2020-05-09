@@ -34,12 +34,14 @@ export class PlayComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userService.getUser();
+    console.log("user", this.user)
     this.messagesColor[this.user.pseudo] = {}
     this.messagesColor[this.user.pseudo].color = "#FF6600";
     // Recevoir les mises à jour sur la partie
     this.webSocket.updatePartie().subscribe(data => {
       console.log("partie ", data)
       this.partie = data;
+      console.log("verif", this.partie.jeu.dessous_pioche.length)
       localStorage.setItem("partie", JSON.stringify(this.partie)) // sauvegarde en local
       this.user = this.partie.users[this.user.pseudo];
       if(this.objectKeys(this.messagesColor).length<2){

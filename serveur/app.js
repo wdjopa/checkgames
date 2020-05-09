@@ -37,6 +37,7 @@ var parties = {};
 var parties_finies = {};
 var waitingTime = 3000;
 var tentativesUsers = {}
+var browsers = {}
 
 
 
@@ -119,20 +120,37 @@ function tentativesDeReconnexion(currentUser, id) {
     let partie = {};
 
     // Connexion d'un utilisateur
-    socket.on("connexion", (user) => {
+    socket.on("connexion", (user, browserid=0, verif = false) => {
       // console.log("Connexion d'un utilisateur ", user, sockets_id);
       if (sockets_id[user.pseudo]) {
-        // io.sockets.connected[sockets_id[user.pseudo].socket].close();
-        socket.emit("user already saved", user);
+        if(browsers[user.pseudo].id === browserid && verif){
+          // On déconnecte l'ancien et on relance ici
+          io.sockets.connected[sockets_id[user.pseudo].socket].disconnect();
+          user.points = 0;
+          user.etat = false;
+          currentUser = user;
+          sockets_id[user.pseudo] = { user: user, socket: socket.id };
+          browsers[user.pseudo] = { id: Object.size(browsers) + 1 };
+          socket.emit("user saved", user, browsers[user.pseudo].id);
+        }else{
+          socket.emit("user already saved", user);
+        }
       } else {
         user.points = 0;
         user.etat = false;
-        user.cartes = [];
         currentUser = user;
         sockets_id[user.pseudo] = { user: user, socket: socket.id };
-        socket.emit("user saved", user);
+        browsers[user.pseudo] = { id: Object.size(browsers) + 1 };
+        socket.emit("user saved", user, browsers[user.pseudo].id);
       }
     });
+
+    socket.on("get browser id", (user)=>{
+      if(!browsers[user.pseudo]){
+        browsers[user.pseudo] = { id: Object.size(browsers) + 1 };
+      }
+      socket.emit("browser id", browsers[user.pseudo].id);
+    })
 
     // Nouvelle partie
     socket.on("new game", (user) => {
