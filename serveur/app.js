@@ -94,22 +94,27 @@ function tentativesDeReconnexion(currentUser, id) {
         delete parties[id];
       }
       delete tentativesUsers[currentUser.pseudo];
-      io.sockets.emit("all parties", parties)
+      io.sockets.emit("all parties", parties);
     } else {
-      setTimeout(() => {
-        // Au bout de 1 seconde, j'évalue si une partie a toujours un joueur à l'état 0
-        if (parties[id].users[currentUser.pseudo].etat == 0) {
-          tentativesUsers[currentUser.pseudo].num--;
-          tentativesDeReconnexion(currentUser, id);
-        }else{
-          if (tentativesUsers[currentUser.pseudo].sent === true) {
-            // On notifie tous les utilisateurs qu'un joueur est partie
-            tentativesUsers[currentUser.pseudo].sent = true
-            io.in(id).emit("error message", currentUser.pseudo+ " est revenu(e) 😉.")
+      if (parties[id]) {
+        setTimeout(() => {
+          // Au bout de 1 seconde, j'évalue si une partie a toujours un joueur à l'état 0
+          if (parties[id].users[currentUser.pseudo].etat == 0) {
+            tentativesUsers[currentUser.pseudo].num--;
+            tentativesDeReconnexion(currentUser, id);
+          } else {
+            if (tentativesUsers[currentUser.pseudo].sent === true) {
+              // On notifie tous les utilisateurs qu'un joueur est partie
+              tentativesUsers[currentUser.pseudo].sent = true;
+              io.in(id).emit(
+                "error message",
+                currentUser.pseudo + " est revenu(e) 😉."
+              );
+            }
+            delete tentativesUsers[currentUser.pseudo];
           }
-          delete tentativesUsers[currentUser.pseudo];
-        }
-      }, 1000);
+        }, 1000);
+      }
     }
   }
 }
@@ -631,7 +636,7 @@ function tentativesDeReconnexion(currentUser, id) {
       socket.emit("deconnexion");
       if(partie.id){
         tentativesUsers[currentUser.pseudo] = {};
-        tentativesUsers[currentUser.pseudo].num = 10;
+        tentativesUsers[currentUser.pseudo].num = 120;
         tentativesDeReconnexion(currentUser, partie.id)
       }
       let datas = {};

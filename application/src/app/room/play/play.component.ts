@@ -41,77 +41,83 @@ export class PlayComponent implements OnInit {
     this.webSocket.updatePartie().subscribe(data => {
       console.log("partie ", data)
       this.partie = data;
-      console.log("verif", this.partie.jeu.dessous_pioche.length)
-      localStorage.setItem("partie", JSON.stringify(this.partie)) // sauvegarde en local
-      this.user = this.partie.users[this.user.pseudo];
-      if(this.objectKeys(this.messagesColor).length<2){
-        let co = 0
-        for(let ps in this.partie.users){
-          this.messagesColor[ps] = {}
-          this.messagesColor[ps].color = this.colorsMessages[co];
-          co++
-        }
-      }
-
-      this.partieObjectKeys = this.objectKeys(data.users)
-      if (this.messages.length != this.partie.messages) {
-        setTimeout(() => {
-          this.scrollToBottom()
-        }, 500);
-      }
-      this.messages = this.partie.messages;
-      if(this.lastTotalMessages < this.messages.length){
-        this.unreadMessages = this.messages.length - this.lastTotalMessages
-        this.lastTotalMessages = this.messages.length
-        console.log("messages non lus", this.unreadMessages)
-      }
-
-      if (this.partie.etat == 3) {
-
-        this.end = true;
-        this._snackBar.open("GAAAAMMMEESSSS !!! La partie est terminée. Félicitations à " + this.partie.gagnant + ". 🎉", "FERMER", {
-          duration: 10000,
-        });
-        setTimeout(() => {
-          // Pour leffet de neige
-          window["initial"]()
-          window["init"]()
-        }, 2000);
-
-        setTimeout(() => {
-          window.location.reload()
-        }, 5000);
-      } else {
-        setTimeout(() => {
-          this.scrollToRight()
-        }, 500);
-        if (this.user.pseudo == this.partie.main) {
-          // this._snackBar.open("C'est à vous de jouer", "FERMER", {
-          //   duration: 5000,
-          // });
-          
-          if (this.partie.jeu.carte_centre[0] == "J" && !this.choiceActive && this.partie.main == this.user.pseudo) {
-
-            this.dialogRef = this.dialog.open(CommanderModal, {
-              width: '700px',
-            });
-            this.choiceActive = true;
-            this.dialogRef.afterClosed().subscribe((result) => {
-              console.log('The dialog was closed', result);
-              if (result) {
-                // this.loadComponent = this.dialog.open(LoaderComponent, { data: { message: "Chargement ..." }, disableClose: true })  
-
-                if (this.choiceActive === true) {
-                  this.webSocket.commande(this.partie.id, result, this.choiceActive)
-                  this.choiceActive = false;
-                  this.dialog.closeAll()
-                }
-              }
-            });
+      if(this.partie){
+        console.log("verif", this.partie.jeu.dessous_pioche.length)
+        localStorage.setItem("partie", JSON.stringify(this.partie)) // sauvegarde en local
+        this.user = this.partie.users[this.user.pseudo];
+        if(this.objectKeys(this.messagesColor).length<2){
+          let co = 0
+          for(let ps in this.partie.users){
+            this.messagesColor[ps] = {}
+            this.messagesColor[ps].color = this.colorsMessages[co];
+            co++
           }
         }
 
+        this.partieObjectKeys = this.objectKeys(data.users)
+        if (this.messages.length != this.partie.messages) {
+          setTimeout(() => {
+            this.scrollToBottom()
+          }, 500);
+        }
+        this.messages = this.partie.messages;
+        if(this.lastTotalMessages < this.messages.length){
+          this.unreadMessages = this.messages.length - this.lastTotalMessages
+          this.lastTotalMessages = this.messages.length
+          console.log("messages non lus", this.unreadMessages)
+        }
+
+        if (this.partie.etat == 3) {
+
+          this.end = true;
+          this._snackBar.open("GAAAAMMMEESSSS !!! La partie est terminée. Félicitations à " + this.partie.gagnant + ". 🎉", "FERMER", {
+            duration: 10000,
+          });
+          setTimeout(() => {
+            // Pour leffet de neige
+            window["initial"]()
+            window["init"]()
+          }, 2000);
+
+          setTimeout(() => {
+            window.location.reload()
+          }, 5000);
+        } else {
+          setTimeout(() => {
+            this.scrollToRight()
+          }, 500);
+          if (this.user.pseudo == this.partie.main) {
+            // this._snackBar.open("C'est à vous de jouer", "FERMER", {
+            //   duration: 5000,
+            // });
+            
+            if (this.partie.jeu.carte_centre[0] == "J" && !this.choiceActive && this.partie.main == this.user.pseudo) {
+
+              this.dialogRef = this.dialog.open(CommanderModal, {
+                width: '700px',
+              });
+              this.choiceActive = true;
+              this.dialogRef.afterClosed().subscribe((result) => {
+                console.log('The dialog was closed', result);
+                if (result) {
+                  // this.loadComponent = this.dialog.open(LoaderComponent, { data: { message: "Chargement ..." }, disableClose: true })  
+
+                  if (this.choiceActive === true) {
+                    this.webSocket.commande(this.partie.id, result, this.choiceActive)
+                    this.choiceActive = false;
+                    this.dialog.closeAll()
+                  }
+                }
+              });
+            }
+          }
+
+        }
+      }else{
+        localStorage.removeItem("partie")
+        window.location.reload()
       }
+
     })
     this.webSocket.getPartieData(this.route.snapshot.paramMap.get("id"))
 
