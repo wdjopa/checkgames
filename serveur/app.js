@@ -192,7 +192,7 @@ function tentativesDeReconnexion(currentUser, id) {
     if (tentativesUsers[currentUser.pseudo].num <= 0) {
       // On supprime le joueur de la partie et on passe la main au joueur suivant
       
-      if (parties[id].main == currentUser.pseudo &&  Object.size(partie.users) > 1) {
+      if (parties[id].main == currentUser.pseudo &&  Object.size(parties[id].users) > 1) {
         parties[id].main = nextValue(parties[id].users, currentUser.pseudo).pseudo; //on passe la main au joueur suivant
       }
       
