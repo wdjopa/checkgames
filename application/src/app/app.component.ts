@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { WebsocketService } from './services/websocket.service';
 import { NavigationService } from './navigation.service';
+import { MatDialog } from '@angular/material';
+import { ChoiceModal } from './modals/choice/choice-modal';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +13,7 @@ export class AppComponent {
   title = 'application';
   splashscreen=false;
 
-  constructor(private webSocket: WebsocketService, private navigationService :NavigationService){
+  constructor(private webSocket: WebsocketService, private navigationService :NavigationService, private dialog : MatDialog){
 
     // Notification.requestPermission();
 
@@ -31,7 +33,18 @@ export class AppComponent {
     })  
 
     this.webSocket.deconnexion().subscribe(()=>{
-      this.splashscreen=true;
+      const dialogRef = this.dialog.open(ChoiceModal,{
+        data: { message: "Vous avez été déconnecté. Continuer ?" },
+        disableClose: true,
+        backdropClass: "mat"
+      })
+      dialogRef.afterClosed().subscribe((result)=>{
+        if(result === true){
+
+        }else{
+          this.splashscreen = true;
+        }
+      })
     }, (err)=>{
       console.log(err)
     })
