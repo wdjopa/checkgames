@@ -16,20 +16,20 @@ import { User } from '../models/User.model';
 export class WaitComponent implements OnInit {
   objectKeys = Object.keys;
   partie: Partie
-  joinRoom : Subscription;
-  user : User;
-  code : string="";
-  parties : any[] = []
+  joinRoom: Subscription;
+  user: User;
+  code: string = "";
+  parties: any[] = []
   partieObjectKeys: any = [];
 
-  constructor(private userService: UserService, private partieService : PartieService, private websocketService : WebsocketService, private router:Router) {
+  constructor(private userService: UserService, private partieService: PartieService, private websocketService: WebsocketService, private router: Router) {
     this.user = this.userService.getUser();
     this.joinRoom = this.websocketService.joinedRoom().subscribe(data => {
       this.partie = data;
       console.log(data)
       this.partieService.setPartie(this.partie)
       // alert("Bienvenue "+this.user.pseudo)
-    }); 
+    });
 
 
     if (localStorage.getItem("currentid")) {
@@ -38,7 +38,24 @@ export class WaitComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      
+    this.websocketService.launchTourGuide("wait", [{
+      anchorId: 'newgame',
+      content: 'Cliquez ici si vous souhaitez créer une nouvelle partie',
+      title: 'Nouvelle partie',
+    }, {
+      anchorId: 'wait.listeparties',
+      content: "Ici, vous avez d'autres joueurs comme vous qui attendent des challengeurs 🔥. N'hésitez pas à les rejoindre !",
+      title: 'Liste des parties en attente',
+    }])
+    }, 3000);
+  }
+
+
   ngOnInit() {
+
 
     if (localStorage.getItem("currentid")) {
       // L'utilisateur est arrivé ici via un lien
@@ -58,17 +75,17 @@ export class WaitComponent implements OnInit {
     })
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     // this.joinRoom.unsubscribe()
   }
 
-  deconnexion(){
+  deconnexion() {
     localStorage.removeItem("partie")
     localStorage.removeItem("user")
     window.location.reload()
   }
 
-  join(id){
+  join(id) {
     this.websocketService.joinRoom(id);
   }
 
@@ -78,7 +95,7 @@ export class WaitComponent implements OnInit {
     form.reset();
   }
 
-  new_game(){
+  new_game() {
     this.websocketService.newGame(this.userService.getUser());
     console.log("Clic sur le bouton de création de partie")
   }

@@ -1,0 +1,37 @@
+* {
+  font-family: "Cinzel" !important;
+}
+.mat {
+  background-color: #ffffff!important;
+  color: #555;
+}
+.mat .mat-dialog-container{
+    background-color: orange;
+}
+.dialog-background{
+  opacity: 0;
+}
+.rotate {
+  perspective: 800px;
+}
+
+img{
+      -webkit-animation: spinner2 2s infinite linear;
+      animation: spinner2 2s infinite linear;
+    transform: rotateY(0deg);
+
+  /* transform: rotate3d(15deg); */
+}
+@-webkit-keyframes spinner2 {
+  0% {
+    transform: rotateY(0deg);
+  }
+50% {
+  transform: rotateY(180deg);
+}
+
+100% {
+  transform: rotateY(360deg);
+}
+
+}

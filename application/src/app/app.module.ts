@@ -67,7 +67,8 @@ import { NavigationService } from './navigation.service';
 import { ChoiceModal } from './modals/choice/choice-modal';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-
+import { TourMatMenuModule, TourService} from "ngx-tour-md-menu"
+import { WinnerModal } from './modals/winner/winner-modal';
 
 const appRoutes: Routes = [
   { path: "accueil", component: AccueilComponent },
@@ -82,10 +83,11 @@ const appRoutes: Routes = [
 
 
 @NgModule({
-  declarations: [AppComponent, AccueilComponent, WaitComponent, CreateComponent, JoinComponent, PlayComponent, CommanderModal,ChoiceModal],
+  declarations: [AppComponent, AccueilComponent, WaitComponent, CreateComponent, JoinComponent, PlayComponent, CommanderModal, ChoiceModal, WinnerModal],
 
   entryComponents: [
     CommanderModal,
+    WinnerModal,
     ChoiceModal,
   ],
   imports: [
@@ -93,6 +95,7 @@ const appRoutes: Routes = [
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
+    TourMatMenuModule.forRoot(),
     RouterModule.forRoot(appRoutes),
     MatAutocompleteModule,
     MatBadgeModule,
@@ -133,7 +136,7 @@ const appRoutes: Routes = [
     BrowserAnimationsModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
-  providers: [AuthService, AuthGuard, UserService, WebsocketService, PartieService, PartieGuard, NavigationService],
+  providers: [AuthService, AuthGuard, UserService, WebsocketService, PartieService, PartieGuard, NavigationService, TourService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

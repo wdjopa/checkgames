@@ -31,6 +31,109 @@ app.use((req, res, next) => {
   next();
 });
 
+let avatars = [
+  "001-woman-5.svg",
+  "002-woman-4.svg",
+  "003-woman-3.svg",
+  "004-woman-2.svg",
+  "005-woman-1.svg",
+  "006-woman.svg",
+  "007-surgeon-3.svg",
+  "008-surgeon-2.svg",
+  "009-surgeon-1.svg",
+  "010-surgeon.svg",
+  "011-doctor-3.svg",
+  "012-teacher-1.svg",
+  "013-teacher.svg",
+  "014-police-3.svg",
+  "015-police-2.svg",
+  "016-police-1.svg",
+  "017-police.svg",
+  "018-nurse-3.svg",
+  "019-nurse-2.svg",
+  "020-nurse-1.svg",
+  "021-nurse.svg",
+  "022-captain-3.svg",
+  "023-captain-2.svg",
+  "024-captain-1.svg",
+  "025-captain.svg",
+  "026-muslim-1.svg",
+  "027-muslim.svg",
+  "028-arab.svg",
+  "029-trinity.svg",
+  "030-niobe.svg",
+  "031-neo.svg",
+  "032-morpheus.svg",
+  "033-man-1.svg",
+  "034-man.svg",
+  "035-geisha.svg",
+  "036-samurai.svg",
+  "037-hindu-1.svg",
+  "038-hindu.svg",
+  "039-hipster-7.svg",
+  "040-hipster-6.svg",
+  "041-hipster-5.svg",
+  "042-hipster-4.svg",
+  "043-hipster-3.svg",
+  "044-hipster-2.svg",
+  "045-hipster-1.svg",
+  "046-hipster.svg",
+  "047-hip-hop-3.svg",
+  "048-hip-hop-2.svg",
+  "049-hip-hop-1.svg",
+  "050-hip-hop.svg",
+  "051-graduate-3.svg",
+  "052-graduate-2.svg",
+  "053-graduate-1.svg",
+  "054-graduate.svg",
+  "055-military-5.svg",
+  "056-military-4.svg",
+  "057-military-3.svg",
+  "058-military-2.svg",
+  "059-military-1.svg",
+  "060-military.svg",
+  "061-old-woman-1.svg",
+  "062-old-woman.svg",
+  "063-old-man-1.svg",
+  "064-old-man.svg",
+  "065-doctor-2.svg",
+  "066-doctor-1.svg",
+  "067-doctor-who-1.svg",
+  "068-doctor-who.svg",
+  "069-doctor.svg",
+  "070-dancer-1.svg",
+  "071-dancer.svg",
+  "072-detective-3.svg",
+  "073-detective-2.svg",
+  "074-detective-1.svg",
+  "075-detective.svg",
+  "076-construction-3.svg",
+  "077-construction-2.svg",
+  "078-construction-1.svg",
+  "079-construction.svg",
+  "080-chef-3.svg",
+  "081-chef-2.svg",
+  "082-chef-1.svg",
+  "083-chef.svg",
+  "084-priest-1.svg",
+  "085-priest.svg",
+  "086-nun-1.svg",
+  "087-nun.svg",
+  "088-burglar-3.svg",
+  "089-burglar-2.svg",
+  "090-burglar-1.svg",
+  "091-burglar.svg",
+  "092-native-american-1.svg",
+  "093-native-american.svg",
+  "094-artist-3.svg",
+  "095-artist-2.svg",
+  "096-artist-1.svg",
+  "097-artist.svg",
+  "098-albert-einstein.svg",
+  "099-african-1.svg",
+  "100-african.svg",
+];
+
 const socket = require("socket.io");
 
 var parties = {};
@@ -38,7 +141,6 @@ var parties_finies = {};
 var waitingTime = 3000;
 var tentativesUsers = {}
 var browsers = {}
-
 
 
 
@@ -88,7 +190,12 @@ function tentativesDeReconnexion(currentUser, id) {
       io.in(id).emit("error message", currentUser.pseudo+ " s'est déconnecté(e). On tente des reconnexions.")
     }
     if (tentativesUsers[currentUser.pseudo].num <= 0) {
-      // On supprime le joueur de la partie
+      // On supprime le joueur de la partie et on passe la main au joueur suivant
+      
+      if (parties[id].main == currentUser.pseudo &&  Object.size(partie.users) > 1) {
+        parties[id].main = nextValue(parties[id].users, currentUser.pseudo).pseudo; //on passe la main au joueur suivant
+      }
+      
       delete parties[id].users[currentUser.pseudo];
       if (Object.size(parties[id].users) == 0) {
         delete parties[id];
@@ -96,7 +203,7 @@ function tentativesDeReconnexion(currentUser, id) {
       delete tentativesUsers[currentUser.pseudo];
       io.sockets.emit("all parties", parties);
     } else {
-      if (parties[id]) {
+      if (parties[id] && parties[id].users[currentUser.pseudo] ) {
         setTimeout(() => {
           // Au bout de 1 seconde, j'évalue si une partie a toujours un joueur à l'état 0
           if (parties[id].users[currentUser.pseudo].etat == 0) {
@@ -419,9 +526,9 @@ function tentativesDeReconnexion(currentUser, id) {
 
     socket.on("remove player", (joueur, id) => {
       if (parties[id] && parties[id].users[joueur]) {
-        parties[id].jeu.dessous_pioche.push(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
+        parties[id].jeu.dessous_pioche.concat(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
         if (parties[id].main == joueur) {
-          parties[id].main = nextValue(parties[id].users, joueur).pseudo;
+          parties[id].main = nextValue(parties[id].users, joueur).pseudo;//on passe la main au joueur suivant
         }
         delete parties[id].users[joueur];
         if (sockets_id[joueur])
@@ -583,11 +690,15 @@ function tentativesDeReconnexion(currentUser, id) {
         partie = parties[id];
         if (partie.etat >= 2) {
           if (parties[id].jeu.dessous_pioche) {
-            parties[id].jeu.dessous_pioche.push(
+            parties[id].jeu.dessous_pioche.concat(
               parties[id].users[currentUser.pseudo].cartes
             ); // on met ses cartes dans la pioche
           }
         }
+         if (partie.main == currentUser.pseudo &&  Object.size(partie.users) > 1) {
+           partie.main = nextValue(partie.users, currentUser.pseudo).pseudo; //on passe la main au joueur suivant
+         }
+
         if (
           partie.admin.pseudo == currentUser.pseudo &&
           Object.size(partie.users) > 1

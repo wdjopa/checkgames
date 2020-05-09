@@ -78,3 +78,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .my-backdrop {
   background: rgba(0, 0, 0, 0.76);
 }
+
+.touranchor--is-active{
+  border: 3px solid orange!important;
+}
+
+.cdk-overlay-transparent-backdrop,
+.cdk-overlay-transparent-backdrop.cdk-overlay-backdrop-showing{
+  background-color: #000000 !important;
+  opacity: 0.258 !important;
+}

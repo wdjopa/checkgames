@@ -3,6 +3,9 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
 import { MatSnackBar, MatDialogRef, MatDialog } from '@angular/material';
+import { PausableObservable, pausable } from 'rxjs-pausable';
+import { Subject, interval } from 'rxjs';
+import { WinnerModal } from 'src/app/modals/winner/winner-modal';
 
 
 @Component({
@@ -26,6 +29,9 @@ export class PlayComponent implements OnInit {
   messagesColor = {}
   colorsMessages = ["forestgreen", "maroon", "dodgerblue", "purple", "Crimson", "DarkTurquoise", "Brown", "YellowGreen"]
 
+  paused = true;
+  pausable: PausableObservable<number>;
+
   @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
 
   constructor(private webSocket: WebsocketService, private userService: UserService, private route: ActivatedRoute, private _snackBar: MatSnackBar, public dialog: MatDialog) {
@@ -44,7 +50,13 @@ export class PlayComponent implements OnInit {
       if(this.partie){
         console.log("verif", this.partie.jeu.dessous_pioche.length)
         localStorage.setItem("partie", JSON.stringify(this.partie)) // sauvegarde en local
-        this.user = this.partie.users[this.user.pseudo];
+        if(this.partie.users[this.user.pseudo]){
+          this.user = this.partie.users[this.user.pseudo];
+        }else{
+          console.log("Vous n'etes plus de la partie")
+          localStorage.removeItem("partie")
+          window.location.reload()
+        }
         if(this.objectKeys(this.messagesColor).length<2){
           let co = 0
           for(let ps in this.partie.users){
@@ -165,6 +177,32 @@ export class PlayComponent implements OnInit {
         }, 500);
       }
     })
+
+    this.paused = false;
+    this.shoot();
+    this.pausable = interval(this.random(300,1000)).pipe(pausable()) as PausableObservable<number>;
+    this.pausable.subscribe(this.shoot.bind(this));
+    // this.pausable.pause();
+    let sounds = ["victoire1",'victoire2']
+    this.dialog.open(WinnerModal, {
+      width: '500px',
+      panelClass: 'myapp-no-padding-dialog',
+       backdropClass: 'dialog-background' ,
+        data : {pseudo : "Willy"}
+    }).afterClosed().subscribe((result)=>{
+      window.location.reload()
+    })
+
+  }
+
+
+  toggle() {
+    if (this.paused) {
+      this.pausable.resume();
+    } else {
+      this.pausable.pause();
+    }
+    this.paused = !this.paused;
   }
 
   remove(joueur) {
@@ -266,6 +304,31 @@ export class PlayComponent implements OnInit {
     if(confirm("Etes vous sur de vouloir quitter cette partie ?")){
       this.webSocket.quitRoom(this.partie.id);
     }
+  }
+
+  
+
+  shoot() {
+    try {
+      this.confetti({
+        angle: this.random(60, 120),
+        spread: this.random(10, 150),
+        particleCount: this.random(40, 50),
+        origin: {
+          y: 0.6
+        }
+      });
+    } catch (e) {
+      // noop, confettijs may not be loaded yet
+    }
+  }
+
+  random(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+  }
+
+  confetti(args: any) {
+    return window['confetti'].apply(this, arguments);
   }
 
 }

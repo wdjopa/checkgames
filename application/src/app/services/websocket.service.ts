@@ -5,7 +5,7 @@ import { Observable } from "rxjs";
 import { User } from "../models/User.model";
 import { Partie } from '../models/Partie.model';
 import { environment } from '../../environments/environment';
-import { browser } from 'protractor';
+import { TourService, IStepOption } from "ngx-tour-md-menu"
 
 @Injectable()
 export class WebsocketService {
@@ -13,7 +13,7 @@ export class WebsocketService {
     private socket = io(environment.link);
     // private socket = io("http://localhost:4000");
 
-    constructor() { }
+    constructor(private tourService : TourService) { }
 
     saveUser(user: User, browserid ? : number, verif ? : boolean ) {
         console.log("save user", user)
@@ -295,5 +295,47 @@ export class WebsocketService {
                 };
             }
         );
+    }
+
+
+
+    launchTourGuide(view: string, steps : any[]) {
+        let endTours = [], totalNext = 0
+        if (localStorage.getItem("endtour")) {
+            endTours = JSON.parse(localStorage.getItem("endtour"))
+        } else {
+            localStorage.setItem("endtour", JSON.stringify(endTours))
+        }
+        if (localStorage.getItem("stepcounter" + view)) {
+            totalNext = parseInt(localStorage.getItem("stepcounter" + view))
+        }
+
+        steps.forEach((step)=>{
+            step.endBtnTitle = "Terminer"
+        })
+
+        this.tourService.initialize(steps);
+
+        if (!endTours.includes(view)) {
+            if (localStorage.getItem("step" + view)) {
+                let step = JSON.parse(localStorage.getItem("step" + view))
+                this.tourService.startAt(step);
+            } else {
+                this.tourService.start()
+            }
+        }
+
+        this.tourService.stepHide$.subscribe((step: IStepOption) => {
+            // au dernier step fermé, On save le prochain step
+            totalNext++;
+            localStorage.setItem("stepcounter" + view, totalNext+"")
+            if(totalNext>=steps.length){
+                endTours.push(view)
+                localStorage.setItem("endtour", JSON.stringify(endTours))
+            }
+            if (step.nextStep) {
+                localStorage.setItem("step" + view, JSON.stringify(step.nextStep))
+            }
+        });
     }
 }

@@ -1,9 +1,10 @@
 <div class="d-md-none">
 <mat-toolbar class="mb-4" style="background-color: #026102;">
   <mat-toolbar-row>
-    <span style="font-family: 'Cinzel'!important; font-size: 1.4rem;">Check & Games</span>
+    <span style="font-family: 'Cinzel'!important; font-size: 1.4rem; color: white;">Check & Games</span>
     <span class="example-spacer"></span>
-    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon" (click)="quit()">close
+    <mat-icon class="example-icon" tourAnchor="join.quitter.small" aria-hidden="false"
+      aria-label="Example user verified icon" style="color: white;" (click)="quit()">close
     </mat-icon>
   </mat-toolbar-row>
 </mat-toolbar>
@@ -13,15 +14,16 @@
   <div class="header">
     <h2 class="title">Partie gérée par {{partie.admin.pseudo}} </h2>
     <div class="btns  d-none d-md-flex">
-      <button class="btn btn-info" (click)="copyToClipboard()"> Partager</button>
-      <button class="btn start" *ngIf="partie.admin.pseudo == user.pseudo" [disabled]="btndisabled"
+      <button tourAnchor="join.share"  class="btn btn-info" (click)="copyToClipboard()"> Partager</button>
+      <button tourAnchor="join.lancer" class="btn start" *ngIf="partie.admin.pseudo == user.pseudo"
+        [disabled]="btndisabled"
         (click)="start()">{{btndisabled ? "Patientez ..." : "Lancer"}}</button>
-      <button class="btn btn-danger" (click)="quit()">Quitter</button>
+      <button class="btn btn-danger" tourAnchor="join.quitter" (click)="quit()">Quitter</button>
     </div>
   </div>
   <div class="main">
     <div class="d-block d-md-none " style="width: 100%;">
-      <mat-card class="mb-4" style="background-color: white;width: 100%; ">
+      <mat-card class="mb-4" style="background-color: white;width: 100%; " tourAnchor="join.playersList.small">
         <mat-card-header class="border-bottom">
           <mat-card-subtitle style="color:#444;">Liste des participants</mat-card-subtitle>
         </mat-card-header>
@@ -36,7 +38,7 @@
         </mat-card-content>
       </mat-card>
     </div>
-    <div class="box players d-none d-md-block">
+    <div class="box players d-none d-md-block" tourAnchor="join.playersList">
       <h3> Liste des participants</h3>
       <div class="gamers">
         <div class="player" *ngFor="let user of objectKeys(partie.users)">
@@ -47,7 +49,7 @@
       </div>
       <div class="foot mt-2 mb-2">En attente d'autres joueurs ...</div>
     </div>
-    <div class="box rules">
+    <div class="box rules" tourAnchor="join.rules">
       <h3>Règles</h3>
       <div>
         Le Check & Games est un jeu de cartes traditionnel dans lequel chaque carte a des effets sur le
@@ -80,9 +82,10 @@
       </button>
     </div> -->
     <button mat-raised-button style="background: white; color: #444; font-size: 1.2rem;"
-      (click)="copyToClipboard()">Partager </button>
+      (click)="copyToClipboard()" tourAnchor="join.share.small">Partager </button>
     <button mat-raised-button style="background: white; color: forestgreen; font-size: 1.2rem;"
-      *ngIf="partie.admin.pseudo == user.pseudo" [disabled]="btndisabled" (click)="start()">Lancer la partie</button>
+      *ngIf="partie.admin.pseudo == user.pseudo" tourAnchor="join.lancer.small" [disabled]="btndisabled"
+      (click)="start()">Lancer la partie</button>
 
     <!-- <button mat-flat-button color="warn">Cliquez pour lancer la partie</button> -->
 

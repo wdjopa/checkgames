@@ -31,10 +31,10 @@
 </mat-menu>
 <mat-toolbar class="mb-4" style="background-color: #026102;">
   <mat-toolbar-row>
-    <span style="font-family: 'Cinzel'!important; font-size: 1.8rem;">Check & Games</span>
+    <span style="font-family: 'Cinzel'!important; font-size: 1.8rem; color: white">Check & Games</span>
     <span class="example-spacer"></span>
     <mat-icon class="example-icon" [matMenuTriggerFor]="menu" aria-hidden="false"
-      aria-label="Example user verified icon">menu</mat-icon>
+      aria-label="Example user verified icon"style="color: white">menu</mat-icon>
   </mat-toolbar-row>
 </mat-toolbar>
 <div class="mt-4 container" style="overflow: auto; height: 80vh;">
@@ -51,14 +51,15 @@
         </mat-card-header>
         <mat-card-content>
           <div class="text-center mt-3 mb-3">
-            <button (click)="new_game()" mat-raised-button style="background-color: #026102; color: #fff;">Créer une
+            <button (click)="new_game()" tourAnchor="newgame" mat-raised-button
+              style="background-color: #026102; color: #fff;">Créer une
               partie</button>
           </div>
         </mat-card-content>
       </mat-card>
     </div>
     <div class="col-sm-6">
-      <mat-card class="mb-3" style="background-color: white; max-height: 50vh; overflow: auto;">
+      <mat-card tourAnchor="wait.listeparties"  class="mb-3" style="background-color: white; max-height: 50vh; overflow: auto;">
         <mat-card-header class="border-bottom">
           <mat-card-subtitle style="color:#444;">Cliquez pour rejoindre une partie</mat-card-subtitle>
         </mat-card-header>
