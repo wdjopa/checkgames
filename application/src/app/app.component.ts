@@ -40,7 +40,7 @@ export class AppComponent {
       })
       dialogRef.afterClosed().subscribe((result)=>{
         if(result === true){
-
+          window.location.reload()
         }else{
           this.splashscreen = true;
         }
