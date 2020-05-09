@@ -65,6 +65,8 @@ import { PlayComponent, CommanderModal } from './room/play/play.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationService } from './navigation.service';
 import { ChoiceModal } from './modals/choice/choice-modal';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 
 const appRoutes: Routes = [
@@ -129,6 +131,7 @@ const appRoutes: Routes = [
     MatTooltipModule,
     MatTreeModule,
     BrowserAnimationsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [AuthService, AuthGuard, UserService, WebsocketService, PartieService, PartieGuard, NavigationService],
   bootstrap: [AppComponent]
