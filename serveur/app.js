@@ -174,6 +174,10 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     if (err) console.log(err);
   });
 
+  db.createCollection("cartes_games_finies", function (err, res) {
+    if (err) console.log(err);
+  });
+
   let sockets_id = {};
 
   //  const server = app.listen(port, () => {
@@ -287,11 +291,11 @@ function tentativesDeReconnexion(currentUser, id) {
       partie.messages = [];
       partie.created_at = new Date();
       partie.updated_at = new Date();
-      partie.messages.push({
-        text: "Je viens de créer une partie",
-        sender: user,
-        date: new Date(),
-      });
+      // partie.messages.push({
+      //   text: "Je viens de créer une partie",
+      //   sender: user,
+      //   date: new Date(),
+      // });
       parties[partie.id] = partie;
       socket.join(partie.id);
       console.log("Nouvelle partie", partie);
@@ -496,6 +500,7 @@ function tentativesDeReconnexion(currentUser, id) {
               // partie = parties[id];
               // io.in(id).emit("partie", parties[id]);
               // On supprime la partie qui est terminée
+              dbo.collection("cartes_games_finies").insertOne(parties[id]);
               parties_finies[id] = parties[id];
               delete parties[id];
             } else {
@@ -656,7 +661,7 @@ function tentativesDeReconnexion(currentUser, id) {
               socket.join(id);
               currentUser.etat = 1;
               partie.users[currentUser.pseudo] = currentUser;
-              partie.messages.push(message);
+              // partie.messages.push(message);
               io.in(partie.id).emit("join", partie);
               io.in(partie.id).emit("partie", partie);
               io.in(partie.id).emit("new message", message);
@@ -766,7 +771,7 @@ function tentativesDeReconnexion(currentUser, id) {
       socket.emit("deconnexion");
       if(partie.id){
         tentativesUsers[currentUser.pseudo] = {};
-        tentativesUsers[currentUser.pseudo].num = 120;
+        tentativesUsers[currentUser.pseudo].num = 60;
         tentativesDeReconnexion(currentUser, partie.id)
       }
       let datas = {};
