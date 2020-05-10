@@ -592,7 +592,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               io.in(id).emit("partie", partie);
               setTimeout(() => {
                 botWantToPlay(id);
-              }, random(10,50)*100);
+              }, random(10, 50) * 100);
               if (commande) {
                 //Le J commande, donc le joueur doit choisir la carte qu'il commande
                 socket.emit("commande");
@@ -687,7 +687,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         io.in(id).emit("partie", partie);
         setTimeout(() => {
           botWantToPlay(id);
-        }, random(10,30)*100);
+        }, random(10, 30) * 100);
       } catch (err) {
         console.log(err);
         socket.emit("reset", id, err);
@@ -1277,12 +1277,32 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               }, random(10, 30) * 100);
             }
           } else {
+            if (currentUser.cartes.length == 0) {
+              // Fin de la partie
+              partie = parties[id];
+              parties[id].etat = 3;
+              parties[id].gagnant = currentUser.pseudo;
+              io.in(id).emit("partie", partie);
+              // On supprime la partie qui est terminée
+              db.collection("cartes_games_finies").insertOne(parties[id]);
+              parties_finies[id] = parties[id];
+              delete parties[id];
+            } else {
+              if (currentUser.cartes.length == 1) {
+                io.in(id).emit(
+                  "notification",
+                  currentUser.pseudo + " annonce 'CHECK !' "
+                );
+              }
+              partie = parties[id];
+              io.in(id).emit("partie", partie);
+            }
             if (commande) {
               io.in(id).emit("partie", partie);
               setTimeout(() => {
                 botWantToCommand(id);
               }, random(10, 30) * 100);
-            }else{
+            } else {
               if (r === 0) {
                 setTimeout(() => {
                   botWantToPlay(id);
