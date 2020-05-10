@@ -19,7 +19,8 @@
           style="max-height: 20%; flex-wrap :nowrap; overflow: auto">
           <div class="d-inline" *ngFor="let pseudo of partieObjectKeys">
             <div class="bord" (click)="remove(pseudo)" [ngClass]="{'active': partie.main==pseudo,'user':
-                    pseudo == user.pseudo}"> {{(pseudo == user.pseudo) ? 'Vous' : pseudo}} [{{partie.users[pseudo].cartes.length}}]
+                    pseudo == user.pseudo}">
+                    {{(pseudo == user.pseudo) ? 'Vous' : pseudo+'['+partie.users[pseudo].cartes.length+']'}}
               {{(partie.users[pseudo].cartes.length == 1) ?" (CHECK)" : ""}} </div>
           </div>
         </div>

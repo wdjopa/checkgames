@@ -207,9 +207,9 @@ function tentativesDeReconnexion(currentUser, id) {
       delete tentativesUsers[currentUser.pseudo];
       io.sockets.emit("all parties", parties);
     } else {
-      if (parties[id] && parties[id].users[currentUser.pseudo] ) {
-        setTimeout(() => {
-          // Au bout de 1 seconde, j'évalue si une partie a toujours un joueur à l'état 0
+      setTimeout(() => {
+        // Au bout de 1 seconde, j'évalue si une partie a toujours un joueur à l'état 0
+          if (parties[id] && parties[id].users[currentUser.pseudo] ) {
           if (parties[id].users[currentUser.pseudo].etat == 0) {
             tentativesUsers[currentUser.pseudo].num--;
             tentativesDeReconnexion(currentUser, id);
@@ -224,8 +224,8 @@ function tentativesDeReconnexion(currentUser, id) {
             }
             delete tentativesUsers[currentUser.pseudo];
           }
-        }, 1000);
-      }
+        }
+      }, 1000);
     }
   }
 }
@@ -500,7 +500,7 @@ function tentativesDeReconnexion(currentUser, id) {
               // partie = parties[id];
               // io.in(id).emit("partie", parties[id]);
               // On supprime la partie qui est terminée
-              dbo.collection("cartes_games_finies").insertOne(parties[id]);
+              db.collection("cartes_games_finies").insertOne(parties[id]);
               parties_finies[id] = parties[id];
               delete parties[id];
             } else {

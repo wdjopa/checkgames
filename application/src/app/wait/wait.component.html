@@ -39,14 +39,14 @@
 <div class="mt-4 container" style="overflow: auto; height: 80vh;">
   <mat-card style="background-color: white;" class="mb-4">
     <mat-card-content style="color: black!important;">
-      Salut {{user.pseudo}}, il ya actuellement {{connectedPersonnes}} personne(s) connectée(s) et {{gamesPlaying}} partie(s) en cours.
+      Salut {{user.pseudo}}, il ya actuellement {{connectedPersonnes}} personne(s) connectée(s) et {{gamesPlaying}} partie(s) disponibles.
     </mat-card-content>
   </mat-card>
    <mat-card style="background-color: white;" class="mb-4">
      <mat-card-content style="color: black!important;">
        Il s'agit d'une version test de l'application. Si vous avez des retours à faire, vous pouvez nous contacter sur
        whatsapp en cliquant ici : <a
-         href="https://wa.me/237695762595?text=Salut La Mater Tech, par rapport au jeu de cartes, je veux vous faire un retour">faire un retour</a>
+         href="https://wa.me/33651190561?text=Salut La Mater Tech, par rapport au jeu de cartes, je veux vous faire un retour">faire un retour</a>
      </mat-card-content>
    </mat-card>
   <div class="row">
@@ -79,7 +79,7 @@
                 <!-- <mat-icon mat-list-icon>play_for_work</mat-icon> -->
                 <div mat-line>Partie gérée par <span style="color: #026102; text-decoration: underline;">{{parties[id].admin.pseudo}}</span>, créée le {{parties[id].created_at | date}}</div>
                 <div mat-line> {{objectKeys(parties[id].users).length}}
-                  participant{{objectKeys(parties[id].users).length>1?'s':''}} | ID : [{{id}},{{parties[id].id}}]</div>
+                  participant{{objectKeys(parties[id].users).length>1?'s':''}}</div>
             </mat-list-item>
           </mat-list>
         </mat-card-content>
