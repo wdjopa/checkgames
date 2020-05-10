@@ -139,11 +139,22 @@ const socket = require("socket.io");
 var parties = {};
 var parties_finies = {};
 var waitingTime = 3000;
-var tentativesUsers = {}
-var browsers = {}
-
-
-
+var tentativesUsers = {};
+var browsers = {};
+let bots = {};
+let detectUsersInGame = {};
+let botsPseudos = [
+  "yvan2015",
+  "pascalmir",
+  "thomas",
+  "malida",
+  "cayla",
+  "carlia",
+  "Loic",
+  "Atango",
+  "tchoptchop",
+  "lamater",
+];
 var mongoPassword = "willaudyv2016";
 var dbase = "dcafc3fe9a3456a911b404aae165817b";
 var config = JSON.parse(
@@ -180,63 +191,115 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
 
   let sockets_id = {};
 
+  function randBotsName() {
+    let ran,
+      used = [];
+    // for (let id in bots) {
+    //   if (bots[id].user) {
+    //     used.push(bots[id].user.pseudo);
+    //   }
+    // }
+    do {
+      ran = random(0, botsPseudos.length);
+    } while (!botsPseudos[ran]);
+    return botsPseudos[ran];
+  }
+
   //  const server = app.listen(port, () => {
   //    console.log("Server started on port " + port + "...");
   //  });
   const io = socket.listen(global.server);
 
-  
-function tentativesDeReconnexion(currentUser, id) {
-  if (tentativesUsers[currentUser.pseudo]) {
-    if (!tentativesUsers[currentUser.pseudo].sent) {
-      // On notifie tous les utilisateurs qu'un joueur est partie
-      tentativesUsers[currentUser.pseudo].sent = true
-      io.in(id).emit("error message", currentUser.pseudo+ " s'est déconnecté(e). On tente des reconnexions.")
-    }
-    if (tentativesUsers[currentUser.pseudo].num <= 0) {
-      // On supprime le joueur de la partie et on passe la main au joueur suivant
-      
-      if (parties[id].main == currentUser.pseudo &&  Object.size(parties[id].users) > 1) {
-        parties[id].main = nextValue(parties[id].users, currentUser.pseudo).pseudo; //on passe la main au joueur suivant
+  function tentativesDeReconnexion(currentUser, id) {
+    if (tentativesUsers[currentUser.pseudo]) {
+      if (!tentativesUsers[currentUser.pseudo].sent) {
+        // On notifie tous les utilisateurs qu'un joueur est partie
+        tentativesUsers[currentUser.pseudo].sent = true;
+        io.in(id).emit(
+          "error message",
+          currentUser.pseudo +
+            " s'est déconnecté(e). On tente des reconnexions."
+        );
       }
-      
-      delete parties[id].users[currentUser.pseudo];
-      if (Object.size(parties[id].users) == 0) {
-        delete parties[id];
-      }
-      delete tentativesUsers[currentUser.pseudo];
-      io.sockets.emit("all parties", parties);
-    } else {
-      setTimeout(() => {
-        // Au bout de 1 seconde, j'évalue si une partie a toujours un joueur à l'état 0
-          if (parties[id] && parties[id].users[currentUser.pseudo] ) {
-          if (parties[id].users[currentUser.pseudo].etat == 0) {
-            tentativesUsers[currentUser.pseudo].num--;
-            tentativesDeReconnexion(currentUser, id);
-          } else {
-            if (tentativesUsers[currentUser.pseudo].sent === true) {
-              // On notifie tous les utilisateurs qu'un joueur est partie
-              tentativesUsers[currentUser.pseudo].sent = true;
-              io.in(id).emit(
-                "error message",
-                currentUser.pseudo + " est revenu(e) 😉."
-              );
-            }
-            delete tentativesUsers[currentUser.pseudo];
-          }
+      if (tentativesUsers[currentUser.pseudo].num <= 0) {
+        // On supprime le joueur de la partie et on passe la main au joueur suivant
+
+        if (
+          parties[id].main == currentUser.pseudo &&
+          Object.size(parties[id].users) > 1
+        ) {
+          parties[id].main = nextValue(
+            parties[id].users,
+            currentUser.pseudo
+          ).pseudo; //on passe la main au joueur suivant
         }
-      }, 1000);
+
+        delete parties[id].users[currentUser.pseudo];
+        if (Object.size(parties[id].users) == 0) {
+          delete parties[id];
+        }
+        delete tentativesUsers[currentUser.pseudo];
+        io.sockets.emit("all parties", parties);
+      } else {
+        setTimeout(() => {
+          // Au bout de 1 seconde, j'évalue si une partie a toujours un joueur à l'état 0
+          if (parties[id] && parties[id].users[currentUser.pseudo]) {
+            if (parties[id].users[currentUser.pseudo].etat == 0) {
+              tentativesUsers[currentUser.pseudo].num--;
+              tentativesDeReconnexion(currentUser, id);
+            } else {
+              if (tentativesUsers[currentUser.pseudo].sent === true) {
+                // On notifie tous les utilisateurs qu'un joueur est partie
+                tentativesUsers[currentUser.pseudo].sent = true;
+                io.in(id).emit(
+                  "error message",
+                  currentUser.pseudo + " est revenu(e) 😉."
+                );
+              }
+              delete tentativesUsers[currentUser.pseudo];
+            }
+          }
+        }, 1000);
+      }
     }
   }
-}
 
+  function addBotTrigger(id) {
+    detectUsersInGame[id] = {};
+    detectUsersInGame[id].timeout = setTimeout(() => {
+      if (
+        parties[id] &&
+        parties[id].etat < 2 &&
+        Object.size(parties[id].users) <= 2
+      ) {
+        addBot(id);
+      }
+    }, 1000);
+  }
+
+  function addBot(id) {
+    bots[id] = {};
+    bots[id].id = id;
+    bots[id].user = {
+      cartes: [],
+      etat: 2,
+      pseudo: randBotsName(),
+      points: 0,
+      status: "bot",
+      difficulte: 0,
+    };
+    let partie = parties[id];
+    partie.users[bots[id].user.pseudo] = bots[id].user;
+    io.in(id).emit("partie", partie);
+    console.log(bots[id].user.pseudo + " a rejoint une partie", partie);
+  }
 
   io.sockets.on("connection", (socket) => {
     let currentUser = {};
     let partie = {};
 
     // Connexion d'un utilisateur
-    socket.on("connexion", (user, browserid=0, verif = false) => {
+    socket.on("connexion", (user, browserid = 0, verif = false) => {
       // console.log("Connexion d'un utilisateur ", user, sockets_id);
       if (sockets_id[user.pseudo]) {
         if (browsers[user.pseudo].id === browserid && verif) {
@@ -264,17 +327,17 @@ function tentativesDeReconnexion(currentUser, id) {
     socket.on("users connected", () => {
       socket.emit("users connected", Object.size(sockets_id));
     });
-    
+
     socket.on("parties en cours", () => {
       socket.emit("parties en cours", Object.size(parties));
     });
 
-    socket.on("get browser id", (user)=>{
-      if(!browsers[user.pseudo]){
+    socket.on("get browser id", (user) => {
+      if (!browsers[user.pseudo]) {
         browsers[user.pseudo] = { id: Object.size(browsers) + 1 };
       }
       socket.emit("browser id", browsers[user.pseudo].id);
-    })
+    });
 
     // Nouvelle partie
     socket.on("new game", (user) => {
@@ -291,12 +354,16 @@ function tentativesDeReconnexion(currentUser, id) {
       partie.messages = [];
       partie.created_at = new Date();
       partie.updated_at = new Date();
+
       // partie.messages.push({
       //   text: "Je viens de créer une partie",
       //   sender: user,
       //   date: new Date(),
       // });
       parties[partie.id] = partie;
+      // Quand on crée la partie, on lance le detecteur d'utilisateur dans le jeu
+      addBotTrigger(partie.id);
+
       socket.join(partie.id);
       console.log("Nouvelle partie", partie);
       io.in(partie.id).emit("join", partie);
@@ -318,8 +385,7 @@ function tentativesDeReconnexion(currentUser, id) {
       // socket.emit("error message", "Il y a actuellement "+Object.size(parties)+" parties en cours")
       let datas = {};
       for (let id in parties) {
-        if (parties[id].etat < 2)
-          datas[id] = parties[id];
+        if (parties[id].etat < 2) datas[id] = parties[id];
       }
       console.log("parties en cours", datas);
       socket.emit("all parties", datas);
@@ -450,6 +516,9 @@ function tentativesDeReconnexion(currentUser, id) {
         partie.main = allUsers[partie.jeu.tour];
         parties[id] = partie;
         io.in(id).emit("partie", partie);
+        setTimeout(() => {
+          botWantToPlay(id);
+        }, 1000);
       }
     });
 
@@ -465,6 +534,9 @@ function tentativesDeReconnexion(currentUser, id) {
         partie.main = allUsers[partie.jeu.tour];
         parties[id] = partie;
         io.in(id).emit("partie", partie);
+        setTimeout(() => {
+          botWantToPlay(id);
+        }, 1000);
         // io.in(id).emit("tour", id, sessions[id].participants[parties[id].tour]);
       } else {
         socket.emit("pas ton tour");
@@ -518,6 +590,9 @@ function tentativesDeReconnexion(currentUser, id) {
               }
               partie = parties[id];
               io.in(id).emit("partie", partie);
+              setTimeout(() => {
+                botWantToPlay(id);
+              }, 1000);
               if (commande) {
                 //Le J commande, donc le joueur doit choisir la carte qu'il commande
                 socket.emit("commande");
@@ -546,7 +621,7 @@ function tentativesDeReconnexion(currentUser, id) {
       if (parties[id] && parties[id].users[joueur]) {
         parties[id].jeu.dessous_pioche.concat(parties[id].users[joueur].cartes); // on met ses cartes dans la pioche
         if (parties[id].main == joueur) {
-          parties[id].main = nextValue(parties[id].users, joueur).pseudo;//on passe la main au joueur suivant
+          parties[id].main = nextValue(parties[id].users, joueur).pseudo; //on passe la main au joueur suivant
         }
         delete parties[id].users[joueur];
         if (sockets_id[joueur])
@@ -610,6 +685,7 @@ function tentativesDeReconnexion(currentUser, id) {
         parties[id] = partie;
         io.in(id).emit("notification", currentUser.pseudo + " a commandé  ");
         io.in(id).emit("partie", partie);
+        botWantToPlay(id);
       } catch (err) {
         console.log(err);
         socket.emit("reset", id, err);
@@ -717,9 +793,12 @@ function tentativesDeReconnexion(currentUser, id) {
             ); // on met ses cartes dans la pioche
           }
         }
-         if (partie.main == currentUser.pseudo &&  Object.size(partie.users) > 1) {
-           partie.main = nextValue(partie.users, currentUser.pseudo).pseudo; //on passe la main au joueur suivant
-         }
+        if (
+          partie.main == currentUser.pseudo &&
+          Object.size(partie.users) > 1
+        ) {
+          partie.main = nextValue(partie.users, currentUser.pseudo).pseudo; //on passe la main au joueur suivant
+        }
 
         if (
           partie.admin.pseudo == currentUser.pseudo &&
@@ -729,7 +808,11 @@ function tentativesDeReconnexion(currentUser, id) {
           let suivant = nextValue(partie.users, currentUser.pseudo);
           partie.admin = partie.users[suivant.pseudo];
         }
-        console.log("l'admin est sortie de la partie. Il reste ", Object.size(partie.users), "joueurs")
+        console.log(
+          "l'admin est sortie de la partie. Il reste ",
+          Object.size(partie.users),
+          "joueurs"
+        );
         delete partie.users[currentUser.pseudo];
 
         currentUser.etat = 0;
@@ -739,9 +822,8 @@ function tentativesDeReconnexion(currentUser, id) {
         if (Object.size(parties[id].users) === 0) {
           // S'il n'y a plus de joueurs dans la partie, on supprime la partie
           delete parties[id];
-        } 
-          io.in(id).emit("partie", parties[id]);
-        
+        }
+        io.in(id).emit("partie", parties[id]);
       }
       socket.leave(id);
       let datas = {};
@@ -749,7 +831,7 @@ function tentativesDeReconnexion(currentUser, id) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
 
-      console.log(currentUser.pseudo, "a quitté la partie. Parties : ", datas)
+      console.log(currentUser.pseudo, "a quitté la partie. Parties : ", datas);
       io.sockets.emit("all parties", datas);
       io.sockets.emit("users connected", Object.size(sockets_id));
       io.sockets.emit("parties en cours", Object.size(parties));
@@ -769,10 +851,10 @@ function tentativesDeReconnexion(currentUser, id) {
         io.in(partie.id).emit("partie", partie);
       }
       socket.emit("deconnexion");
-      if(partie.id){
+      if (partie.id) {
         tentativesUsers[currentUser.pseudo] = {};
         tentativesUsers[currentUser.pseudo].num = 60;
-        tentativesDeReconnexion(currentUser, partie.id)
+        tentativesDeReconnexion(currentUser, partie.id);
       }
       let datas = {};
       for (let id in parties) {
@@ -821,6 +903,7 @@ function tentativesDeReconnexion(currentUser, id) {
       //   partie.jeu.pioche_vide = 0;
       //   console.log("Vous ne pouviez plus piocher");
       // }
+      partie = parties[id];
       if (!parties[id].pioche_vide) {
         var ran;
         if (distrib)
@@ -889,7 +972,7 @@ function tentativesDeReconnexion(currentUser, id) {
           0,
           parties[id].jeu.carte_centre.length - motif_centre.length
         );
-
+      let currentUser = parties[id].users[nom];
       console.log(motif + " <> " + motif_centre);
       console.log(num + " <> " + num_centre);
 
@@ -1043,6 +1126,11 @@ function tentativesDeReconnexion(currentUser, id) {
                   (carte) => carte != card
                 );
                 currentUser = parties[id].users[currentUser.pseudo];
+                console.log(
+                  "les cartes qui restent ",
+                  card,
+                  currentUser.cartes
+                );
                 // socket.emit("retirer carte", card);
               }
             }
@@ -1051,32 +1139,282 @@ function tentativesDeReconnexion(currentUser, id) {
       }
       return { r: r, commande: commande };
     }
-    function nextValue(obj, key) {
-      var keys = Object.keys(obj),
-        i = keys.indexOf(key);
-      // if(i === -1){
-      //   return null;
-      // }else{
-      //   if(keys.length == 1){
-      //     return key;
-      //   }else{
-      //     if(keys[(i + 1) % Object.size(obj)]){
-      //       return obj[keys[(i + 1) % Object.size(obj)]];
-      //     }
-      //   }
-      // }
-      return (
-        i !== -1 &&
-        keys[(i + 1) % Object.size(obj)] &&
-        obj[keys[(i + 1) % Object.size(obj)]]
-      );
+
+    function botPlayACard(id, carte_centre) {
+      let motif_centre = carte_centre.split("")[
+          carte_centre.split("").length - 1
+        ],
+        num_centre = carte_centre.substring(
+          0,
+          carte_centre.length - motif_centre.length
+        );
+      let currentUser = parties[id].users[bots[id].user.pseudo];
+
+      if (bots[id].user.difficulte === 0) {
+        if (parties[id].users[bots[id].user.pseudo].pioche) {
+          // Si le bot doit piocher, je regarde s'il a un 7
+          let c = currentUser.cartes.filter((carte) => {
+            let motif = carte
+              .split("")
+              [carte.split("").length - 1].toLowerCase();
+            let num = carte.substring(0, carte.length - motif.length);
+            return num == num_centre;
+          });
+          if (c.length > 0) {
+            return c[0];
+          } else {
+            return null;
+          }
+        }
+        // On cherche le premier motif
+        let c = currentUser.cartes.filter((carte) => {
+          let motif = carte.split("")[carte.split("").length - 1].toLowerCase();
+          return motif == motif_centre;
+        });
+        console.log("carte que le bot doit jouer motif", c);
+        if (c.length > 0) {
+          return c[0];
+        } else {
+          // On cherche le premier numero
+          let c = currentUser.cartes.filter((carte) => {
+            let motif = carte
+              .split("")
+              [carte.split("").length - 1].toLowerCase();
+            let num = carte.substring(0, carte.length - motif.length);
+            return num == num_centre;
+          });
+          console.log("carte que le bot doit jouer chiffre", c);
+          if (c.length > 0) {
+            return c[0];
+          } else {
+            // On check s'il a un 2
+            let c = currentUser.cartes.filter((carte) => {
+              let motif = carte
+                .split("")
+                [carte.split("").length - 1].toLowerCase();
+              let num = carte.substring(0, carte.length - motif.length);
+              return num == "2";
+            });
+            console.log("carte que le bot doit jouer chiffre", c);
+            if (c.length > 0) {
+              return c[0];
+            } else {
+              // On check s'il a un J
+              let c = currentUser.cartes.filter((carte) => {
+                let motif = carte
+                  .split("")
+                  [carte.split("").length - 1].toLowerCase();
+                let num = carte.substring(0, carte.length - motif.length);
+                return num == "J";
+              });
+              console.log("carte que le bot doit jouer chiffre", c);
+              if (c.length > 0) {
+                return c[0];
+              } else {
+                return null;
+              }
+            }
+          }
+        }
+      }
     }
-    function random(min, max) {
-      if (max <= min) return min;
-      else return ((parseInt(Math.random() * 1000) + min) % (max - min)) + min;
+
+    function botWantToPlay(id) {
+      if (parties[id] && parties[id].main == bots[id].user.pseudo) {
+        let currentUser = parties[id].users[bots[id].user.pseudo];
+        let motif_centre = parties[id].jeu.carte_centre.split("")[
+            parties[id].jeu.carte_centre.split("").length - 1
+          ],
+          num_centre = parties[id].jeu.carte_centre.substring(
+            0,
+            parties[id].jeu.carte_centre.length - motif_centre.length
+          );
+        console.log("cest au tour du bot " + bots[id].user.pseudo);
+        let cardPlayed = botPlayACard(id, parties[id].jeu.carte_centre);
+        console.log(
+          "le bot " + currentUser.pseudo + " a tente de jouer " + cardPlayed
+        );
+        if (cardPlayed) {
+          let { r, commande } = jouer(id, currentUser.pseudo, cardPlayed);
+          console.log("r bot", r, "command bot", commande);
+          if (r) {
+            //On passe la main au joueur suivant
+            let partie = parties[id];
+            partie.jeu.tour += r;
+            let allUsers = Object.keys(partie.users);
+            partie.jeu.tour %= allUsers.length;
+            partie.main = allUsers[partie.jeu.tour];
+            parties[id] = partie;
+            currentUser = parties[id].users[currentUser.pseudo];
+            console.log("les cartes qu'il reste au bot r ", currentUser.cartes);
+            // On met à jour les cartes
+            // Si la partie est finie,
+            if (currentUser.cartes.length == 0) {
+              // Fin de la partie
+              partie = parties[id];
+              parties[id].etat = 3;
+              parties[id].gagnant = currentUser.pseudo;
+              io.in(id).emit("partie", partie);
+              // On supprime la partie qui est terminée
+              db.collection("cartes_games_finies").insertOne(parties[id]);
+              parties_finies[id] = parties[id];
+              delete parties[id];
+            } else {
+              if (currentUser.cartes.length == 1) {
+                io.in(id).emit(
+                  "notification",
+                  currentUser.pseudo + " annonce 'CHECK !' "
+                );
+              }
+              partie = parties[id];
+              io.in(id).emit("partie", partie);
+            }
+            if (r === 2 && Object.size(parties[id].users) === 2) {
+              setTimeout(() => {
+                botWantToPlay(id);
+              }, 500);
+            }
+          } else {
+            if (commande) {
+              io.in(id).emit("partie", partie);
+              setTimeout(() => {
+                botWantToCommand(id);
+              }, 500);
+            }else{
+              if (r === 0) {
+                setTimeout(() => {
+                  botWantToPlay(id);
+                }, 500);
+              }
+            }
+          }
+        } else {
+          botPioche(id);
+        }
+      }
+    }
+
+    function botPioche(id) {
+      let currentUser = parties[id].users[bots[id].user.pseudo];
+      if (currentUser.pseudo == parties[id].main) {
+        if (currentUser.pioche) {
+          console.log("le bot doit piquer beaucoup de cartes");
+          botHasToPickSomeCards(id);
+        } else {
+          console.log("le bot doit juste piocher une carte");
+          piocher(id, currentUser.pseudo);
+          let partie = parties[id]; // On met à jour la partie du joueur
+          //On passe la main au joueur suivant
+          partie.jeu.tour++;
+          let allUsers = Object.keys(partie.users);
+          partie.jeu.tour %= allUsers.length;
+          partie.main = allUsers[partie.jeu.tour];
+          parties[id] = partie;
+          console.log(
+            "update de la partie, cartes apres pioche",
+            partie.users[currentUser.pseudo].cartes
+          );
+          io.in(id).emit("partie", partie);
+          // io.in(id).emit("tour", id, sessions[id].participants[parties[id].tour]);
+        }
+      }
+    }
+
+    function botWantToCommand(id) {
+      //on regarde dans les cartes du robot le motif qui revient le plus
+      let motifs = {};
+      motifs["s"] = 0;
+      motifs["c"] = 0;
+      motifs["h"] = 0;
+      motifs["d"] = 0;
+      let max = 0,
+        maxmotif = null;
+      bots[id].user.cartes.forEach((carte) => {
+        let motif = carte.split("")[carte.split("").length - 1].toLowerCase();
+        motifs[motif]++;
+        if (motifs[motif] > max) {
+          max = motifs[motif];
+          maxmotif = motif;
+        }
+      });
+      if (maxmotif) {
+        let carte = "*" + maxmotif;
+        let partie = parties[id];
+        partie.jeu.carte_centre = carte;
+        partie.jeu.tour++;
+        let allUsers = Object.keys(partie.users);
+        partie.jeu.tour %= allUsers.length;
+        partie.main = allUsers[partie.jeu.tour];
+        parties[id] = partie;
+        io.in(id).emit("notification", bots[id].user.pseudo + " a commandé  ");
+        io.in(id).emit("partie", partie);
+      }
+    }
+
+    function botHasToPickSomeCards(id) {
+      let partie = parties[id];
+      let currentUser = partie.users[bots[id].user.pseudo];
+      console.log(currentUser.pseudo, "doit piocher normalement", partie);
+      if (currentUser.pioche && currentUser.pseudo == partie.main) {
+        io.in(id).emit(
+          "notification",
+          currentUser.pseudo +
+            " prend " +
+            currentUser.pioche +
+            " cartes supplémentaires"
+        );
+        io.in(id).emit(
+          "error message",
+          currentUser.pseudo +
+            " prend " +
+            currentUser.pioche +
+            " cartes supplémentaires"
+        );
+
+        for (let i = 0; i < currentUser.pioche; i++) {
+          piocher(id, currentUser.pseudo); // On pioche autant de fois que necessaire
+          console.log("pioche n°", i);
+        }
+        delete parties[id].users[currentUser.pseudo].pioche; // on supprime la pioche
+        currentUser = parties[id].users[currentUser.pseudo]; // on met à jour l'utilisateur
+        partie = parties[id];
+        //On passe la main au joueur suivant
+        partie.jeu.tour++;
+        let allUsers = Object.keys(partie.users);
+        partie.jeu.tour %= allUsers.length;
+        partie.main = allUsers[partie.jeu.tour];
+        parties[id] = partie;
+        io.in(id).emit("partie", partie);
+      }
     }
   });
 });
+
+function nextValue(obj, key) {
+  var keys = Object.keys(obj),
+    i = keys.indexOf(key);
+  // if(i === -1){
+  //   return null;
+  // }else{
+  //   if(keys.length == 1){
+  //     return key;
+  //   }else{
+  //     if(keys[(i + 1) % Object.size(obj)]){
+  //       return obj[keys[(i + 1) % Object.size(obj)]];
+  //     }
+  //   }
+  // }
+  return (
+    i !== -1 &&
+    keys[(i + 1) % Object.size(obj)] &&
+    obj[keys[(i + 1) % Object.size(obj)]]
+  );
+}
+
+function random(min, max) {
+  if (max <= min) return min;
+  else return ((parseInt(Math.random() * 1000) + min) % (max - min)) + min;
+}
 
 Object.size = function (obj) {
   var size = 0,
