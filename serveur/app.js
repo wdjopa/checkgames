@@ -518,7 +518,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         io.in(id).emit("partie", partie);
         setTimeout(() => {
           botWantToPlay(id);
-        }, 1000);
+        }, random(10, 50) * 100);
       }
     });
 
@@ -536,7 +536,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         io.in(id).emit("partie", partie);
         setTimeout(() => {
           botWantToPlay(id);
-        }, 1000);
+        }, random(10, 50) * 100);
         // io.in(id).emit("tour", id, sessions[id].participants[parties[id].tour]);
       } else {
         socket.emit("pas ton tour");
@@ -592,7 +592,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               io.in(id).emit("partie", partie);
               setTimeout(() => {
                 botWantToPlay(id);
-              }, 1000);
+              }, random(10,50)*100);
               if (commande) {
                 //Le J commande, donc le joueur doit choisir la carte qu'il commande
                 socket.emit("commande");
@@ -685,7 +685,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         parties[id] = partie;
         io.in(id).emit("notification", currentUser.pseudo + " a commandé  ");
         io.in(id).emit("partie", partie);
-        botWantToPlay(id);
+        setTimeout(() => {
+          botWantToPlay(id);
+        }, random(10,30)*100);
       } catch (err) {
         console.log(err);
         socket.emit("reset", id, err);
@@ -1272,19 +1274,19 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             if (r === 2 && Object.size(parties[id].users) === 2) {
               setTimeout(() => {
                 botWantToPlay(id);
-              }, 500);
+              }, random(10, 30) * 100);
             }
           } else {
             if (commande) {
               io.in(id).emit("partie", partie);
               setTimeout(() => {
                 botWantToCommand(id);
-              }, 500);
+              }, random(10, 30) * 100);
             }else{
               if (r === 0) {
                 setTimeout(() => {
                   botWantToPlay(id);
-                }, 500);
+                }, random(10, 30) * 100);
               }
             }
           }
