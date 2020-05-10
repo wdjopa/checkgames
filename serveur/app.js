@@ -1222,7 +1222,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     }
 
     function botWantToPlay(id) {
-      if (parties[id] && parties[id].main == bots[id].user.pseudo) {
+      if (parties[id] && bots[id] && bots[id].user && parties[id].main == bots[id].user.pseudo) {
         let currentUser = parties[id].users[bots[id].user.pseudo];
         let motif_centre = parties[id].jeu.carte_centre.split("")[
             parties[id].jeu.carte_centre.split("").length - 1
