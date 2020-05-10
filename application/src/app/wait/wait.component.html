@@ -25,7 +25,6 @@
 </div>
 --> 
 <mat-menu #menu="matMenu">
-    <a mat-menu-item style="color: white;" href="https://wa.me/237695762595?text=Salut La Mater Tech, par rapport au jeu de cartes, je veux vous faire un retour">Feedback</a>
   <!-- <button mat-menu-item (click)="deconnexion()">Feedback</button> -->
   <button mat-menu-item (click)="deconnexion()">Déconnexion</button>
 </mat-menu>
@@ -40,9 +39,16 @@
 <div class="mt-4 container" style="overflow: auto; height: 80vh;">
   <mat-card style="background-color: white;" class="mb-4">
     <mat-card-content style="color: black!important;">
-      Salut {{user.pseudo}}, vous avez 0 coins
+      Salut {{user.pseudo}}, il ya actuellement {{connectedPersonnes}} personne(s) connectée(s) et {{gamesPlaying}} parties en cours.
     </mat-card-content>
   </mat-card>
+   <mat-card style="background-color: white;" class="mb-4">
+     <mat-card-content style="color: black!important;">
+       Il s'agit d'une version test de l'application. Si vous avez des retours à faire, vous pouvez nous contacter sur
+       whatsapp en cliquant ici : <a
+         href="https://wa.me/237695762595?text=Salut La Mater Tech, par rapport au jeu de cartes, je veux vous faire un retour">faire un retour</a>
+     </mat-card-content>
+   </mat-card>
   <div class="row">
     <div class="col-sm-6">
       <mat-card class="mb-3" style="background-color: white; ">

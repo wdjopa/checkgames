@@ -22,6 +22,14 @@ export class JoinComponent implements OnInit, OnDestroy {
   user: User;
   partieSubscription: Subscription;
 
+  message: any = { text: "" };
+  messages: any[] = [];
+  unreadMessages = 0;
+  lastTotalMessages = 0;
+  messagesColor = {}
+  colorsMessages = ["forestgreen", "maroon", "dodgerblue", "purple", "Crimson", "DarkTurquoise", "Brown", "YellowGreen"]
+
+
   constructor(private userService: UserService,  private navigationService: NavigationService, private partieService: PartieService, private webSocketService: WebsocketService, private router: Router, private route: ActivatedRoute, private ngNavigatorShareService: NgNavigatorShareService) {
     this.user = this.userService.getUser();
 
@@ -32,6 +40,10 @@ export class JoinComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.messagesColor[this.user.pseudo] = {}
+    this.messagesColor[this.user.pseudo].color = "#FF6600";
+    
     this.partie = this.partieService.getPartie()
     this.partieSubscription = this.webSocketService.updatePartie().subscribe(partie => {
       if (partie) {
@@ -45,9 +57,13 @@ export class JoinComponent implements OnInit, OnDestroy {
           this.router.navigate(["/room/play/" + partie.id]);
         }
         localStorage.setItem("partie", JSON.stringify(this.partie))
+
+        
       }
 
     })
+
+
   }
 
   ngAfterViewInit(){

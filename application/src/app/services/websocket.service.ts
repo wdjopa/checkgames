@@ -190,6 +190,40 @@ export class WebsocketService {
         this.socket.emit("all parties")
     }
 
+    askTotalUsers() {
+        this.socket.emit("users connected")
+    }
+    askTotalGames() {
+        this.socket.emit("parties en cours")
+    }
+
+    getPartiesEncours() {
+        return new Observable<number>(
+            observer => {
+                this.socket.on("parties en cours", (a) => {
+                    observer.next(a);
+                });
+                return () => {
+                    this.socket.disconnect();
+                };
+            }
+        );
+    }
+
+    getTotalUsers() {
+        return new Observable<number>(
+            observer => {
+                this.socket.on("users connected", (a) => {
+                    observer.next(a);
+                });
+                return () => {
+                    this.socket.disconnect();
+                };
+            }
+        );
+    }
+
+
     allPartiesDatas() {
         return new Observable<any>(
             observer => {
@@ -283,6 +317,7 @@ export class WebsocketService {
         });
         return observable;
     }
+
 
     deconnexion() {
         return new Observable<User>(

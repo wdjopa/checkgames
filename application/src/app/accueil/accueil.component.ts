@@ -27,7 +27,6 @@ export class AccueilComponent implements OnInit {
   ) {
     this.webSocketService.userSaved().subscribe(({user, browserid}) => {
       this.user = user;
-      console.log(browserid)
       // alert("Bienvenue "+this.user.pseudo)
       localStorage.setItem("user", JSON.stringify(this.user))
       localStorage.setItem("browserid", JSON.stringify(browserid))

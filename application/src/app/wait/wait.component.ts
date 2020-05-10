@@ -21,9 +21,13 @@ export class WaitComponent implements OnInit {
   code: string = "";
   parties: any[] = []
   partieObjectKeys: any = [];
+  connectedPersonnes = 0
+  gamesPlaying = 0
 
   constructor(private userService: UserService, private partieService: PartieService, private websocketService: WebsocketService, private router: Router) {
     this.user = this.userService.getUser();
+
+
     this.joinRoom = this.websocketService.joinedRoom().subscribe(data => {
       this.partie = data;
       console.log(data)
@@ -39,6 +43,19 @@ export class WaitComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+
+    this.websocketService.getTotalUsers().subscribe((data) => {
+      console.log("total users", data)
+      this.connectedPersonnes = data
+    })
+    this.websocketService.getPartiesEncours().subscribe((data) => {
+      console.log("total games", data)
+      this.gamesPlaying = data
+    })
+    this.websocketService.askTotalUsers()
+    this.websocketService.askTotalGames()
+
+
     setTimeout(() => {
       
     this.websocketService.launchTourGuide("wait", [{

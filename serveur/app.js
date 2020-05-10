@@ -235,7 +235,7 @@ function tentativesDeReconnexion(currentUser, id) {
     socket.on("connexion", (user, browserid=0, verif = false) => {
       // console.log("Connexion d'un utilisateur ", user, sockets_id);
       if (sockets_id[user.pseudo]) {
-        if(browsers[user.pseudo].id === browserid && verif){
+        if (browsers[user.pseudo].id === browserid && verif) {
           // On déconnecte l'ancien et on relance ici
           io.sockets.connected[sockets_id[user.pseudo].socket].disconnect();
           user.points = 0;
@@ -244,7 +244,7 @@ function tentativesDeReconnexion(currentUser, id) {
           sockets_id[user.pseudo] = { user: user, socket: socket.id };
           browsers[user.pseudo] = { id: Object.size(browsers) + 1 };
           socket.emit("user saved", user, browsers[user.pseudo].id);
-        }else{
+        } else {
           socket.emit("user already saved", user);
         }
       } else {
@@ -255,6 +255,14 @@ function tentativesDeReconnexion(currentUser, id) {
         browsers[user.pseudo] = { id: Object.size(browsers) + 1 };
         socket.emit("user saved", user, browsers[user.pseudo].id);
       }
+    });
+
+    socket.on("users connected", () => {
+      socket.emit("users connected", Object.size(sockets_id));
+    });
+    
+    socket.on("parties en cours", () => {
+      socket.emit("parties en cours", Object.size(parties));
     });
 
     socket.on("get browser id", (user)=>{
@@ -294,6 +302,8 @@ function tentativesDeReconnexion(currentUser, id) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
+      io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("parties en cours", Object.size(parties));
       //  io.sockets.emit("error message", "Il y a actuellement "+Object.size(parties)+" parties en cours")
 
       // socket.emit("")
@@ -397,6 +407,8 @@ function tentativesDeReconnexion(currentUser, id) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
+      io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("parties en cours", Object.size(parties));
     });
 
     /** */
@@ -543,6 +555,8 @@ function tentativesDeReconnexion(currentUser, id) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
+      io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("parties en cours", Object.size(parties));
     });
 
     // function bouffeAuto(joueur, id) {
@@ -684,6 +698,8 @@ function tentativesDeReconnexion(currentUser, id) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
+      io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("parties en cours", Object.size(parties));
     });
 
     socket.on("quit", (id) => {
@@ -730,6 +746,8 @@ function tentativesDeReconnexion(currentUser, id) {
 
       console.log(currentUser.pseudo, "a quitté la partie. Parties : ", datas)
       io.sockets.emit("all parties", datas);
+      io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("parties en cours", Object.size(parties));
     });
 
     socket.on("disconnect", () => {
@@ -756,6 +774,8 @@ function tentativesDeReconnexion(currentUser, id) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
+      io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("parties en cours", Object.size(parties));
       // parties[partie.id].users.remove(currentUser);
     });
 

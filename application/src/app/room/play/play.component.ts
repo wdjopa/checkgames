@@ -21,16 +21,16 @@ export class PlayComponent implements OnInit {
   user: any = {};
   choiceActive = false;
   loading = false;
-  message: any = { text: "" };
-  messages: any[] = [];
   dialogRef: any = null;
   end = false;
+  message: any = { text: "" };
+  messages: any[] = [];
   unreadMessages = 0;
   lastTotalMessages = 0;
   messagesColor = {}
   colorsMessages = ["forestgreen", "maroon", "dodgerblue", "purple", "Crimson", "DarkTurquoise", "Brown", "YellowGreen"]
   sounds: string[] = ["assets/sounds/victoire1.mp3", 'assets/sounds/victoire2.mp3', 'assets/sounds/message.mp3']
-
+  colorsSetDone : boolean = false;
   soundVictoire1 = new Howl({
     src: this.sounds[0],
     volume: 0.5,
@@ -70,17 +70,18 @@ export class PlayComponent implements OnInit {
           localStorage.removeItem("partie")
           window.location.reload()
         }
-        if(this.objectKeys(this.messagesColor).length<2){
+        if(this.objectKeys(this.messagesColor).length<2 && !this.colorsSetDone){
           let co = 0
           for(let ps in this.partie.users){
             this.messagesColor[ps] = {}
             this.messagesColor[ps].color = this.colorsMessages[co];
             co++
           }
+          this.colorsSetDone = true;
         }
 
         this.partieObjectKeys = this.objectKeys(data.users)
-        if (this.messages.length != this.partie.messages) {
+        if (this.messages.length != this.partie.messages.length) {
           setTimeout(() => {
             this.scrollToBottom()
           }, 500);
@@ -118,6 +119,8 @@ export class PlayComponent implements OnInit {
             backdropClass: 'dialog-background',
             data: { pseudo: this.partie.gagnant }
           }).afterClosed().subscribe((result) => {
+            localStorage.removeItem("partie")
+            localStorage.removeItem("currentid")
             window.location.reload()
           })
 
