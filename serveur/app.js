@@ -202,6 +202,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
   });
 
   let sockets_id = {};
+  let randUsers = random(2, botsPseudos.length) + Object.size(sockets_id);
 
   function randBotsName(id) {
     let ran,
@@ -326,7 +327,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
   io.sockets.on("connection", (socket) => {
     let currentUser = {};
     let partie = {};
-    let randUsers = random(2, botsPseudos.length) + Object.size(sockets_id);
+    randUsers = random(2, botsPseudos.length) + Object.size(sockets_id);
 
     // Connexion d'un utilisateur
     socket.on("connexion", (user, browserid = 0, verif = false) => {
