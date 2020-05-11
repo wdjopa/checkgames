@@ -137,8 +137,6 @@ let avatars = [
 const socket = require("socket.io");
 
 var parties = {};
-var parties_finies = {};
-var waitingTime = 3000;
 var tentativesUsers = {};
 var browsers = {};
 let bots = {};
@@ -282,9 +280,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       if (parties[id] && Object.size(parties[id].users) <= 2) {
         setTimeout(() => {
           addBots(id, 1); // On ajoute le premier bot
-          setTimeout(() => {
-            addBots(id, 1); // On ajoute le second bot
-          }, random(30, 50) * 100);
         }, random(5, 30) * 100);
       }
     }, random(5, 20) * 100);
@@ -428,7 +423,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       for (let id in parties) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
-      console.log("parties en cours", datas);
+      // console.log("parties en cours", datas);
       socket.emit("all parties", datas);
     });
 
@@ -501,7 +496,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           carte_centre: "",
           tour: 0,
         };
-        console.log("lancement de la partie");
+        // console.log("lancement de la partie");
         // On fixe le joueur qui a la main
         let allUsers = Object.keys(partie.users);
         partie.jeu.tour %= allUsers.length;
@@ -526,7 +521,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     socket.on("pique", (id) => {
       partie = parties[id];
       currentUser = partie.users[currentUser.pseudo];
-      console.log(currentUser, "doit piocher normalement", partie);
+      // console.log(currentUser, "doit piocher normalement", partie);
       if (currentUser.pioche && currentUser.pseudo == partie.main) {
         io.in(id).emit(
           "notification",
@@ -545,7 +540,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
 
         for (let i = 0; i < currentUser.pioche; i++) {
           piocher(id, currentUser.pseudo); // On pioche autant de fois que necessaire
-          console.log("pioche n°", i);
+          // console.log("pioche n°", i);
         }
         delete parties[id].users[currentUser.pseudo].pioche; // on supprime la pioche
         currentUser = parties[id].users[currentUser.pseudo]; // on met à jour l'utilisateur
@@ -581,9 +576,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         // io.in(id).emit("tour", id, sessions[id].participants[parties[id].tour]);
       } else {
         socket.emit("pas ton tour");
-        console.log(
-          currentUser.pseudo + " a voulu jouer alors que cetait pas son tour."
-        );
+        // console.log(
+        //   currentUser.pseudo + " a voulu jouer alors que cetait pas son tour."
+        // );
       }
     });
 
@@ -614,7 +609,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               // io.in(id).emit("partie", parties[id]);
               // On supprime la partie qui est terminée
               db.collection("cartes_games_finies").insertOne(parties[id]);
-              parties_finies[id] = parties[id];
+              // parties_finies[id] = parties[id];
               delete parties[id];
               // On supprime les bots à la liste des joueurs connectés
               for (let b of bots[id].users) {
@@ -659,7 +654,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           );
         }
       } catch (err) {
-        console.log(err);
+        // console.log(err);
+        console.log("une erreur est survenue dans la partie ", parties[id], err)
         socket.emit("reset", id, err);
       }
     });
@@ -736,7 +732,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           botWantToPlay(id);
         }, random(10, 30) * 100);
       } catch (err) {
-        console.log(err);
+        // console.log(err);
         socket.emit("reset", id, err);
       }
     });
@@ -815,7 +811,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               parties[id] = partie;
               io.in(partie.id).emit("join", partie);
               io.in(partie.id).emit("partie", partie);
-              console.log(currentUser.pseudo + " était deja là");
+              // console.log(currentUser.pseudo + " était deja là");
             }
           }
         }
@@ -858,7 +854,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           do {
             // si cest lui l'admin, on passe au joueur suivant (s'il yen a un) sauf aux bots
             suivant = nextValue(partie.users, suivant.pseudo);
-            console.log("suivant", suivant);
+            // console.log("suivant", suivant);
             if (suivant.profile == "bot") {
               //s'il a l'attribut profile ==bot
               delete partie.users[suivant.pseudo];
@@ -873,11 +869,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             partie.admin = partie.users[suivant.pseudo];
           }
         }
-        console.log(
-          "l'admin est sortie de la partie. Il reste ",
-          Object.size(partie.users),
-          "joueurs"
-        );
+        // console.log(
+        //   "l'admin est sortie de la partie. Il reste ",
+        //   Object.size(partie.users),
+        //   "joueurs"
+        // );
         delete partie.users[currentUser.pseudo];
 
         currentUser.etat = 0;
@@ -903,7 +899,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
 
-      console.log(currentUser.pseudo, "a quitté la partie. Parties : ", datas);
+      // console.log(currentUser.pseudo, "a quitté la partie. Parties : ", datas);
       io.sockets.emit("all parties", datas);
       io.sockets.emit("users connected", Object.size(sockets_id));
       io.sockets.emit("parties en cours", Object.size(parties));
@@ -952,7 +948,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       do {
         do {
           var ran = random(0, partie.jeu.pioche.length);
-          console.log("ran", ran);
+          // console.log("ran", ran);
           partie.jeu.carte_centre = partie.jeu.pioche[ran];
         } while (!partie.jeu.carte_centre);
       } while (
@@ -1045,8 +1041,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           parties[id].jeu.carte_centre.length - motif_centre.length
         );
       let currentUser = parties[id].users[nom];
-      console.log(motif + " <> " + motif_centre);
-      console.log(num + " <> " + num_centre);
+      // console.log(motif + " <> " + motif_centre);
+      // console.log(num + " <> " + num_centre);
 
       let r = 0,
         commande = false;
@@ -1113,18 +1109,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               if (num == "7") {
                 //On essaie de faire piocher le joueur suivant
                 let suivant = nextValue(parties[id].users, nom);
-                console.log(
-                  nom +
-                    " dans la partie créée par " +
-                    parties[id].admin.pseudo +
-                    " a joué " +
-                    card +
-                    " et " +
-                    suivant.pseudo +
-                    " doit piocher " +
-                    nombre_de_cartes_a_piocher +
-                    " cartes supplémentaires."
-                );
+                // console.log(
+                //   nom +
+                //     " dans la partie créée par " +
+                //     parties[id].admin.pseudo +
+                //     " a joué " +
+                //     card +
+                //     " et " +
+                //     suivant.pseudo +
+                //     " doit piocher " +
+                //     nombre_de_cartes_a_piocher +
+                //     " cartes supplémentaires."
+                // );
 
                 // io.in(id).emit(
                 //   "pioche double",
@@ -1173,13 +1169,13 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 // socket.emit("retirer carte", card);
               } else {
                 r = 1;
-                console.log(
-                  nom +
-                    " dans la partie créée par " +
-                    parties[id].admin.pseudo +
-                    " a joué " +
-                    card
-                );
+                // console.log(
+                //   nom +
+                //     " dans la partie créée par " +
+                //     parties[id].admin.pseudo +
+                //     " a joué " +
+                //     card
+                // );
                 //si la carte proposée correspond aux criteres, alors elle est jouée.
 
                 //On la met sur la table
@@ -1198,13 +1194,13 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                   (carte) => carte != card
                 );
                 currentUser = parties[id].users[currentUser.pseudo];
-                console.log(
-                  "les cartes qui restent ",
-                  card,
-                  currentUser.cartes
-                );
-                let suivant = nextValue(parties[id].users, nom);
-                console.log("c'est le tour de ", suivant);
+                // console.log(
+                //   "les cartes qui restent ",
+                //   card,
+                //   currentUser.cartes
+                // );
+                // let suivant = nextValue(parties[id].users, nom);
+                // console.log("c'est le tour de ", suivant);
                 // socket.emit("retirer carte", card);
               }
             }
@@ -1248,7 +1244,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               [carte.split("").length - 1].toLowerCase();
             return motif == motif_centre;
           });
-          console.log("carte que le bot doit jouer motif", c);
+          // console.log("carte que le bot doit jouer motif", c);
           if (c.length > 0) {
             return c[0];
           } else {
@@ -1260,7 +1256,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               let num = carte.substring(0, carte.length - motif.length);
               return num == num_centre;
             });
-            console.log("carte que le bot doit jouer chiffre", c);
+            // console.log("carte que le bot doit jouer chiffre", c);
             if (c.length > 0) {
               return c[0];
             } else {
@@ -1272,7 +1268,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 let num = carte.substring(0, carte.length - motif.length);
                 return num == "2";
               });
-              console.log("carte que le bot doit jouer chiffre", c);
+              // console.log("carte que le bot doit jouer chiffre", c);
               if (c.length > 0) {
                 return c[0];
               } else {
@@ -1284,7 +1280,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                   let num = carte.substring(0, carte.length - motif.length);
                   return num == "J";
                 });
-                console.log("carte que le bot doit jouer chiffre", c);
+                // console.log("carte que le bot doit jouer chiffre", c);
                 if (c.length > 0) {
                   return c[0];
                 } else {
@@ -1305,117 +1301,120 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             userBot = bot;
           }
         }
-      }
-      if (parties[id] && bots[id] && parties[id].main == userBot.pseudo) {
-        let currentUser = parties[id].users[userBot.pseudo];
-        let motif_centre = parties[id].jeu.carte_centre.split("")[
-            parties[id].jeu.carte_centre.split("").length - 1
-          ],
-          num_centre = parties[id].jeu.carte_centre.substring(
-            0,
-            parties[id].jeu.carte_centre.length - motif_centre.length
+        if (parties[id].main == userBot.pseudo) {
+          let currentUser = parties[id].users[userBot.pseudo];
+          let motif_centre = parties[id].jeu.carte_centre.split("")[
+              parties[id].jeu.carte_centre.split("").length - 1
+            ],
+            num_centre = parties[id].jeu.carte_centre.substring(
+              0,
+              parties[id].jeu.carte_centre.length - motif_centre.length
+            );
+          console.log("cest au tour du bot " + userBot.pseudo+ " partie créée par "+parties[id].admin.pseudo);
+          let cardPlayed = botPlayACard(
+            userBot.index,
+            id,
+            parties[id].jeu.carte_centre
           );
-        console.log("cest au tour du bot " + userBot.pseudo);
-        let cardPlayed = botPlayACard(
-          userBot.index,
-          id,
-          parties[id].jeu.carte_centre
-        );
-        console.log(
-          "le bot " + currentUser.pseudo + " a tente de jouer " + cardPlayed
-        );
-        if (cardPlayed) {
-          let { r, commande } = jouer(id, currentUser.pseudo, cardPlayed);
-          console.log("r bot", r, "command bot", commande);
-          if (r) {
-            //On passe la main au joueur suivant
-            let partie = parties[id];
-            partie.jeu.tour += r;
-            let allUsers = Object.keys(partie.users);
-            partie.jeu.tour %= allUsers.length;
-            partie.main = allUsers[partie.jeu.tour];
-            parties[id] = partie;
-            currentUser = parties[id].users[currentUser.pseudo];
-            console.log("les cartes qu'il reste au bot r ", currentUser.cartes);
-            // On met à jour les cartes
-            // Si la partie est finie,
-            if (currentUser.cartes.length == 0) {
-              // Fin de la partie
-              partie = parties[id];
-              parties[id].etat = 3;
-              parties[id].gagnant = currentUser.pseudo;
-              io.in(id).emit("partie", partie);
-              // On supprime la partie qui est terminée
-              db.collection("cartes_games_finies").insertOne(parties[id]);
-              parties_finies[id] = parties[id];
-              delete parties[id];
+          console.log(
+            "le bot " + currentUser.pseudo + " a tente de jouer " + cardPlayed
+          );
+          if (cardPlayed) {
+            let { r, commande } = jouer(id, currentUser.pseudo, cardPlayed);
+            console.log("r bot", r, "command bot", commande);
+            if (r) {
+              //On passe la main au joueur suivant
+              let partie = parties[id];
+              partie.jeu.tour += r;
+              let allUsers = Object.keys(partie.users);
+              partie.jeu.tour %= allUsers.length;
+              partie.main = allUsers[partie.jeu.tour];
+              parties[id] = partie;
+              currentUser = parties[id].users[currentUser.pseudo];
+              console.log(
+                "les cartes qu'il reste au bot r ",
+                currentUser.cartes
+              );
+              // On met à jour les cartes
+              // Si la partie est finie,
+              if (currentUser.cartes.length == 0) {
+                // Fin de la partie
+                partie = parties[id];
+                parties[id].etat = 3;
+                parties[id].gagnant = currentUser.pseudo;
+                io.in(id).emit("partie", partie);
+                // On supprime la partie qui est terminée
+                db.collection("cartes_games_finies").insertOne(parties[id]);
+                // parties_finies[id] = parties[id];
+                delete parties[id];
 
-              // On supprime les bots à la liste des joueurs connectés
-              for (let b of bots[id].users) {
-                delete sockets_id[id + b.pseudo];
-              }
-              delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
-              io.sockets.emit("users connected", Object.size(sockets_id));
+                // On supprime les bots à la liste des joueurs connectés
+                for (let b of bots[id].users) {
+                  delete sockets_id[id + b.pseudo];
+                }
+                delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
+                io.sockets.emit("users connected", Object.size(sockets_id));
 
-              return;
-            } else {
-              if (currentUser.cartes.length == 1) {
-                io.in(id).emit(
-                  "notification",
-                  currentUser.pseudo + " annonce 'CHECK !' "
-                );
+                return;
+              } else {
+                if (currentUser.cartes.length == 1) {
+                  io.in(id).emit(
+                    "notification",
+                    currentUser.pseudo + " annonce 'CHECK !' "
+                  );
+                }
+                partie = parties[id];
+                io.in(id).emit("partie", partie);
               }
-              partie = parties[id];
-              io.in(id).emit("partie", partie);
-            }
-            if (r === 2 && Object.size(parties[id].users) === 2) {
-              setTimeout(() => {
-                botWantToPlay(id);
-              }, random(10, 30) * 100);
-            }
-          } else {
-            if (currentUser.cartes.length == 0) {
-              // Fin de la partie
-              partie = parties[id];
-              parties[id].etat = 3;
-              parties[id].gagnant = currentUser.pseudo;
-              io.in(id).emit("partie", partie);
-              // On supprime la partie qui est terminée
-              db.collection("cartes_games_finies").insertOne(parties[id]);
-              parties_finies[id] = parties[id];
-              delete parties[id];
-              return;
-            } else {
-              if (currentUser.cartes.length == 1) {
-                io.in(id).emit(
-                  "notification",
-                  currentUser.pseudo + " annonce 'CHECK !' "
-                );
-              }
-              partie = parties[id];
-              io.in(id).emit("partie", partie);
-            }
-            if (commande) {
-              setTimeout(() => {
-                botWantToCommand(userBot.index, id);
-              }, random(10, 30) * 100);
-              io.in(id).emit("partie", partie);
-            } else {
-              if (r === 0) {
+              if (r === 2 && Object.size(parties[id].users) === 2) {
                 setTimeout(() => {
                   botWantToPlay(id);
                 }, random(10, 30) * 100);
               }
+            } else {
+              if (currentUser.cartes.length == 0) {
+                // Fin de la partie
+                partie = parties[id];
+                parties[id].etat = 3;
+                parties[id].gagnant = currentUser.pseudo;
+                io.in(id).emit("partie", partie);
+                // On supprime la partie qui est terminée
+                db.collection("cartes_games_finies").insertOne(parties[id]);
+                // parties_finies[id] = parties[id];
+                delete parties[id];
+                return;
+              } else {
+                if (currentUser.cartes.length == 1) {
+                  io.in(id).emit(
+                    "notification",
+                    currentUser.pseudo + " annonce 'CHECK !' "
+                  );
+                }
+                partie = parties[id];
+                io.in(id).emit("partie", partie);
+              }
+              if (commande) {
+                setTimeout(() => {
+                  botWantToCommand(userBot.index, id);
+                }, random(10, 30) * 100);
+                io.in(id).emit("partie", partie);
+              } else {
+                if (r === 0) {
+                  setTimeout(() => {
+                    botWantToPlay(id);
+                  }, random(10, 30) * 100);
+                }
+              }
             }
+          } else {
+            botPioche(userBot.index, id);
           }
-        } else {
-          botPioche(userBot.index, id);
-        }
 
-        //Lorsqu'un robot a joué, il appelle la fonction au cas où un autre robot doit jouer
-        setTimeout(() => {
-          botWantToPlay(id);
-        }, random(10, 30) * 100);
+          //Lorsqu'un robot a joué, il appelle la fonction au cas où un autre robot doit jouer
+          setTimeout(() => {
+            botWantToPlay(id);
+          }, random(10, 30) * 100);
+        }
       }
     }
 
