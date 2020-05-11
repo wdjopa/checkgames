@@ -1424,7 +1424,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (currentUser.pseudo == parties[id].main) {
           if (currentUser.pioche) {
             console.log("le bot doit piquer beaucoup de cartes");
-            botHasToPickSomeCards(id);
+            botHasToPickSomeCards(index, id);
           } else {
             console.log("le bot doit juste piocher une carte");
             piocher(id, currentUser.pseudo);
