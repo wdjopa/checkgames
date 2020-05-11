@@ -1,0 +1,10 @@
+* {
+  font-family: "Cinzel" !important;
+}
+.mat {
+  background-color: #ffffff!important;
+  color: #555;
+}
+.mat .mat-dialog-container{
+    background-color: orange;
+}

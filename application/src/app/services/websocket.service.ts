@@ -20,9 +20,9 @@ export class WebsocketService {
         this.socket.emit("connexion", user, browserid, verif);
     }
 
-    async newGame(user: User) {
+    async newGame(user: User, code ? : string) {
         console.log("Envoie au socket")
-        await this.socket.emit("new game", user);
+        await this.socket.emit("new game", user, code);
     }
 
     lancer(id:string){

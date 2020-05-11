@@ -69,6 +69,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { TourMatMenuModule, TourService} from "ngx-tour-md-menu"
 import { WinnerModal } from './modals/winner/winner-modal';
+import { SecureGameModal } from './modals/secure-game/secure-game-modal';
 
 const appRoutes: Routes = [
   { path: "accueil", component: AccueilComponent },
@@ -83,12 +84,13 @@ const appRoutes: Routes = [
 
 
 @NgModule({
-  declarations: [AppComponent, AccueilComponent, WaitComponent, CreateComponent, JoinComponent, PlayComponent, CommanderModal, ChoiceModal, WinnerModal],
+  declarations: [AppComponent, AccueilComponent, WaitComponent, CreateComponent, JoinComponent, PlayComponent, CommanderModal, ChoiceModal, SecureGameModal,WinnerModal],
 
   entryComponents: [
     CommanderModal,
     WinnerModal,
     ChoiceModal,
+    SecureGameModal,
   ],
   imports: [
     BrowserModule,

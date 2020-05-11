@@ -1,4 +1,3 @@
-
 <!-- <div class="d-none d-lg-block">
 <div class="wait">
 
@@ -23,7 +22,7 @@
 
   <div class="d-block d-lg-none">
 </div>
---> 
+-->
 <mat-menu #menu="matMenu">
   <!-- <button mat-menu-item (click)="deconnexion()">Feedback</button> -->
   <button mat-menu-item (click)="deconnexion()">Déconnexion</button>
@@ -33,23 +32,24 @@
     <span style="font-family: 'Cinzel'!important; font-size: 1.8rem; color: white">Check & Games</span>
     <span class="example-spacer"></span>
     <mat-icon class="example-icon" [matMenuTriggerFor]="menu" aria-hidden="false"
-      aria-label="Example user verified icon"style="color: white">menu</mat-icon>
+      aria-label="Example user verified icon" style="color: white">menu</mat-icon>
   </mat-toolbar-row>
 </mat-toolbar>
 <div class="mt-4 container" style="overflow: auto; height: 80vh;">
   <mat-card style="background-color: white;" class="mb-4">
     <mat-card-content style="color: black!important;">
       Salut {{user.pseudo}}, il ya actuellement <span [innerHTML]="connectedPersonnes"></span> personnes
-      connectées et <span [innerHTML]="gamesPlaying"></span>  parties.
+      connectées et <span [innerHTML]="gamesPlaying"></span> parties.
     </mat-card-content>
   </mat-card>
-   <mat-card style="background-color: white;" class="mb-4">
-     <mat-card-content style="color: black!important;">
-       Il s'agit d'une version test de l'application. Si vous avez des retours à faire, vous pouvez nous contacter sur
-       whatsapp en cliquant ici : <a
-         href="https://wa.me/33651190561?text=Salut La Mater Tech, par rapport au jeu de cartes, je veux vous faire un retour">faire un retour</a>
-     </mat-card-content>
-   </mat-card>
+  <mat-card style="background-color: white;" class="mb-4">
+    <mat-card-content style="color: black!important;">
+      Il s'agit d'une version test de l'application. Si vous avez des retours à faire, vous pouvez nous contacter sur
+      whatsapp en cliquant ici : <a
+        href="https://wa.me/33651190561?text=Salut La Mater Tech, par rapport au jeu de cartes, je veux vous faire un retour">faire
+        un retour</a>
+    </mat-card-content>
+  </mat-card>
   <div class="row">
     <div class="col-sm-6">
       <mat-card class="mb-3" style="background-color: white; ">
@@ -58,15 +58,31 @@
         </mat-card-header>
         <mat-card-content>
           <div class="text-center mt-3 mb-3">
-            <button (click)="new_game()" tourAnchor="newgame" mat-raised-button
-              style="background-color: #026102; color: #fff;">Créer une
-              partie</button>
+               <button (click)="new_game(false)" tourAnchor="newgameopen" mat-raised-button
+                 style="background-color: #026102; color: #fff; ">
+                 <span
+                   style="vertical-align: middle; display: flex;align-items: center; flex-direction: row; justify-content: center;">
+                   Créer une partie ouverte<mat-icon aria-hidden="false"
+                     style="font-size: .81rem; padding-left: .2rem;padding-top: .3rem; vertical-align: middle;">
+                     supervisor_account</mat-icon>
+                 </span>
+               </button>
+          </div>
+          <div class="text-center mt-3 mt-3">
+            <button (click)="new_game(true)" tourAnchor="newgameclose" mat-raised-button
+              style="background-color: #451358; color: #fff; ">
+              <span style="vertical-align: middle; display: flex;align-items: center; flex-direction: row; justify-content: center;">
+                Créer une partie fermée<mat-icon aria-hidden="false" style="font-size: .81rem; padding-left: .2rem;padding-top: .3rem; vertical-align: middle;">
+                  lock</mat-icon>
+              </span>
+            </button>
           </div>
         </mat-card-content>
       </mat-card>
     </div>
     <div class="col-sm-6">
-      <mat-card tourAnchor="wait.listeparties"  class="mb-3" style="background-color: white; max-height: 50vh; overflow: auto;">
+      <mat-card tourAnchor="wait.listeparties" class="mb-3"
+        style="background-color: white; max-height: 50vh; overflow: auto;">
         <mat-card-header class="border-bottom">
           <mat-card-subtitle style="color:#444;">Cliquez pour rejoindre une partie</mat-card-subtitle>
         </mat-card-header>
@@ -75,12 +91,14 @@
             Aucune partie n'est encore disponible pour l'instant
           </div>
           <mat-list role="list" *ngIf="partieObjectKeys.length>0">
-            <mat-list-item (click)="join(id)" class="mat-elevation-z2 border-radius mb-3" style="cursor: pointer;" matRipple role=" listitem"
-              *ngFor="let id of partieObjectKeys.reverse()">
-                <!-- <mat-icon mat-list-icon>play_for_work</mat-icon> -->
-                <div mat-line>Partie gérée par <span style="color: #026102; text-decoration: underline;">{{parties[id].admin.pseudo}}</span>, créée le {{parties[id].created_at | date}}</div>
-                <div mat-line> {{objectKeys(parties[id].users).length}}
-                  participant{{objectKeys(parties[id].users).length>1?'s':''}}</div>
+            <mat-list-item (click)="join(id)" class="mat-elevation-z2 border-radius mb-3" style="cursor: pointer;"
+              matRipple role=" listitem" *ngFor="let id of partieObjectKeys.reverse()">
+              <!-- <mat-icon mat-list-icon>play_for_work</mat-icon> -->
+              <div mat-line>Partie gérée par <span
+                  style="color: #026102; text-decoration: underline;">{{parties[id].admin.pseudo}}</span>, créée le
+                {{parties[id].created_at | date}}</div>
+              <div mat-line> {{objectKeys(parties[id].users).length}}
+                participant{{objectKeys(parties[id].users).length>1?'s':''}}</div>
             </mat-list-item>
           </mat-list>
         </mat-card-content>

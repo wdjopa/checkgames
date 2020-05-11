@@ -7,6 +7,8 @@ import { PartieService } from '../services/partie.service';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { User } from '../models/User.model';
+import { SecureGameModal } from '../modals/secure-game/secure-game-modal';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-wait',
@@ -24,7 +26,7 @@ export class WaitComponent implements OnInit {
   connectedPersonnes : string = "0"
   gamesPlaying : string = "0"
 
-  constructor(private userService: UserService, private partieService: PartieService, private websocketService: WebsocketService, private router: Router) {
+  constructor(private userService: UserService, public dialog: MatDialog,private partieService: PartieService, private websocketService: WebsocketService, private router: Router) {
     this.user = this.userService.getUser();
 
 
@@ -59,10 +61,14 @@ export class WaitComponent implements OnInit {
     setTimeout(() => {
       
     this.websocketService.launchTourGuide("wait", [{
-      anchorId: 'newgame',
-      content: 'Cliquez ici si vous souhaitez créer une nouvelle partie',
+      anchorId: 'newgameopen',
+      content: 'Cliquez ici si vous souhaitez créer une nouvelle partie ouverte à tous',
       title: 'Nouvelle partie',
     }, {
+        anchorId: 'newgameclose',
+        content: 'Cliquez ici si vous souhaitez créer une nouvelle partie protégée par un mot de passe',
+        title: 'Nouvelle partie',
+      }, {
       anchorId: 'wait.listeparties',
       content: "Ici, vous avez d'autres joueurs comme vous qui attendent des challengeurs 🔥. N'hésitez pas à les rejoindre !",
       title: 'Liste des parties en attente',
@@ -103,7 +109,14 @@ export class WaitComponent implements OnInit {
   }
 
   join(id) {
-    this.websocketService.joinRoom(id);
+    if(this.parties[id].code){
+      this.dialog.open(SecureGameModal, { data: { code: this.parties[id].code, unlock: true } })
+        .afterClosed().subscribe((result) => {
+          this.websocketService.joinRoom(id);
+        })
+    }else{
+      this.websocketService.joinRoom(id);
+    }
   }
 
   OnSubmit(form: NgForm) {
@@ -112,8 +125,15 @@ export class WaitComponent implements OnInit {
     form.reset();
   }
 
-  new_game() {
-    this.websocketService.newGame(this.userService.getUser());
+  new_game(secure) {
+    if(secure){
+      this.dialog.open(SecureGameModal, {data:{code : "", unlock : false }})
+      .afterClosed().subscribe((result)=>{
+        this.websocketService.newGame(this.userService.getUser(), result.toLowerCase());
+      })
+    }else{
+      this.websocketService.newGame(this.userService.getUser());
+    }
     console.log("Clic sur le bouton de création de partie")
   }
 }

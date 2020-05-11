@@ -379,7 +379,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     });
 
     // Nouvelle partie
-    socket.on("new game", (user) => {
+    socket.on("new game", (user, code=false) => {
       user.etat = 1;
       partie = {};
       partie.id = uuidv4().split("-")[0];
@@ -393,15 +393,20 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       partie.messages = [];
       partie.created_at = new Date();
       partie.updated_at = new Date();
-
+      if(code){
+      console.log("partie créée avec un code")
+        partie.code = code;
+      }
       // partie.messages.push({
       //   text: "Je viens de créer une partie",
       //   sender: user,
       //   date: new Date(),
       // });
       parties[partie.id] = partie;
-      // Quand on crée la partie, on lance le detecteur d'utilisateur dans le jeu
-      addBotTrigger(partie.id);
+      if(!partie.code){
+        // Quand on crée la partie, on lance le detecteur d'utilisateur dans le jeu
+        addBotTrigger(partie.id);
+      }
 
       socket.join(partie.id);
       console.log("Nouvelle partie", partie);

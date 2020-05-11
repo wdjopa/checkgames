@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Entrez le mot de passe de la partie</h2>
+<mat-dialog-content>
+  <span class="text-danger">{{err}}</span>
+  <br>
+   <mat-form-field class="example-full-width">
+     <mat-label>Clé de la partie</mat-label>
+     <input matInput placeholder="Entrez un mot de passe de votre partie" [(ngModel)]="code" name="code">
+   </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Annuler</button>
+  <button mat-button (click)="valider()">Valider</button>
+</mat-dialog-actions>
