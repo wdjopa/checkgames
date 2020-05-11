@@ -21,8 +21,8 @@ export class WaitComponent implements OnInit {
   code: string = "";
   parties: any[] = []
   partieObjectKeys: any = [];
-  connectedPersonnes = 0
-  gamesPlaying = 0
+  connectedPersonnes : string = "0"
+  gamesPlaying : string = "0"
 
   constructor(private userService: UserService, private partieService: PartieService, private websocketService: WebsocketService, private router: Router) {
     this.user = this.userService.getUser();

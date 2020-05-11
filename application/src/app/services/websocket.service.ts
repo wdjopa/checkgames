@@ -198,7 +198,7 @@ export class WebsocketService {
     }
 
     getPartiesEncours() {
-        return new Observable<number>(
+        return new Observable<string>(
             observer => {
                 this.socket.on("parties en cours", (a) => {
                     observer.next(a);
@@ -211,7 +211,7 @@ export class WebsocketService {
     }
 
     getTotalUsers() {
-        return new Observable<number>(
+        return new Observable<string>(
             observer => {
                 this.socket.on("users connected", (a) => {
                     observer.next(a);
