@@ -131,7 +131,9 @@ export class WaitComponent implements OnInit {
     if(secure){
       this.dialog.open(SecureGameModal, {data:{code : "", unlock : false }})
       .afterClosed().subscribe((result)=>{
-        this.websocketService.newGame(this.userService.getUser(), result.toLowerCase());
+        if(result){
+          this.websocketService.newGame(this.userService.getUser(), result.toLowerCase());
+        }
       })
     }else{
       this.websocketService.newGame(this.userService.getUser());

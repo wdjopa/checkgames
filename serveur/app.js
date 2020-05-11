@@ -242,6 +242,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             parties[id].users,
             currentUser.pseudo
           ).pseudo; //on passe la main au joueur suivant
+
+          // #TODO: Retirer les bots s'il en reste
         }
 
         delete parties[id].users[currentUser.pseudo];
@@ -316,7 +318,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         io.in(id).emit("partie", partie);
         // On ajoute les bots à la liste des joueurs connectés
         sockets_id[id + b.pseudo] = { user: b, socket: b.index };
-        io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
       }
     }, random(5, 30) * 100);
   }
@@ -417,8 +419,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", Object.size(sockets_id));
-      io.sockets.emit("parties en cours", Object.size(parties));
+      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
+      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+          Object.size(parties) +
+          "<sub>" +
+          Object.size(parties) +
+          "</sub>");
       //  io.sockets.emit("error message", "Il y a actuellement "+Object.size(parties)+" parties en cours")
 
       // socket.emit("")
@@ -521,8 +527,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", Object.size(sockets_id));
-      io.sockets.emit("parties en cours", Object.size(parties));
+      io.sockets.emit(
+        "users connected",
+        randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+      );
+      io.sockets.emit(
+        "parties en cours",
+        parseInt(randUsers / 3) +
+          Object.size(parties) +
+          "<sub>" +
+          Object.size(parties) +
+          "</sub>"
+      );
     });
 
     /** */
@@ -624,7 +640,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 delete sockets_id[id + b.pseudo];
               }
               delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
-              io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
             } else {
               if (currentUser.cartes.length == 1) {
                 io.in(id).emit(
@@ -686,8 +702,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", Object.size(sockets_id));
-      io.sockets.emit("parties en cours", Object.size(parties));
+      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
+      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+          Object.size(parties) +
+          "<sub>" +
+          Object.size(parties) +
+          "</sub>");
     });
 
     // function bouffeAuto(joueur, id) {
@@ -832,8 +852,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", Object.size(sockets_id));
-      io.sockets.emit("parties en cours", Object.size(parties));
+      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
+      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+          Object.size(parties) +
+          "<sub>" +
+          Object.size(parties) +
+          "</sub>");
     });
 
     socket.on("quit", (id) => {
@@ -909,8 +933,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
 
       // console.log(currentUser.pseudo, "a quitté la partie. Parties : ", datas);
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", Object.size(sockets_id));
-      io.sockets.emit("parties en cours", Object.size(parties));
+      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
+      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+          Object.size(parties) +
+          "<sub>" +
+          Object.size(parties) +
+          "</sub>");
     });
 
     socket.on("disconnect", () => {
@@ -937,8 +965,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", Object.size(sockets_id));
-      io.sockets.emit("parties en cours", Object.size(parties));
+      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
+      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+          Object.size(parties) +
+          "<sub>" +
+          Object.size(parties) +
+          "</sub>");
       // parties[partie.id].users.remove(currentUser);
     });
 
@@ -1361,7 +1393,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                   delete sockets_id[id + b.pseudo];
                 }
                 delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
-                io.sockets.emit("users connected", Object.size(sockets_id));
+      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
 
                 return;
               } else {

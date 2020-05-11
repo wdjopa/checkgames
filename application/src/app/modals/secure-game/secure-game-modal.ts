@@ -32,7 +32,7 @@ export class SecureGameModal implements OnDestroy, AfterViewInit, OnInit {
         this.err = ""
         if(this.code.length>0){
             if(this.data.unlock){
-                if(this.code == this.data.code){
+                if(this.code.toLowerCase() == this.data.code){
                     this.dialogRef.close(true);
                 }else{
                     this.err = "Mot de passe incorrect"
