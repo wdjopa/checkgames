@@ -332,7 +332,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       if (sockets_id[user.pseudo]) {
         if (browsers[user.pseudo].id === browserid && verif) {
           // On déconnecte l'ancien et on relance ici
-          io.sockets.connected[sockets_id[user.pseudo].socket].disconnect();
+          if (io.sockets.connected[sockets_id[user.pseudo].socket])
+            io.sockets.connected[sockets_id[user.pseudo].socket].disconnect();
           user.points = 0;
           user.etat = false;
           currentUser = user;
