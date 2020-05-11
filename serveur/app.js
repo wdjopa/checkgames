@@ -1299,7 +1299,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
 
     function botWantToPlay(id) {
       let userBot = { pseudo: "" };
-      if (parties[id]) {
+      if (parties[id] && bots[id]) {
         for (let bot of bots[id].users) {
           if (parties[id].main == bot.pseudo) {
             userBot = bot;
