@@ -279,10 +279,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
   function addBotTrigger(id) {
     detectUsersInGame[id] = {};
     detectUsersInGame[id].timeout = setTimeout(() => {
-      if (
-        parties[id] &&
-        Object.size(parties[id].users) <= 2
-      ) {
+      if (parties[id] && Object.size(parties[id].users) <= 2) {
         setTimeout(() => {
           addBots(id, 1); // On ajoute le premier bot
           setTimeout(() => {
@@ -294,7 +291,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
   }
 
   function addBots(id, total) {
-    if (parties[id].etat < 2) {
+    if (parties[id] && parties[id].etat < 2) {
       if (!bots[id]) {
         bots[id] = {};
         bots[id].id = id;
@@ -322,7 +319,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       }
       io.in(id).emit("partie", partie);
       // On ajoute les bots à la liste des joueurs connectés
-      sockets_id[id+b.pseudo] = { user: b, socket: b.index };
+      sockets_id[id + b.pseudo] = { user: b, socket: b.index };
       io.sockets.emit("users connected", Object.size(sockets_id));
     }
   }
@@ -358,13 +355,22 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       }
     });
 
-
     socket.on("users connected", () => {
-      socket.emit("users connected", randUsers+"<sub>"+Object.size(sockets_id)+"</sub>");
+      socket.emit(
+        "users connected",
+        randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+      );
     });
 
     socket.on("parties en cours", () => {
-      socket.emit("parties en cours", (parseInt(randUsers/3)+ Object.size(parties))+"<sub>"+Object.size(parties)+"</sub>");
+      socket.emit(
+        "parties en cours",
+        parseInt(randUsers / 3) +
+          Object.size(parties) +
+          "<sub>" +
+          Object.size(parties) +
+          "</sub>"
+      );
     });
 
     socket.on("get browser id", (user) => {
@@ -610,13 +616,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               db.collection("cartes_games_finies").insertOne(parties[id]);
               parties_finies[id] = parties[id];
               delete parties[id];
-               // On supprime les bots à la liste des joueurs connectés
-              for(let b of bots[id].users){
+              // On supprime les bots à la liste des joueurs connectés
+              for (let b of bots[id].users) {
                 delete sockets_id[id + b.pseudo];
               }
-              delete bots[id] // On supprime le tableau des bots en rapport avec la partie
+              delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
               io.sockets.emit("users connected", Object.size(sockets_id));
-
             } else {
               if (currentUser.cartes.length == 1) {
                 io.in(id).emit(
@@ -848,18 +853,23 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           partie.admin.pseudo == currentUser.pseudo &&
           Object.size(partie.users) > 1
         ) {
-          let ic = 0
+          let ic = 0;
           let suivant = currentUser;
-          do{
+          do {
             // si cest lui l'admin, on passe au joueur suivant (s'il yen a un) sauf aux bots
             suivant = nextValue(partie.users, suivant.pseudo);
-            console.log("suivant", suivant)
-            if(suivant.profile == "bot"){//s'il a l'attribut profile ==bot
+            console.log("suivant", suivant);
+            if (suivant.profile == "bot") {
+              //s'il a l'attribut profile ==bot
               delete partie.users[suivant.pseudo];
             }
-            ic++
-          }while(suivant && suivant.profile != 'bot' && ic < Object.size(partie.users))
-          if(suivant.pseudo != currentUser.pseudo){
+            ic++;
+          } while (
+            suivant &&
+            suivant.profile != "bot" &&
+            ic < Object.size(partie.users)
+          );
+          if (suivant.pseudo != currentUser.pseudo) {
             partie.admin = partie.users[suivant.pseudo];
           }
         }
@@ -874,16 +884,15 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         parties[id] = partie;
         partie = {};
 
-
         if (Object.size(parties[id].users) === 0 || !parties[id].admin) {
           // S'il n'y a plus de joueurs dans la partie, on supprime la partie
           delete parties[id];
-          if(bots[id] && bots[id].users){
+          if (bots[id] && bots[id].users) {
             // On supprime les bots à la liste des joueurs connectés
-            for(let b of bots[id].users){
+            for (let b of bots[id].users) {
               if (sockets_id[id + b.pseudo]) delete sockets_id[id + b.pseudo];
             }
-            delete bots[id] // On supprime le tableau des bots en rapport avec la partie
+            delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
           }
         }
         io.in(id).emit("partie", parties[id]);
@@ -1297,13 +1306,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           }
         }
       }
-      console.log(
-        "cest le tour de ",
-        parties[id].main,
-        "on garde",
-        userBot,
-        bots[id]
-      );
       if (parties[id] && bots[id] && parties[id].main == userBot.pseudo) {
         let currentUser = parties[id].users[userBot.pseudo];
         let motif_centre = parties[id].jeu.carte_centre.split("")[
@@ -1347,16 +1349,15 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               db.collection("cartes_games_finies").insertOne(parties[id]);
               parties_finies[id] = parties[id];
               delete parties[id];
-              
+
               // On supprime les bots à la liste des joueurs connectés
-              for(let b of bots[id].users){
+              for (let b of bots[id].users) {
                 delete sockets_id[id + b.pseudo];
               }
-              delete bots[id] // On supprime le tableau des bots en rapport avec la partie
+              delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
               io.sockets.emit("users connected", Object.size(sockets_id));
 
               return;
-
             } else {
               if (currentUser.cartes.length == 1) {
                 io.in(id).emit(
@@ -1395,10 +1396,10 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               io.in(id).emit("partie", partie);
             }
             if (commande) {
-              io.in(id).emit("partie", partie);
               setTimeout(() => {
                 botWantToCommand(userBot.index, id);
               }, random(10, 30) * 100);
+              io.in(id).emit("partie", partie);
             } else {
               if (r === 0) {
                 setTimeout(() => {
