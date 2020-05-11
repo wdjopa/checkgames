@@ -112,7 +112,9 @@ export class WaitComponent implements OnInit {
     if(this.parties[id].code){
       this.dialog.open(SecureGameModal, { data: { code: this.parties[id].code, unlock: true } })
         .afterClosed().subscribe((result) => {
-          this.websocketService.joinRoom(id);
+          if(result){
+           this.websocketService.joinRoom(id);
+          }
         })
     }else{
       this.websocketService.joinRoom(id);
