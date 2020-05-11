@@ -62,7 +62,7 @@
                  style="background-color: #026102; color: #fff; ">
                  <span
                    style="vertical-align: middle; display: flex;align-items: center; flex-direction: row; justify-content: center;">
-                   Créer une partie ouverte<mat-icon aria-hidden="false"
+                   Créer une partie publique<mat-icon aria-hidden="false"
                      style="font-size: .81rem; padding-left: .2rem;padding-top: .3rem; vertical-align: middle;">
                      supervisor_account</mat-icon>
                  </span>
@@ -72,7 +72,7 @@
             <button (click)="new_game(true)" tourAnchor="newgameclose" mat-raised-button
               style="background-color: #451358; color: #fff; ">
               <span style="vertical-align: middle; display: flex;align-items: center; flex-direction: row; justify-content: center;">
-                Créer une partie fermée<mat-icon aria-hidden="false" style="font-size: .81rem; padding-left: .2rem;padding-top: .3rem; vertical-align: middle;">
+                Créer une partie privée<mat-icon aria-hidden="false" style="font-size: .81rem; padding-left: .2rem;padding-top: .3rem; vertical-align: middle;">
                   lock</mat-icon>
               </span>
             </button>
@@ -93,8 +93,8 @@
           <mat-list role="list" *ngIf="partieObjectKeys.length>0">
             <mat-list-item (click)="join(id)" class="mat-elevation-z2 border-radius mb-3" style="cursor: pointer;"
               matRipple role=" listitem" *ngFor="let id of partieObjectKeys.reverse()">
-              <!-- <mat-icon mat-list-icon>play_for_work</mat-icon> -->
-              <div mat-line>Partie gérée par <span
+              <mat-icon *ngIf="parties[id].code" mat-list-icon>lock</mat-icon>
+              <div mat-line>Partie gérée par  <span
                   style="color: #026102; text-decoration: underline;">{{parties[id].admin.pseudo}}</span>, créée le
                 {{parties[id].created_at | date}}</div>
               <div mat-line> {{objectKeys(parties[id].users).length}}

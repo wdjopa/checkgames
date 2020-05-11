@@ -66,7 +66,7 @@ export class WaitComponent implements OnInit {
       title: 'Nouvelle partie',
     }, {
         anchorId: 'newgameclose',
-        content: 'Cliquez ici si vous souhaitez créer une nouvelle partie protégée par un mot de passe',
+        content: 'Cliquez ici si vous souhaitez créer une nouvelle partie privée, protégée par un mot de passe',
         title: 'Nouvelle partie',
       }, {
       anchorId: 'wait.listeparties',
