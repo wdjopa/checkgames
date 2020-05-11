@@ -278,45 +278,47 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     detectUsersInGame[id] = {};
     detectUsersInGame[id].timeout = setTimeout(() => {
       if (parties[id] && Object.size(parties[id].users) <= 2) {
-        setTimeout(() => {
+        for(let i=0;i<random(1,5);i++){
           addBots(id, 1); // On ajoute le premier bot
-        }, random(5, 30) * 100);
+        }
       }
     }, random(5, 20) * 100);
   }
 
   function addBots(id, total) {
-    if (parties[id] && parties[id].etat < 2) {
-      if (!bots[id]) {
-        bots[id] = {};
-        bots[id].id = id;
+    setTimeout(() => {
+      if (parties[id] && parties[id].etat < 2) {
+        if (!bots[id]) {
+          bots[id] = {};
+          bots[id].id = id;
+        }
+        if (!bots[id].users) {
+          bots[id].users = [];
+        }
+        let partie = parties[id];
+        let b;
+        for (let i = 0; i < total; i++) {
+          b = {
+            index: bots[id].users.length,
+            cartes: [],
+            etat: 2,
+            pseudo: randBotsName(id),
+            points: 0,
+            profile: "bot",
+            difficulte: 0,
+          };
+          bots[id].users.push(b);
+          partie.users[b.pseudo] = b;
+          console.log(
+            b.pseudo + " a rejoint la partie créée par " + partie.admin.pseudo
+          );
+        }
+        io.in(id).emit("partie", partie);
+        // On ajoute les bots à la liste des joueurs connectés
+        sockets_id[id + b.pseudo] = { user: b, socket: b.index };
+        io.sockets.emit("users connected", Object.size(sockets_id));
       }
-      if (!bots[id].users) {
-        bots[id].users = [];
-      }
-      let partie = parties[id];
-      let b;
-      for (let i = 0; i < total; i++) {
-        b = {
-          index: bots[id].users.length,
-          cartes: [],
-          etat: 2,
-          pseudo: randBotsName(id),
-          points: 0,
-          profile: "bot",
-          difficulte: 0,
-        };
-        bots[id].users.push(b);
-        partie.users[b.pseudo] = b;
-        console.log(
-          b.pseudo + " a rejoint la partie créée par " + partie.admin.pseudo
-        );
-      }
-      io.in(id).emit("partie", partie);
-      // On ajoute les bots à la liste des joueurs connectés
-      sockets_id[id + b.pseudo] = { user: b, socket: b.index };
-      io.sockets.emit("users connected", Object.size(sockets_id));
-    }
+    }, random(5, 30) * 100);
   }
 
   io.sockets.on("connection", (socket) => {
