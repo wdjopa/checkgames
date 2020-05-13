@@ -637,8 +637,10 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               // parties_finies[id] = parties[id];
               delete parties[id];
               // On supprime les bots à la liste des joueurs connectés
-              for (let b of bots[id].users) {
-                delete sockets_id[id + b.pseudo];
+              if(bots[id]){
+                for (let b of bots[id].users) {
+                  delete sockets_id[id + b.pseudo];
+                }
               }
               delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
       io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
