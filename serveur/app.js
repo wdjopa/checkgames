@@ -642,6 +642,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               // partie = parties[id];
               // io.in(id).emit("partie", parties[id]);
               // On supprime la partie qui est terminée
+              parties[id].endtime = new Date();
               db.collection("cartes_games_finies").insertOne(parties[id]);
               // parties_finies[id] = parties[id];
               delete parties[id];
@@ -1432,6 +1433,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 parties[id].gagnant = currentUser.pseudo;
                 io.in(id).emit("partie", partie);
                 // On supprime la partie qui est terminée
+                parties[id].endtime = new Date();
+
                 db.collection("cartes_games_finies").insertOne(parties[id]);
                 // parties_finies[id] = parties[id];
                 delete parties[id];
@@ -1470,6 +1473,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 parties[id].gagnant = currentUser.pseudo;
                 io.in(id).emit("partie", partie);
                 // On supprime la partie qui est terminée
+                parties[id].endtime = new Date();
+
                 db.collection("cartes_games_finies").insertOne(parties[id]);
                 // parties_finies[id] = parties[id];
                 delete parties[id];
