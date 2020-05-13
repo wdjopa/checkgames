@@ -1,0 +1,318 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>La Mater Tech - Check&Games Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="Carlos Alvarez - Alvarez.is">
+
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+
+  <link href="css/main.css" rel="stylesheet">
+  <link href="css/font-style.css" rel="stylesheet">
+  <link href="css/flexslider.css" rel="stylesheet">
+
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" src="js/lineandbars.js"></script>
+
+  <script type="text/javascript" src="js/dash-charts.js"></script>
+  <script type="text/javascript" src="js/gauge.js"></script>
+
+  <!-- NOTY JAVASCRIPT -->
+  <script type="text/javascript" src="js/noty/jquery.noty.js"></script>
+  <script type="text/javascript" src="js/noty/layouts/top.js"></script>
+  <script type="text/javascript" src="js/noty/layouts/topLeft.js"></script>
+  <script type="text/javascript" src="js/noty/layouts/topRight.js"></script>
+  <script type="text/javascript" src="js/noty/layouts/topCenter.js"></script>
+
+  <!-- You can add more layouts if you want -->
+  <script type="text/javascript" src="js/noty/themes/default.js"></script>
+  <!-- <script type="text/javascript" src="assets/js/dash-noty.js"></script> This is a Noty bubble when you init the theme-->
+  <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="js/jquery.flexslider.js" type="text/javascript"></script>
+
+  <script type="text/javascript" src="js/admin.js"></script>
+
+  <style type="text/css">
+    body {
+      padding-top: 60px;
+    }
+  </style>
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+  <!-- Google Fonts call. Font Used Open Sans & Raleway -->
+  <link href="http://fonts.googleapis.com/css?family=Raleway:400,300" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+
+      $("#btn-blog-next").click(function () {
+        $('#blogCarousel').carousel('next')
+      });
+      $("#btn-blog-prev").click(function () {
+        $('#blogCarousel').carousel('prev')
+      });
+
+      $("#btn-client-next").click(function () {
+        $('#clientCarousel').carousel('next')
+      });
+      $("#btn-client-prev").click(function () {
+        $('#clientCarousel').carousel('prev')
+      });
+
+    });
+
+    $(window).load(function () {
+
+      $('.flexslider').flexslider({
+        animation: "slide",
+        slideshow: true,
+        start: function (slider) {
+          $('body').removeClass('loading');
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+
+  <!-- NAVIGATION MENU -->
+
+  <div class="navbar-nav navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">Check&Games</a>
+      </div>
+
+      <!--/.nav-collapse -->
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- FIRST ROW OF BLOCKS -->
+    <div class="row">
+
+      <!-- USER PROFILE BLOCK -->
+      <div class="col-sm-3 col-lg-3">
+        <div class="dash-unit">
+          <dtitle>Owner</dtitle>
+          <hr>
+          <div class="thumbnail">
+            <img src="https://cards.lamater.tech/assets/favicon.ico" alt="La Mater Tech" width="100" class="img-circle">
+          </div><!-- /thumbnail -->
+          <h1>Check&Games</h1>
+          <h3>La Mater Tech</h3>
+          <br>
+          <div class="info-user">
+            <a href="https://cards.lamater.tech">Visiter le site</a>
+            <span aria-hidden="true" class="li_key fs1"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DONUT CHART BLOCK -->
+      <div class="col-sm-3 col-lg-3">
+        <!-- PAGE VIEWS BLOCK -->
+        <div class="dash-unit">
+          <dtitle>Parties total créées</dtitle>
+          <hr>
+          <div class="cont parties">
+            <p>
+              <bold><%= parties.length %></bold>
+            </p>
+            <p>Parties créées depuis le
+              <%= parties[0].created_at.toLocaleDateString("fr-FR", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' , hourCycle : "h24", hour : "2-digit", minute : "2-digit", second : "2-digit"}) %>
+            </p>
+            <br>
+            <p>
+              <bold id="today_games"><%=  %></bold>
+            </p>
+            <p>parties créées aujourdhui</p>
+            <p><img src="images/down-small.png" class="croissance_image" alt=""> <span class="valeur_croissance"></span>%</p>
+            </div>
+        </div>
+
+
+      </div>
+
+      <!-- DONUT CHART BLOCK -->
+      <div class="col-sm-3 col-lg-3">
+        <div class="half-unit">
+          <dtitle>Utilisateurs</dtitle>
+          <hr>
+          <div class="cont">
+            <p>
+              <bold id="users">0
+              </bold>
+              <br>
+              <span class="accent">Comptes créés</span>
+            </p>
+            <!-- <p><img src="images/up-small.png" alt=""> 23.88%</p> -->
+          </div>
+        </div>
+        <div class="half-unit">
+          <dtitle>Bots</dtitle>
+          <hr>
+          <div class="cont">
+            <p>
+              <bold id="bots">0</bold>
+            </p>
+            <span class="accent">Bots créés</span>
+            <!-- <p><img src="images/up-small.png" alt=""> 23.88%</p> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-3 col-lg-3">
+
+        <!-- LOCAL TIME BLOCK -->
+        <div class="half-unit">
+          <dtitle>Parties privées</dtitle>
+          <hr>
+          <div class="clockcenter">
+            <p>
+              <bold id="parties_privees">0</bold>
+            </p>
+            <span class="accent">Parties privées</span>
+          </div>
+        </div>
+
+        <div class="half-unit">
+          <dtitle>Parties publiques</dtitle>
+          <hr>
+          <div class="clockcenter">
+            <p>
+              <bold id="parties_publiques">0</bold>
+            </p>
+            <span class="accent">Parties publiques</span>
+          </div>
+        </div>
+
+        <!-- SERVER UPTIME -->
+        <!-- <div class="half-unit">
+          <dtitle>Server Uptime</dtitle>
+          <hr>
+          <div class="cont">
+            <p><img src="images/up.png" alt="">
+              <bold>Up</bold> | 356ms.
+            </p>
+          </div>
+        </div> -->
+
+      </div>
+    </div><!-- /row -->
+
+    <div class="row">
+      <div class="col-sm-3 col-lg-3">
+
+        <!-- FOLLOWERS BLOCK -->
+        <div class="half-unit">
+          <dtitle>Messages envoyés</dtitle>
+          <hr>
+          <div class="cont">
+            <p>
+              <bold><span id="messages"></span> Messages</bold>
+            </p>
+            <p>Dernier message : <span id="last_message"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--/row -->
+
+
+
+  </div> <!-- /container -->
+  <div id="footerwrap">
+    <footer class="clearfix"></footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12 col-lg-12">
+          <p>Check&Games - Copyright 2020</p>
+        </div>
+
+      </div><!-- /row -->
+    </div><!-- /container -->
+  </div><!-- /footerwrap -->
+
+
+  <script src="js/moment.js"></script>
+  <script>
+    let parties = <%-JSON.stringify(parties) %> ;
+    console.log(parties);
+    let users = {}
+    let bots = {}
+    let parties_privees = []
+    let parties_publiques = []
+    let messages = []
+    let todaygames = []
+    console.log(moment().subtract(1,'days').toString())
+    todaygames = parties.filter(function (item) {
+      return moment(item.created_at).isAfter(moment().subtract('days').startOf('day').toString())
+    })
+    let yesterdaygames = parties.filter(function (item) {
+      return moment(item.created_at).isAfter(moment().subtract(1,'days').startOf('day').toString()) &&
+      moment(item.created_at).isBefore(moment().subtract(1,'days').toString())
+    })
+    let ratio = (((todaygames.length / yesterdaygames.length) - 1 ) * 100.0).toFixed(2)
+
+
+
+    parties.forEach(partie => {
+      // Parties privées et publiques
+      if (partie.code) {
+        parties_privees.push(partie)
+      } else {
+        parties_publiques.push(partie)
+      }
+
+      messages = messages.concat(partie.messages)
+      // Données sur les utilisateurs et les bots
+      for (let pseudo in partie.users) {
+        let user = partie.users[pseudo]
+        if (user.profile || user.status) {
+          if (!bots[user.pseudo]) {
+            bots[user.pseudo] = user;
+          }
+        } else {
+          if (!users[user.pseudo]) {
+            users[user.pseudo] = user;
+          }
+        }
+
+      }
+    });
+    document.querySelector("#today_games").innerHTML = todaygames.length
+    document.querySelector("#users").innerHTML = Object.keys(users).length
+    document.querySelector("#bots").innerHTML = Object.keys(bots).length
+    document.querySelector("#parties_privees").innerHTML = parties_privees.length
+    document.querySelector("#parties_publiques").innerHTML = parties_publiques.length
+    document.querySelector("#messages").innerHTML = messages.length
+    if(ratio>0){
+    document.querySelector(".parties .croissance_image").src = "images/up-small.png"
+    }else{
+    document.querySelector(".parties .croissance_image").src = "images/down-small.png"
+    }
+    document.querySelector(".parties .valeur_croissance").innerHTML = ratio
+  </script>
+</body>
+
+</html>

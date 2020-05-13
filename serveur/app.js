@@ -6,12 +6,13 @@ var logger = require("morgan");
 var bodyParser = require("body-parser");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var geoip = require("geoip-lite");
 const uuidv4 = require("uuid/v4"); // <== NOW DEPRECATED!
 var app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
+app.set("view engine", "ejs");
 app.use(bodyParser.json());
 app.use(logger("dev"));
 app.use(express.json());
@@ -203,7 +204,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
 
   let sockets_id = {};
   let randUsers = random(2, botsPseudos.length) + Object.size(sockets_id);
-
   function randBotsName(id) {
     let ran,
       used = [];
@@ -331,9 +331,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     let currentUser = {};
     let partie = {};
     randUsers = random(2, botsPseudos.length) + Object.size(sockets_id);
+    let ip = socket.handshake.address;
+    let geo = geoip.lookup(ip);
 
     // Connexion d'un utilisateur
     socket.on("connexion", (user, browserid = 0, verif = false) => {
+      user.geo = geo;
       // console.log("Connexion d'un utilisateur ", user, sockets_id);
       if (sockets_id[user.pseudo]) {
         if (browsers[user.pseudo].id === browserid && verif) {
@@ -1672,10 +1675,26 @@ app.get("/", (req, res, next) => {
   res.send("Welcome to the express server...");
 });
 
-app.get("/", (req, res, next) => {
-  res.send("Welcome to the express server...");
-});
+app.get("/lamater", (req, res, next) => {
+  MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
+    if (err) {
+      console.log(err);
+      return false;
+    }
+    console.log("Connexion à la base de données réussie");
 
+    db = dbs.db(dbase);
+
+    db.collection("cartes_games_finies")
+      .find({})
+      .toArray(function (err, result) {
+        res.render("index", {
+          title: "Dashboard",
+          parties: result,
+        });
+      });
+  });
+});
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 
