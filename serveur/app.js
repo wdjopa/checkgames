@@ -281,7 +281,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     detectUsersInGame[id] = {};
     detectUsersInGame[id].timeout = setTimeout(() => {
       if (parties[id] && Object.size(parties[id].users) <= 2) {
-        for(let i=0;i<random(1,5);i++){
+        for (let i = 0; i < random(1, 5); i++) {
           addBots(id, 1); // On ajoute le premier bot
         }
       }
@@ -319,7 +319,10 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         io.in(id).emit("partie", partie);
         // On ajoute les bots à la liste des joueurs connectés
         sockets_id[id + b.pseudo] = { user: b, socket: b.index };
-      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
+        io.sockets.emit(
+          "users connected",
+          randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+        );
       }
     }, random(5, 30) * 100);
   }
@@ -382,7 +385,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     });
 
     // Nouvelle partie
-    socket.on("new game", (user, code=false) => {
+    socket.on("new game", (user, code = false) => {
       user.etat = 1;
       partie = {};
       partie.id = uuidv4().split("-")[0];
@@ -396,8 +399,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       partie.messages = [];
       partie.created_at = new Date();
       partie.updated_at = new Date();
-      if(code){
-      console.log("partie créée avec un code")
+      if (code) {
+        console.log("partie créée avec un code");
         partie.code = code;
       }
       // partie.messages.push({
@@ -406,7 +409,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       //   date: new Date(),
       // });
       parties[partie.id] = partie;
-      if(!partie.code){
+      if (!partie.code) {
         // Quand on crée la partie, on lance le detecteur d'utilisateur dans le jeu
         addBotTrigger(partie.id);
       }
@@ -420,12 +423,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
-      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+      io.sockets.emit(
+        "users connected",
+        randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+      );
+      io.sockets.emit(
+        "parties en cours",
+        parseInt(randUsers / 3) +
           Object.size(parties) +
           "<sub>" +
           Object.size(parties) +
-          "</sub>");
+          "</sub>"
+      );
       //  io.sockets.emit("error message", "Il y a actuellement "+Object.size(parties)+" parties en cours")
 
       // socket.emit("")
@@ -637,13 +646,16 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               // parties_finies[id] = parties[id];
               delete parties[id];
               // On supprime les bots à la liste des joueurs connectés
-              if(bots[id]){
+              if (bots[id]) {
                 for (let b of bots[id].users) {
                   delete sockets_id[id + b.pseudo];
                 }
               }
               delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
-      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
+              io.sockets.emit(
+                "users connected",
+                randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+              );
             } else {
               if (currentUser.cartes.length == 1) {
                 io.in(id).emit(
@@ -682,7 +694,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         }
       } catch (err) {
         // console.log(err);
-        console.log("une erreur est survenue dans la partie ", parties[id], err)
+        console.log(
+          "une erreur est survenue dans la partie ",
+          parties[id],
+          err
+        );
         socket.emit("reset", id, err);
       }
     });
@@ -694,7 +710,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           parties[id].main = nextValue(parties[id].users, joueur).pseudo; //on passe la main au joueur suivant
         }
         delete parties[id].users[joueur];
-        if (sockets_id[joueur])
+        if (io.sockets.connected[sockets_id[joueur].socket])
           io.sockets.connected[sockets_id[joueur].socket].emit("quit");
         // sockets_id[joueur].socket
         partie = parties[id];
@@ -705,12 +721,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
-      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+      io.sockets.emit(
+        "users connected",
+        randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+      );
+      io.sockets.emit(
+        "parties en cours",
+        parseInt(randUsers / 3) +
           Object.size(parties) +
           "<sub>" +
           Object.size(parties) +
-          "</sub>");
+          "</sub>"
+      );
     });
 
     // function bouffeAuto(joueur, id) {
@@ -855,12 +877,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         if (parties[id].etat < 2) datas[id] = parties[id];
       }
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
-      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+      io.sockets.emit(
+        "users connected",
+        randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+      );
+      io.sockets.emit(
+        "parties en cours",
+        parseInt(randUsers / 3) +
           Object.size(parties) +
           "<sub>" +
           Object.size(parties) +
-          "</sub>");
+          "</sub>"
+      );
     });
 
     socket.on("quit", (id) => {
@@ -936,12 +964,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
 
       // console.log(currentUser.pseudo, "a quitté la partie. Parties : ", datas);
       io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
-      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
+      io.sockets.emit(
+        "users connected",
+        randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+      );
+      io.sockets.emit(
+        "parties en cours",
+        parseInt(randUsers / 3) +
           Object.size(parties) +
           "<sub>" +
           Object.size(parties) +
-          "</sub>");
+          "</sub>"
+      );
     });
 
     socket.on("disconnect", () => {
@@ -956,25 +990,31 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           }
         }
         io.in(partie.id).emit("partie", partie);
+        socket.emit("deconnexion");
+        if (partie.id) {
+          tentativesUsers[currentUser.pseudo] = {};
+          tentativesUsers[currentUser.pseudo].num = 60;
+          tentativesDeReconnexion(currentUser, partie.id);
+        }
+        let datas = {};
+        for (let id in parties) {
+          if (parties[id].etat < 2) datas[id] = parties[id];
+        }
+        io.sockets.emit("all parties", datas);
+        io.sockets.emit(
+          "users connected",
+          randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+        );
+        io.sockets.emit(
+          "parties en cours",
+          parseInt(randUsers / 3) +
+            Object.size(parties) +
+            "<sub>" +
+            Object.size(parties) +
+            "</sub>"
+        );
+        // parties[partie.id].users.remove(currentUser);
       }
-      socket.emit("deconnexion");
-      if (partie.id) {
-        tentativesUsers[currentUser.pseudo] = {};
-        tentativesUsers[currentUser.pseudo].num = 60;
-        tentativesDeReconnexion(currentUser, partie.id);
-      }
-      let datas = {};
-      for (let id in parties) {
-        if (parties[id].etat < 2) datas[id] = parties[id];
-      }
-      io.sockets.emit("all parties", datas);
-      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
-      io.sockets.emit("parties en cours",  parseInt(randUsers / 3) +
-          Object.size(parties) +
-          "<sub>" +
-          Object.size(parties) +
-          "</sub>");
-      // parties[partie.id].users.remove(currentUser);
     });
 
     function distribution(id) {
@@ -1353,7 +1393,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               0,
               parties[id].jeu.carte_centre.length - motif_centre.length
             );
-          console.log("cest au tour du bot " + userBot.pseudo+ " partie créée par "+parties[id].admin.pseudo);
+          console.log(
+            "cest au tour du bot " +
+              userBot.pseudo +
+              " partie créée par " +
+              parties[id].admin.pseudo
+          );
           let cardPlayed = botPlayACard(
             userBot.index,
             id,
@@ -1396,7 +1441,10 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                   delete sockets_id[id + b.pseudo];
                 }
                 delete bots[id]; // On supprime le tableau des bots en rapport avec la partie
-      io.sockets.emit("users connected", randUsers + "<sub>" + Object.size(sockets_id) + "</sub>");
+                io.sockets.emit(
+                  "users connected",
+                  randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+                );
 
                 return;
               } else {

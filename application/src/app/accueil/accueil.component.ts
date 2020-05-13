@@ -70,7 +70,7 @@ export class AccueilComponent implements OnInit {
 
   OnSubmit(form: NgForm) {
     if (form.value.pseudo && form.value.pseudo.length <=8){
-      this.userService.connectUserByPseudo(form.value.pseudo);
+      this.userService.connectUserByPseudo(this.escapeHtml(form.value.pseudo));
       form.reset();
     } else {
       if (form.value.pseudo.length > 8){
@@ -79,4 +79,16 @@ export class AccueilComponent implements OnInit {
     }
     
   }
+
+  escapeHtml(unsafe) {
+  return unsafe
+    .replace(".", "")
+    .replace(" ", "")
+    .replace(",", "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 }
