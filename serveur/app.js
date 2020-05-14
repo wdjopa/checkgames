@@ -327,6 +327,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     }, random(5, 30) * 100);
   }
 
+  
+  function escapeHtml(unsafe) {
+  return unsafe
+    .replace(".", "")
+    .replace(" ", "")
+    .replace(",", "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
   io.sockets.on("connection", (socket) => {
     let currentUser = {};
     let partie = {};
@@ -337,6 +349,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     // Connexion d'un utilisateur
     socket.on("connexion", (user, browserid = 0, verif = false) => {
       user.geo = geo;
+      user.pseudo = escapeHtml(user.pseudo)
       // console.log("Connexion d'un utilisateur ", user, sockets_id);
       if (sockets_id[user.pseudo]) {
         if (browsers[user.pseudo].id === browserid && verif) {
