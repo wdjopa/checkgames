@@ -259,7 +259,7 @@
     let parties = <%-JSON.stringify(parties) %> ;
     console.log(parties);
     let users = {}
-    let bots = {}
+    let bots = []
     let parties_privees = []
     let parties_publiques = []
     let messages = []
@@ -289,9 +289,7 @@
       for (let pseudo in partie.users) {
         let user = partie.users[pseudo]
         if (user.profile || user.status) {
-          if (!bots[user.pseudo]) {
-            bots[user.pseudo] = user;
-          }
+          bots.push(user)
         } else {
           if (!users[user.pseudo]) {
             users[user.pseudo] = user;
@@ -302,7 +300,7 @@
     });
     document.querySelector("#today_games").innerHTML = todaygames.length
     document.querySelector("#users").innerHTML = Object.keys(users).length
-    document.querySelector("#bots").innerHTML = Object.keys(bots).length
+    document.querySelector("#bots").innerHTML = bots.length
     document.querySelector("#parties_privees").innerHTML = parties_privees.length
     document.querySelector("#parties_publiques").innerHTML = parties_publiques.length
     document.querySelector("#messages").innerHTML = messages.length
