@@ -33,6 +33,10 @@ export class AppComponent {
           volume: 0.5,
         })
       }
+      if(message.includes("cette partie n'est")){
+        localStorage.removeItem("partie")
+        localStorage.removeItem("currentid")
+      }
       this.navigationService.openSnackBar({ message: message, action: "FERMER", duration: 5000 })
 
       // new Notification("CheckGamesMaster - Message du serveur", { "body": message , "dir": "auto", "icon": "https://cards.lamater.tech/assets/favicon.ico" })

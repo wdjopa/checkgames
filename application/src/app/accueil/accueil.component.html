@@ -4,12 +4,21 @@
        <button (click)="reload()" mat-raised-button style="background-color: #082e08; color: #fff; padding: 1rem 2rem; font-family: 'Cinzel';">Actualiser la
          page</button>
      </div>
-     <form (ngSubmit)="OnSubmit(f)" *ngIf="!splashscreen" #f="ngForm">
-       <div class="form-row align-items-center">
-         <div class="col-sm-5 my-1" >
+     <form (ngSubmit)="OnSubmit(f)" class="d-flex justify-content-center align-items-center" style="width: 80%;" *ngIf="!splashscreen" #f="ngForm">
+       <div class="form-row align-items-center justify-content-center w-100">
+         <div class="col-12 col-sm-5 my-1" >
            <!-- <label class="sr-only" for="pseudo">Pseudo</label> -->
-           <input type="text" class="form-control" id="pseudo" max="8" name="pseudo" ngModel placeholder="Votre pseudo" required autofocus>
-             <input type="submit" id="submit" value="valider">
+           <mat-card class="w-100 mat-elevation-z4 p-0" style="background: #ffffffee;font-weight: 700; color: black;">
+             <input type="text" class="form-control text-center border-0"
+               style="background: transparent;padding: 1.75rem; font-size: 1rem; font-family: 'Cinzel';" max="8"
+               name="pseudo" ngModel placeholder="Votre pseudo" required autofocus>
+             <!-- <mat-card-content>
+            </mat-card-content> -->
+          </mat-card>
+          <button mat-raised-button style="background: #082e08; color: white; border: 2px solid #fff; font-size: 1rem; font-family: 'Cinzel';"
+            class="w-100 p-2 mt-2">Valider</button>
+           <!-- <input type="text" class="form-control" id="pseudo" max="8" name="pseudo" ngModel placeholder="Votre pseudo" required autofocus>
+             <input type="submit" id="submit" value="valider"> -->
          </div>
        </div>
      </form>
