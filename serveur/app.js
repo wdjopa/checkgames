@@ -839,6 +839,24 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               socket.join(id);
               currentUser.etat = 1;
               partie.users[currentUser.pseudo] = currentUser;
+              // On parcours pour voir si l'admin est un robot. Ou si l'admin est présent ou pas.
+              let adminpresent = false;
+              if (!currentUser.profile) {
+                if (partie.admin.profile) {
+                  //si cest un robot qui est admin, on met l'utilisateur actuel
+                  partie.admin = currentUser;
+                } else {
+                  // On vérifie donc si l'admin est encore dans la partie
+                  for (let pseudo in partie.users) {
+                    if (partie.admin.pseudo == pseudo) {
+                      adminpresent = true;
+                    }
+                  }
+                  if (!adminpresent) {
+                    partie.admin = currentUser;
+                  }
+                }
+              }
               // partie.messages.push(message);
               io.in(partie.id).emit("join", partie);
               io.in(partie.id).emit("partie", partie);
@@ -863,6 +881,24 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                   delete partie.users[pseudo];
                 } else {
                   partie.users[pseudo].etat = 1;
+                }
+              }
+              // On parcours pour voir si l'admin est un robot. Ou si l'admin est présent ou pas.
+              let adminpresent = false;
+              if (!currentUser.profile) {
+                if (partie.admin.profile) {
+                  //si cest un robot qui est admin, on met l'utilisateur actuel
+                  partie.admin = currentUser;
+                } else {
+                  // On vérifie donc si l'admin est encore dans la partie
+                  for (let pseudo in partie.users) {
+                    if (partie.admin.pseudo == pseudo) {
+                      adminpresent = true;
+                    }
+                  }
+                  if (!adminpresent) {
+                    partie.admin = currentUser;
+                  }
                 }
               }
               parties[id] = partie;
