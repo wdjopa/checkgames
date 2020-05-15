@@ -85,10 +85,10 @@ export class AccueilComponent implements OnInit {
     .replace(".", "")
     .replace(" ", "")
     .replace(",", "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(/&/g, "")
+    .replace(/</g, "")
+    .replace(/>/g, "")
+    .replace(/"/g, "")
+    .replace(/'/g, "");
 }
 }

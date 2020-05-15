@@ -333,11 +333,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     .replace(".", "")
     .replace(" ", "")
     .replace(",", "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(/&/g, "")
+    .replace(/</g, "")
+    .replace(/>/g, "")
+    .replace(/"/g, "")
+    .replace(/'/g, "");
 }
   io.sockets.on("connection", (socket) => {
     let currentUser = {};
@@ -727,7 +727,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           parties[id].main = nextValue(parties[id].users, joueur).pseudo; //on passe la main au joueur suivant
         }
         delete parties[id].users[joueur];
-        if (io.sockets.connected[sockets_id[joueur].socket])
+        if (sockets_id[joueur] && io.sockets.connected[sockets_id[joueur].socket])
           io.sockets.connected[sockets_id[joueur].socket].emit("quit");
         // sockets_id[joueur].socket
         partie = parties[id];
