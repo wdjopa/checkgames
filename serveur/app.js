@@ -9,6 +9,7 @@ var usersRouter = require("./routes/users");
 var geoip = require("geoip-lite");
 const uuidv4 = require("uuid/v4"); // <== NOW DEPRECATED!
 var app = express();
+require("dotenv").config();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -1180,8 +1181,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
       // console.log(motif + " <> " + motif_centre);
       // console.log(num + " <> " + num_centre);
 
-      let r = 0,
-        commande = false;
+      let r = 0,        commande = false;
 
       if (num == "2") {
         //Le  numéro de la carte jouée est 2 (passe partout)
@@ -1463,7 +1463,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           if (cardPlayed) {
             let { r, commande } = jouer(id, currentUser.pseudo, cardPlayed);
             console.log("r bot", r, "command bot", commande);
-            if (r) {
+            if (r>0) {
               //On passe la main au joueur suivant
               let partie = parties[id];
               partie.jeu.tour += r;
@@ -1512,11 +1512,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                 partie = parties[id];
                 io.in(id).emit("partie", partie);
               }
-              if (r === 2 && Object.size(parties[id].users) === 2) {
+              // if (r === 2 && Object.size(parties[id].users) === 2) {
                 setTimeout(() => {
                   botWantToPlay(id);
                 }, random(10, 30) * 100);
-              }
+              // }
             } else {
               if (currentUser.cartes.length == 0) {
                 // Fin de la partie
@@ -1538,14 +1538,14 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
                     currentUser.pseudo + " annonce 'CHECK !' "
                   );
                 }
-                partie = parties[id];
-                io.in(id).emit("partie", partie);
+                // partie = parties[id];
+                // io.in(id).emit("partie", partie);
               }
               if (commande) {
+                io.in(id).emit("partie", partie);
                 setTimeout(() => {
                   botWantToCommand(userBot.index, id);
                 }, random(10, 30) * 100);
-                io.in(id).emit("partie", partie);
               } else {
                 if (r === 0) {
                   setTimeout(() => {
@@ -1555,13 +1555,14 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
               }
             }
           } else {
+            // si le bot ne peut pas jouer, il pioche
             botPioche(userBot.index, id);
+            
+            //Lorsqu'un robot a joué, il appelle la fonction au cas où un autre robot doit jouer
+            setTimeout(() => {
+              botWantToPlay(id);
+            }, random(10, 30) * 100);
           }
-
-          //Lorsqu'un robot a joué, il appelle la fonction au cas où un autre robot doit jouer
-          setTimeout(() => {
-            botWantToPlay(id);
-          }, random(10, 30) * 100);
         }
       }
     }
@@ -1626,6 +1627,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
             bots[id].users[index].pseudo + " a commandé  "
           );
           io.in(id).emit("partie", partie);
+          
+          //Lorsqu'un robot a joué, il appelle la fonction au cas où un autre robot doit jouer
+          setTimeout(() => {
+            botWantToPlay(id);
+          }, random(10, 30) * 100);
         }
       }
     }
@@ -1744,6 +1750,22 @@ app.get("/lamater", (req, res, next) => {
       });
   });
 });
+
+app.get("/lamater/parties", (req, res, next)=>{
+   MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
+     if (err) {
+       console.log(err);
+       return false;
+     }
+     console.log("Connexion à la base de données réussie");
+
+     db = dbs.db(dbase);
+
+     db.collection("cartes_games_finies").find({}).toArray(function (err, result) {
+         res.send(result)
+      });
+   });
+})
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 

@@ -1,5 +1,5 @@
 .splashscreen{
-    background-color: aliceblue;
+    background-color: #026102fa;
     width: 100vw;
     height: 100vh;
     position: fixed;
@@ -9,4 +9,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+:host ::ng-deep .mat-progress-spinner circle,
+.mat-spinner circle {
+  stroke: #fff;
 }

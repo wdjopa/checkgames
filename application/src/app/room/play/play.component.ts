@@ -7,6 +7,7 @@ import { PausableObservable, pausable } from 'rxjs-pausable';
 import { Subject, interval } from 'rxjs';
 import { WinnerModal } from 'src/app/modals/winner/winner-modal';
 import { Howl, Howler } from 'howler';
+import { PartieService } from 'src/app/services/partie.service';
 
 
 @Component({
@@ -47,7 +48,7 @@ export class PlayComponent implements OnInit {
 
   @ViewChild('scrollMe', { static: false }) private myScrollContainer: ElementRef;
 
-  constructor(private webSocket: WebsocketService, private userService: UserService, private route: ActivatedRoute, private _snackBar: MatSnackBar, public dialog: MatDialog) {
+  constructor(private webSocket: WebsocketService, private partieService:PartieService, private userService: UserService, private route: ActivatedRoute, private _snackBar: MatSnackBar, public dialog: MatDialog) {
 
   }
 
@@ -328,6 +329,8 @@ export class PlayComponent implements OnInit {
   quit() {
     if(confirm("Etes vous sur de vouloir quitter cette partie ?")){
       this.webSocket.quitRoom(this.partie.id);
+      this.partieService.cancelPartie()
+      localStorage.removeItem("currentid")
     }
   }
 

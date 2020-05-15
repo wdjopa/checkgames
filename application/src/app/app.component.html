@@ -4,4 +4,9 @@
        <button (click)="reload()" mat-raised-button style="background-color: #026102; color: #fff;">Actualiser la page</button>
      </div>
 </div>
+<div class="splashscreen" *ngIf="loading">
+  <div class="text-center">
+    <mat-spinner diameter="70" strokeWidth="4" ></mat-spinner>
+  </div>
+</div>
 <tour-step-template></tour-step-template>
