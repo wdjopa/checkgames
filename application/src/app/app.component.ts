@@ -62,7 +62,7 @@ export class AppComponent {
 
     this.webSocket.deconnexion().subscribe(() => {
       const dialogRef = this.dialog.open(ChoiceModal, {
-        data: { message: "Vous avez été déconnecté. Continuer ?" },
+        data: { message: "Vous avez été déconnecté. Veuillez actualisez 😊" },
         disableClose: true,
         backdropClass: "mat"
       })

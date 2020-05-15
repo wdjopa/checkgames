@@ -9,7 +9,9 @@ import { Subscription } from 'rxjs';
 import { User } from '../models/User.model';
 import { SecureGameModal } from '../modals/secure-game/secure-game-modal';
 import { MatDialog } from '@angular/material';
-
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+registerLocaleData(localeFr, 'fr');
 @Component({
   selector: 'app-wait',
   templateUrl: './wait.component.html',
@@ -25,10 +27,10 @@ export class WaitComponent implements OnInit {
   partieObjectKeys: any = [];
   connectedPersonnes : string = "0"
   gamesPlaying : string = "0"
+  zone = (new Date()).getTimezoneOffset()
 
   constructor(private userService: UserService, public dialog: MatDialog,private partieService: PartieService, private websocketService: WebsocketService, private router: Router) {
     this.user = this.userService.getUser();
-
 
     this.joinRoom = this.websocketService.joinedRoom().subscribe(data => {
       this.partie = data;
@@ -93,7 +95,7 @@ export class WaitComponent implements OnInit {
       // parties = parties.forEach((partie)=>{
       //   partie.usersSize = Object.keys(partie.users).length
       // })
-      this.partieObjectKeys = this.objectKeys(parties)
+      this.partieObjectKeys = this.objectKeys(parties).reverse()
       this.parties = parties;
     })
   }
@@ -131,7 +133,7 @@ export class WaitComponent implements OnInit {
     if(secure){
       this.dialog.open(SecureGameModal, {data:{code : "", unlock : false }})
       .afterClosed().subscribe((result)=>{
-        if(result.length>0){
+        if(result && result.length>0){
           this.websocketService.newGame(this.userService.getUser(), result.toLowerCase());
         }
       })

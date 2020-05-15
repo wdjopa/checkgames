@@ -947,6 +947,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
 
     socket.on("quit", (id) => {
       if (parties[id]) {
+        console.log("current user : "+currentUser.pseudo +" quitte la partie")
         partie = parties[id];
         if (partie.etat >= 2) {
           if (parties[id].jeu.dessous_pioche) {
@@ -971,15 +972,11 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
           do {
             // si cest lui l'admin, on passe au joueur suivant (s'il yen a un) sauf aux bots
             suivant = nextValue(partie.users, suivant.pseudo);
-            // console.log("suivant", suivant);
-            if (suivant.profile == "bot") {
-              //s'il a l'attribut profile ==bot
-              delete partie.users[suivant.pseudo];
-            }
+            console.log("suivant", suivant)
             ic++;
           } while (
-            suivant &&
-            suivant.profile != "bot" &&
+            suivant 
+            && suivant.profile && suivant.profile == "bot" &&
             ic < Object.size(partie.users)
           );
           if (suivant.pseudo != currentUser.pseudo) {
@@ -997,7 +994,16 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
         parties[id] = partie;
         partie = {};
 
-        if (Object.size(parties[id].users) === 0 || !parties[id].admin) {
+        let usersLeft = 0
+        for(let pseudo of Object.keys(parties[id].users)){
+          if(parties[id].users[pseudo] && !parties[id].users[pseudo].profile){
+            usersLeft++;
+          }
+        }
+
+        console.log("usersLeft", usersLeft);
+
+        if (usersLeft === 0 || !parties[id].admin) {
           // S'il n'y a plus de joueurs dans la partie, on supprime la partie
           delete parties[id];
           if (bots[id] && bots[id].users) {
