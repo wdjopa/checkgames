@@ -70,6 +70,7 @@ import { environment } from '../environments/environment';
 import { TourMatMenuModule, TourService} from "ngx-tour-md-menu"
 import { WinnerModal } from './modals/winner/winner-modal';
 import { SecureGameModal } from './modals/secure-game/secure-game-modal';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 
 const appRoutes: Routes = [
   { path: "accueil", component: AccueilComponent },
@@ -138,7 +139,7 @@ const appRoutes: Routes = [
     BrowserAnimationsModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
-  providers: [AuthService, AuthGuard, UserService, WebsocketService, PartieService, PartieGuard, NavigationService, TourService],
+  providers: [AuthService, AuthGuard, UserService, WebsocketService, PartieService, PartieGuard, NavigationService, TourService, NgNavigatorShareService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
