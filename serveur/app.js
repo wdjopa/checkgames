@@ -9,17 +9,14 @@ var usersRouter = require("./routes/users");
 var geoip = require("geoip-lite");
 const uuidv4 = require("uuid/v4"); // <== NOW DEPRECATED!
 var app = express();
-const https = require("https")
-const fs = require("fs")
-
-const options = {
-        key: fs.readFileSync('/etc/letsencrypt/live/cards.lamater.tech/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/cards.lamater.tech/fullchain.pem')
-};
-
-https.createServer(options, app).listen(5200);
 
 require("dotenv").config();
+
+const port = process.env.PORT || 3000
+const server = app.listen(port, () => {
+    console.log("Listening on port: " + port);
+});
+const io = require('socket.io')(server);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -230,7 +227,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
   //  const server = app.listen(port, () => {
   //    console.log("Server started on port " + port + "...");
   //  });
-  const io = socket.listen(app);
 
   function tentativesDeReconnexion(currentUser, id) {
     if (tentativesUsers[currentUser.pseudo]) {
