@@ -13,7 +13,7 @@ var app = express();
 require("dotenv").config();
 
 const port = process.env.PORT || 3000
-const server = app.listen(port, () => {
+const server = app.listen(port, '0.0.0.0', () => {
     console.log("Listening on port: " + port);
 });
 const io = require('socket.io')(server);
