@@ -176,6 +176,14 @@ let botsPseudos = [
   "Winner8",
   "Best🏆",
 ];
+
+var mongoPassword = "CGXzx5Lcf68mSg5PMLY";
+var dbase = "check_games";
+var config = { mongo: { hostString: "cluster0.2rzao.mongodb.net/check_games", user: "check_games_user", db: "check_games" } };
+var MongoClient = require("mongodb").MongoClient;
+var url = "mongodb+srv://" + config.mongo.user + ":" + encodeURIComponent(mongoPassword) + "@" + config.mongo.hostString + "?retryWrites=true&w=majority";
+
+/*
 var mongoPassword = "willaudyv2016";
 var dbase = "dcafc3fe9a3456a911b404aae165817b";
 var config = JSON.parse(
@@ -189,7 +197,10 @@ var url =
   encodeURIComponent(mongoPassword) +
   "@" +
   config.mongo.hostString +
+
   "?replicaSet=eu-6";
+
+*/
 MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
   if (err) {
     console.log(err);
