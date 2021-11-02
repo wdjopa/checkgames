@@ -61,7 +61,7 @@
             </mat-card-content>
           </mat-card>
         </div>
-        <div class="write" style="min-height: 20%; overflow: auto;">
+        <div class="write" style="min-height: 15%;overflow: auto;justify-content: space-between;align-items: center;background: white;border-radius: 6px;display: flex;">
           <div class="row m-0">
             <div class="col-sm-8 col-12">
               <mat-form-field class="w-100">
@@ -71,7 +71,7 @@
               </mat-form-field>
             </div>
             <div class="col-sm-4 col-12 d-flex justify-content-center align-items-center flex-column">
-              <button mat-raised-button color="primary" (click)="send()" [class.spinner]="loading" [disabled]="loading"
+              <button mat-raised-button color="primary" (click)="send()" [class.spinner]="loading" [disabled]="loading" style="background-color: green;"
                 cdkFocusInitial>Envoyer</button>
             </div>
           </div>
@@ -82,7 +82,7 @@
 
   <div cdkDrag class="message-btn d-md-none" style="position: absolute; bottom: 1rem; left: 1rem;">
     <button [matBadge]="unreadMessages" matBadgeOverlap="true"  [matBadgeHidden]="unreadMessages===0"
-      style="z-index: 10000; background: #ff6600;"
+      style="z-index: 10000; background:green;"
       (click)="printMessagesBox()" mat-fab color="warn"
       aria-label="Cliquez pour voir les messages">
       <mat-icon>messages</mat-icon>

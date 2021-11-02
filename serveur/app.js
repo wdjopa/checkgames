@@ -396,18 +396,21 @@ MongoClient.connect(url, { useNewUrlParser: true }, function (err, dbs) {
     socket.on("users connected", () => {
       socket.emit(
         "users connected",
-        randUsers + "<sub>" + Object.size(sockets_id) + "</sub>"
+        // randUsers 
+        // + "<sub>" +
+         Object.size(sockets_id) 
+        //  + "</sub>"
       );
     });
 
     socket.on("parties en cours", () => {
       socket.emit(
         "parties en cours",
-        parseInt(randUsers / 3) +
-          Object.size(parties) +
-          "<sub>" +
-          Object.size(parties) +
-          "</sub>"
+        // parseInt(randUsers / 3) +
+        //   Object.size(parties) +
+        //   "<sub>" +
+          Object.size(parties)
+          //  + "</sub>"
       );
     });
 
